@@ -13,88 +13,85 @@
 # L-me under a preference (prior) function for stationary GEV ---
 # ---------------------------------------------------------------
 
-
-MS_pk = function(para=para, p=6,q=9){
-
-  z=list()
+#' Martins-Stedinger prior function
+#'
+#' @param para A vector of GEV parameters (location, scale, shape).
+#' @param p Shape parameter for beta distribution (default 6).
+#' @param q Shape parameter for beta distribution (default 9).
+#' @return Prior probability value.
+#' @author Jeong-Soo Park
+#' @export
+MS_pk = function(para=para, p=6, q=9){
 
   Bef <- function(x) { ((0.5+x)^(p-1)) * ((0.5-x)^(q-1)) }
   Be  <- integrate(Bef, lower=-0.5, upper=0.5)[1]$value
 
   if( abs(para[3]) < 0.5 ){
-    z$pk.ms <- ((0.5+para[3])^(p-1))*((0.5-para[3])^(q-1))/ Be
+    pk.ms <- ((0.5+para[3])^(p-1))*((0.5-para[3])^(q-1))/ Be
   }else if ( abs(para[3]) >= 0.5 ) {
-    z$pk.ms = 1e-20
+    pk.ms = 1e-20
   }
 
-  # z$fmax= 3.11898237
-  # z$maxit = -0.11538
-
-  return(z)
-}
-
-# 주어진 매개변수에 대해 GEV 모델의 L-moments 계산
-glme.sol <- function(para, slmgev=slmgev, eps=eps) {
-
-  zz=rep(10000,3)
-
-  if(para[2] <= 0) return(zz)
-  if(abs(para[3]) > 1.0) return(zz)
-  if(abs(para[3]) < 1e-5) para[3]= -(1e-5)
-
-  emom=list()
-  emom=lmomgev(vec2par(para,'gev'))
-  if( is.na(emom$lambda[1]) ) return(zz)
-  if( is.na(emom$lambda[2]) ) return(zz)
-  if( is.na(emom$ratios[3]) ) return(zz)
-
-  #  slmgev=lmoms(xdat)
-
-  zz[1] = emom$lambdas[1]-slmgev$lambdas[1]
-  zz[2] = emom$lambdas[2]-slmgev$lambdas[2]
-  zz[3] = max( abs( emom$ratios[3]-slmgev$ratios[3] ) - eps, 0 )
-
-  return(zz)
+  pk.ms
 }
 
 
-new_pf_norm =function(para=NULL, mu=NULL, std=NULL){
+#' Normal preference function for shape parameter
+#'
+#' @param para A vector of GEV parameters.
+#' @param mu Mean for normal distribution.
+#' @param std Standard deviation for normal distribution.
+#' @return Preference function value.
+#' @author Jeong-Soo Park
+#' @export
+new_pf_norm = function(para=NULL, mu=NULL, std=NULL){
 
-  Brone = 1 + dnorm(para[3], mean= mu, sd=std) #*2
+  Brone = 1 + dnorm(para[3], mean= mu, sd=std)
 
   return(Brone)
 }
 
-pk.beta.stnary = function(para=NULL, lme.center=NULL,  p=NULL){
 
+#' Beta preference function for stationary GEV
+#'
+#' @param para A vector of GEV parameters.
+#' @param lme.center L-moment estimates as center.
+#' @param p Shape parameter (default 6).
+#' @param c0 Limit parameter (default 0.3).
+#' @param c1 Scaling parameter (default 10).
+#' @param c2 Upper limit parameter (default 5).
+#' @return A list containing pk.one (preference value), p, and q.
+#' @author Jeong-Soo Park
+#' @export
+pk.beta.stnary = function(para=NULL, lme.center=NULL,
+                          p=NULL, c0=0.3, c1=10, c2=5){
+
+  pk=list()
   pk.one = 1e-10
-  ulim= 0.3
-  aa= max(-1.0, lme.center[3]-ulim)
+  ulim= c0
+  aa= max(-1, lme.center[3]-ulim)
   bb= min(0.3, lme.center[3]+ulim)
   al=min(aa,bb)
   bl=max(aa,bb)
 
   if(lme.center[3] <= 0) {
-
-    c1=10
-    c2=5
-
-    qlim= min( 0.0+abs(lme.center[3])*c1, c2 )
+    qlim= min(0.0 +abs(lme.center[3])*c1, c2)
   }else{ qlim =0.0 }
-
-  #  qlim=10
 
   p=p; q=p+qlim
 
   Bef <- function(x) { ((-al+x)^(p-1)) * ((bl-x)^(q-1)) }
   Be  <- integrate(Bef, lower=al, upper=bl)[1]$value
 
-  if(lme.center[3] <= 0.1){
+  pk$pk.one=1
+  if(lme.center[3] <= 0.3){
     if( (para[3] > al) & (para[3] < bl) ) {
-      pk.one <- ((-al+para[3])^(p-1))*((bl-para[3])^(q-1))/ Be
-    }
-  }
-  return(pk.one)
+      pk$pk.one <- ((-al+para[3])^(p-1))*((bl-para[3])^(q-1))/ Be
+    }}
+  if(is.na(pk$pk.one)) pk$pk.one=1
+  pk$p=p
+  pk$q=q
+  return(pk)
 }
 
 
@@ -112,7 +109,10 @@ pk.beta.stnary = function(para=NULL, lme.center=NULL,  p=NULL){
 #' @param mu Mean for the normal penalization (used when pen='norm').
 #' @param std Standard deviation for the normal penalization (used when pen='norm').
 #' @param lme L-moment estimates of the parameters.
-#' @param pen Penalization method ('norm' or 'beta').
+#' @param pen Penalization method: 'norm', 'beta', 'ms', 'park', 'cannon', 'cd', or 'no'.
+#' @param p Shape parameter for beta penalty.
+#' @param c1 Scaling parameter for beta penalty.
+#' @param c2 Upper limit parameter for beta penalty.
 #'
 #' @details
 #' The function performs the following steps:
@@ -120,32 +120,30 @@ pk.beta.stnary = function(para=NULL, lme.center=NULL,  p=NULL){
 #' 2. Calculates the expected L-moments based on the current parameters.
 #' 3. Computes the difference between expected and sample L-moments.
 #' 4. Calculates the generalized L-moments distance.
-#' 5. Applies a penalization term based on the specified method ('norm' or 'beta').
+#' 5. Applies a penalization term based on the specified method.
 #' 6. Returns the sum of the L-moments distance and the penalization term.
 #'
 #' @return A numeric value representing the penalized negative log-likelihood.
 #' A lower value indicates a better fit.
 #'
-#' @author [Jeong-Soo Park]
+#' @author Jeong-Soo Park
 #' @export
 glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
-                     lcovdet=lcovdet, mu=mu, std=std, lme=lme, pen=pen){
+                     lcovdet=lcovdet, mu=mu, std=std, lme=lme, pen=pen,
+                     p=p, c1=c1, c2=c2){
 
   if( par[2] <= 0) return(10^8)
   if( abs(par[3]) > 1) return(10^8)
 
   nsample=length(xdat)
 
-  if( abs(par[3]) < 1e-5) par[3]= -(1e-5)
+  if( abs(par[3]) < 1e-5) par[3]= -(1e-4)
 
   emom= lmomgev( vec2par(par,type='gev') )
 
   if( is.na(emom$lambda[1]) ) return(10^8)
   if( is.na(emom$lambda[2]) ) return(10^8)
   if( is.na(emom$ratios[3]) ) return(10^8)
-
-  # slmgev=lmoms(xdat)
-  # cov=lmoms.cov(xdat, nmom=3)
 
   zvec=rep(NA,3)
   zvec= emom$lambdas[1:3] - slmgev$lambdas[1:3]
@@ -156,19 +154,45 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 
   prob.norm =  z/2   + (3/2)*log( (2*pi) ) + lcovdet
 
-  if(pen=='norm'){
+  if(pen=='norm' | pen=="normal"){
 
-    pk_beta = -log( new_pf_norm(para=par, mu= -0.55, std= 0.15) )
+    pk_beta = -log( new_pf_norm(para=par, mu= mu, std= std) )
 
-  }else if(pen=='beta'){
+  }else if(pen=='beta' | pen=="Beta"){
 
-    pk_beta = -log( pk.beta.stnary(para= par, lme.center=lme, p=6) )
+    work = pk.beta.stnary(para= par, lme.center=lme, p=p,
+                          c1=c1, c2=c2)$pk.one
+    pk_beta = -log(work)
+
+  }else if(pen=='ms' | pen=="MS"){
+
+    pk_beta = -log( MS_pk(para=par, p=6, q=9))
+
+  }else if(pen=="park" | pen=="Park"){
+
+    pk_beta = -log( MS_pk(para=par, p=2.5, q=2.5))
+
+  }else if(pen=="cannon" | pen=="Cannon"){
+
+    pk_beta = -log( MS_pk(para=par, p=2, q=3.3)  )
+
+  }else if(pen=="cd" | pen=="CD"){
+
+    if (par[3] >= 0) {pk_beta <- 0
+    }else if (par[3] > -1 & par[3] < 0) {
+      pk_beta <- -log( exp(-((1/(1 + par[3])) - 1)) )
+    }else if (par[3] <= -1) {pk_beta = 10^6
+    }
+
+  }else if(pen=='no'){
+    pk_beta =0
   }
 
   zz= prob.norm  + pk_beta
 
   return(zz)
 }
+
 
 #' Initialize parameters for Generalized L-moments estimation of GEV distribution
 #'
@@ -182,17 +206,12 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 #' @details
 #' The function generates `ntry` sets of initial parameters for the GEV distribution.
 #' It uses L-moment estimates as a starting point and then generates additional
-#' sets of parameters using random perturbations. This approach increases the
-#' likelihood of finding a global optimum in the subsequent optimization process.
-#'
-#' The function ensures that:
-#' 1. The scale parameter (sigma) is always positive.
-#' 2. The shape parameter (xi) is constrained between -0.7 and 0.7.
+#' sets of parameters using random perturbations.
 #'
 #' @return A matrix with `ntry` rows and 3 columns, where each row represents
 #' a set of initial parameters (location, scale, shape) for the GEV distribution.
 #'
-#' @author [Jeong-Soo Park]
+#' @author Jeong-Soo Park
 #' @export
 init.glme <-function(xdat, ntry=ntry){
 
@@ -208,11 +227,11 @@ init.glme <-function(xdat, ntry=ntry){
 
   init[2:ntry,1] <- init[1,1]+rnorm(n=(ntry-1),mean=0, sd = sd1)
   init[2:ntry,2] <- runif(n=(ntry-1), min= init[1,2]*0.5, max= sd2)
-  init[2:ntry,3] <- runif(n=(ntry-1), min= -.7, max=.5)
+  init[2:ntry,3] <- runif(n=(ntry-1), min= -.5, max=.5)
 
   for (i in 1:ntry){
     if(init[i,2] <= 0) init[i,2] = 1.0
-    if(abs(init[i,3]) >= 0.7 ) init[i,3]= 0.69*sign(init[i,3])
+    if(abs(init[i,3]) >= 0.5 ) init[i,3]= 0.49*sign(init[i,3])
   }
 
   return(init)
@@ -222,16 +241,29 @@ init.glme <-function(xdat, ntry=ntry){
 #' Generalized L-moments estimation for generalized extreme value distribution
 #'
 #' @description
-#' This function estimates the Generalized L-moments of Generalized Extreme Value distribution using an updated algorithm.
+#' This function estimates the Generalized L-moments of Generalized Extreme Value distribution.
 #'
 #' @param xdat A numeric vector of data to be fitted.
-#' @param ntry Number of attempts for parameter estimation. Higher values increase the chance of finding a more accurate estimate by trying different initial conditions.
-#' @param pen Penalization method used in estimation. Options are 'beta' and 'norm'.
+#' @param ntry Number of attempts for parameter estimation. Higher values increase
+#'   the chance of finding a more accurate estimate by trying different initial conditions.
+#' @param pen Type of penalty function: Choose among "norm", "beta" (default),
+#'   "ms", "park", "cannon", "cd", and "no" (without penalty function).
+#' @param pen.choice Choice number of penalty function specifying hyperparameters.
+#'   For "beta": 1-6 correspond to different (p, c1, c2) combinations.
+#'   For "norm": 1-4 correspond to different (mu, std) combinations.
+#' @param mu Mean hyperparameter for "norm" penalty function (default -0.5).
+#' @param std Standard deviation hyperparameter for "norm" penalty function (default 0.2).
+#' @param p Shape hyperparameter for "beta" penalty function (default 6).
+#' @param c1 Scaling hyperparameter for "beta" penalty function (default 10).
+#' @param c2 Upper limit hyperparameter for "beta" penalty function (default 5).
 #'
 #' @details
-#' The function uses an optimization approach to estimate the parameters of the Generalized Extreme Value distribution.
-#' It implements a penalized likelihood method, where the penalization can be either 'beta' or 'norm'.
-#' The function handles potential issues with covariance matrix calculation by using a bootstrap approach when necessary.
+#' The equations for the L-moments for LME of the GEVD are
+#' \deqn{ \underline{\bf \lambda} - \underline{\bf l} = \underline{\bf 0},}
+#' where \eqn{ \underline{\bf \lambda} =(\lambda_1,\; \lambda_2,\; \lambda_3)^t } and \eqn{\underline{\bf l} =(l_1,\; l_2,\; l_3)^t}.
+#' Next, we define the generalized L-moments distance (GLD) as;
+#' \deqn{(\underline{\bf \lambda} -\underline{\bf l})^t V^{-1} (\underline{\bf \lambda} -\underline{\bf l}),}
+#' where \eqn{V} is the variance-covariance matrix of the sample L-moments up to the third order.
 #'
 #' @return The glme.gev function returns a list containing the following elements:
 #' \itemize{
@@ -240,17 +272,32 @@ init.glme <-function(xdat, ntry=ntry){
 #'  \item covinv - The inverse of the covariance matrix of the L-moments.
 #'  \item lcovdet - The log determinant of the covariance matrix.
 #'  \item nllh.pref - The negative log-likelihood of the preferred solution.
-#'  \item pen - The penalization method used ('beta' or 'norm').
+#'  \item pen - The penalization method used.
+#'  \item p_q - (for beta penalty) The p and q values used.
+#'  \item c1_c2 - (for beta penalty) The c1 and c2 values used.
+#'  \item mu_std - (for norm penalty) The mu and std values used.
 #' }
 #'
-#' @author [Jeong-Soo Park]
+#' @author Jeong-Soo Park
 #' @export
-glme.gev= function(xdat, ntry=10, pen='beta'){
-
-  # pen='beta' or 'norm'
+glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
+                   mu= -0.5, std= 0.2, p=6, c1=10, c2=5){
 
   z=list()
   k =list()
+
+  if(pen=='beta' & !is.null(pen.choice)){
+    pc1c2= matrix(c(6,6,6,2,2,2,10,20,30,10,20,30,5,7,9,5,7,9),
+                  6,3, byrow=FALSE)
+    p= pc1c2[pen.choice,1]
+    c1=pc1c2[pen.choice,2]
+    c2=pc1c2[pen.choice,3]
+  }
+  if(pen=='norm' & !is.null(pen.choice)){
+    mustd= matrix(c(-.5,.2,-.5,.1,-.6,.2,-.6,.1),4,2, byrow=TRUE)
+    mu= mustd[pen.choice,1]
+    std=mustd[pen.choice,2]
+  }
 
   # initial setting ------
   nsample=length(xdat)
@@ -282,13 +329,13 @@ glme.gev= function(xdat, ntry=10, pen='beta'){
 
   #--------------------------------------------------
   if(detc <= 0){
-    # cat("det <0, Bootstrap to calculate cov","\n")
 
     BB=200          # we need Bootstrap to calculate cov ---
     sam.lmom= matrix(NA,BB,3)
 
     for (ib in 1:BB){
-      sam.lmom[ib,1:3]=lmoms(sample(xdat,size=nsample,replace=T), nmom=3)$lambdas
+      sam.lmom[ib,1:3]=lmoms(sample(xdat,size=nsample,replace=T),
+                             nmom=3)$lambdas
     }
     cov=cov(sam.lmom)
     covinv=solve(cov)
@@ -309,7 +356,8 @@ glme.gev= function(xdat, ntry=10, pen='beta'){
       value <- try(
         optim(par=as.vector(sinit[i,1:3]), fn=glme.like,
               xdat=xdat, slmgev=slmgev, covinv=covinv,
-              lcovdet=lcovdet, mu=mu, std=std, lme=lme, pen=pen)
+              lcovdet=lcovdet, mu=mu, std=std, lme=lme, pen=pen,
+              p=p, c1=c1, c2=c2)
       )
 
       if(is(value)[1]=="try-error"){
@@ -332,7 +380,7 @@ glme.gev= function(xdat, ntry=10, pen='beta'){
   if(isol==0) {
     cat("-- No solution was found in nleqslv or optim --","\n")
     z$glme = z$lme
-    return
+    return(z)
   }
 
   selc_num = which.min( precis )    #precis=k[[i]]$fvec
@@ -343,12 +391,28 @@ glme.gev= function(xdat, ntry=10, pen='beta'){
   z$glme = x$root
   z$pen = pen
 
+  if(pen=="beta" | pen=="Beta"){
+    ww = pk.beta.stnary(para= z$glme, lme.center=lme, p=p,
+                        c1=c1, c2=c2)
+    z$p_q= c(ww$p, ww$q); z$c1_c2=c(c1,c2)
+
+  }else if(pen=="norm" | pen=="normal"){
+    z$mu_std = c(mu, std)
+  }
+
   return(z)
 }
 
 
-
-
+#' GEV parameter estimation with fixed shape parameter
+#'
+#' @param lmom L-moments object.
+#' @param kfix Fixed shape parameter value.
+#' @param checklmom Whether to check L-moment validity.
+#' @param ... Additional arguments.
+#' @return A list with GEV parameters.
+#' @author Jeong-Soo Park
+#' @export
 pargev.kfix= function (lmom, kfix= 0.1, checklmom = TRUE, ...)
 {
 
@@ -423,7 +487,6 @@ pargev.kfix= function (lmom, kfix= 0.1, checklmom = TRUE, ...)
     }
   }
 
-  #  para[3] <- G
   para[3]=kfix
   G = kfix
 
@@ -432,6 +495,3 @@ pargev.kfix= function (lmom, kfix= 0.1, checklmom = TRUE, ...)
   para[1] <- lmom$L1 - para[2] * (1 - GAM)/G
   return(list(type = "gev", para = para, source = "pargev"))
 }
-
-
-

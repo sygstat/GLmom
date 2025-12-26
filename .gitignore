@@ -1,4 +1,40 @@
+# R
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+.Rapp.history
+
+# R package build
+*.tar.gz
+*.Rcheck/
+GLmomentEst.Rcheck/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
+
+# Development files
+new/
+
+# Byte-compiled files
+*.rdb
+*.rdx
+
+# Documentation
+docs/
+
+# Coverage
+covr/
+*.gcov
+*.gcno
+*.gcda

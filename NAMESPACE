@@ -1,5 +1,16 @@
-exportPattern("^[[:alpha:]]+")
-importFrom("lmomco", "lmoms", "pargev", "lmoms.cov", "vec2par", "lmomgev", "lmorph", "are.lmom.valid")
-importFrom("stats", "optim", "rnorm", "runif", "integrate")
+# Export main functions
+export(glme.gev)
+export(glme.gev11)
+export(glme.like)
+export(init.glme)
+export(pargev.kfix)
+export(MS_pk)
+export(new_pf_norm)
+export(pk.beta.stnary)
+
+# Imports
+importFrom("lmomco", "lmoms", "pargev", "lmoms.cov", "vec2par", "lmomgev", "lmorph", "are.lmom.valid", "TLmoms", "lmomgum")
+importFrom("stats", "optim", "rnorm", "runif", "integrate", "dnorm", "lm", "var", "cov")
 importFrom("methods", "is")
 importFrom("nleqslv", "nleqslv")
+importFrom("robustbase", "lmrob")

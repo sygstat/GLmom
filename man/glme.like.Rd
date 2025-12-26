@@ -13,7 +13,10 @@ glme.like(
   mu = mu,
   std = std,
   lme = lme,
-  pen = pen
+  pen = pen,
+  p = p,
+  c1 = c1,
+  c2 = c2
 )
 }
 \arguments{
@@ -33,7 +36,13 @@ glme.like(
 
 \item{lme}{L-moment estimates of the parameters.}
 
-\item{pen}{Penalization method ('norm' or 'beta').}
+\item{pen}{Penalization method: 'norm', 'beta', 'ms', 'park', 'cannon', 'cd', or 'no'.}
+
+\item{p}{Shape parameter for beta penalty.}
+
+\item{c1}{Scaling parameter for beta penalty.}
+
+\item{c2}{Upper limit parameter for beta penalty.}
 }
 \value{
 A numeric value representing the penalized negative log-likelihood.
@@ -49,9 +58,9 @@ The function performs the following steps:
 2. Calculates the expected L-moments based on the current parameters.
 3. Computes the difference between expected and sample L-moments.
 4. Calculates the generalized L-moments distance.
-5. Applies a penalization term based on the specified method ('norm' or 'beta').
+5. Applies a penalization term based on the specified method.
 6. Returns the sum of the L-moments distance and the penalization term.
 }
 \author{
-[Jeong-Soo Park]
+Jeong-Soo Park
 }

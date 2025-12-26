@@ -4,14 +4,27 @@
 \alias{glme.gev}
 \title{Generalized L-moments estimation for generalized extreme value distribution}
 \usage{
-glme.gev(xdat, ntry = 10, pen = "beta")
+glme.gev(xdat, ntry = 10, pen = "beta", pen.choice = NULL,
+         mu = -0.5, std = 0.2, p = 6, c1 = 10, c2 = 5)
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted.}
 
 \item{ntry}{Number of attempts for parameter estimation. Higher values increase the chance of finding a more accurate estimate by trying different initial conditions.}
 
-\item{pen}{Penalization method used in estimation. Options are 'beta' and 'norm'.}
+\item{pen}{Type of penalty function: Choose among "norm", "beta" (default), "ms", "park", "cannon", "cd", and "no" (without penalty function).}
+
+\item{pen.choice}{Choice number of penalty function specifying hyperparameters. For "beta": 1-6 correspond to different (p, c1, c2) combinations. For "norm": 1-4 correspond to different (mu, std) combinations.}
+
+\item{mu}{Mean hyperparameter for "norm" penalty function (default -0.5).}
+
+\item{std}{Standard deviation hyperparameter for "norm" penalty function (default 0.2).}
+
+\item{p}{Shape hyperparameter for "beta" penalty function (default 6).}
+
+\item{c1}{Scaling hyperparameter for "beta" penalty function (default 10).}
+
+\item{c2}{Upper limit hyperparameter for "beta" penalty function (default 5).}
 }
 \value{
 The glme.gev function returns a list containing the following elements:
@@ -21,17 +34,23 @@ The glme.gev function returns a list containing the following elements:
  \item covinv - The inverse of the covariance matrix of the L-moments.
  \item lcovdet - The log determinant of the covariance matrix.
  \item nllh.pref - The negative log-likelihood of the preferred solution.
- \item pen - The penalization method used ('beta' or 'norm').
+ \item pen - The penalization method used.
+ \item p_q - (for beta penalty) The p and q values used.
+ \item c1_c2 - (for beta penalty) The c1 and c2 values used.
+ \item mu_std - (for norm penalty) The mu and std values used.
 }
 }
 \description{
-This function estimates the Generalized L-moments of Generalized Extreme Value distribution using an updated algorithm.
+This function estimates the Generalized L-moments of Generalized Extreme Value distribution.
 }
 \details{
-The function uses an optimization approach to estimate the parameters of the Generalized Extreme Value distribution.
-It implements a penalized likelihood method, where the penalization can be either 'beta' or 'norm'.
-The function handles potential issues with covariance matrix calculation by using a bootstrap approach when necessary.
+The equations for the L-moments for LME of the GEVD are
+\deqn{ \underline{\bf \lambda} - \underline{\bf l} = \underline{\bf 0},}
+where \eqn{ \underline{\bf \lambda} =(\lambda_1,\; \lambda_2,\; \lambda_3)^t } and \eqn{\underline{\bf l} =(l_1,\; l_2,\; l_3)^t}.
+Next, we define the generalized L-moments distance (GLD) as;
+\deqn{(\underline{\bf \lambda} -\underline{\bf l})^t V^{-1} (\underline{\bf \lambda} -\underline{\bf l}),}
+where \eqn{V} is the variance-covariance matrix of the sample L-moments up to the third order.
 }
 \author{
-[Jeong-Soo Park]
+Jeong-Soo Park
 }
