@@ -4,17 +4,30 @@
 \alias{glme.gev}
 \title{Generalized L-moments estimation for generalized extreme value distribution}
 \usage{
-glme.gev(xdat, ntry = 10, pen = "beta", pen.choice = NULL,
-         mu = -0.5, std = 0.2, p = 6, c1 = 10, c2 = 5)
+glme.gev(
+  xdat,
+  ntry = 10,
+  pen = "beta",
+  pen.choice = NULL,
+  mu = -0.5,
+  std = 0.2,
+  p = 6,
+  c1 = 10,
+  c2 = 5
+)
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted.}
 
-\item{ntry}{Number of attempts for parameter estimation. Higher values increase the chance of finding a more accurate estimate by trying different initial conditions.}
+\item{ntry}{Number of attempts for parameter estimation. Higher values increase
+the chance of finding a more accurate estimate by trying different initial conditions.}
 
-\item{pen}{Type of penalty function: Choose among "norm", "beta" (default), "ms", "park", "cannon", "cd", and "no" (without penalty function).}
+\item{pen}{Type of penalty function: Choose among "norm", "beta" (default),
+"ms", "park", "cannon", "cd", and "no" (without penalty function).}
 
-\item{pen.choice}{Choice number of penalty function specifying hyperparameters. For "beta": 1-6 correspond to different (p, c1, c2) combinations. For "norm": 1-4 correspond to different (mu, std) combinations.}
+\item{pen.choice}{Choice number of penalty function specifying hyperparameters.
+For "beta": 1-6 correspond to different (p, c1, c2) combinations.
+For "norm": 1-4 correspond to different (mu, std) combinations.}
 
 \item{mu}{Mean hyperparameter for "norm" penalty function (default -0.5).}
 
@@ -50,6 +63,20 @@ where \eqn{ \underline{\bf \lambda} =(\lambda_1,\; \lambda_2,\; \lambda_3)^t } a
 Next, we define the generalized L-moments distance (GLD) as;
 \deqn{(\underline{\bf \lambda} -\underline{\bf l})^t V^{-1} (\underline{\bf \lambda} -\underline{\bf l}),}
 where \eqn{V} is the variance-covariance matrix of the sample L-moments up to the third order.
+}
+\examples{
+# Load example streamflow data
+data(streamflow)
+x <- streamflow$r1
+
+# Estimate GEV parameters using beta penalty (default)
+result <- glme.gev(x, ntry = 5)
+print(result$glme)
+
+# Using Martins-Stedinger penalty
+result_ms <- glme.gev(x, ntry = 5, pen = "ms")
+print(result_ms$glme)
+
 }
 \author{
 Jeong-Soo Park

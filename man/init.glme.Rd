@@ -22,13 +22,8 @@ of the Generalized Extreme Value (GEV) distribution.
 \details{
 The function generates `ntry` sets of initial parameters for the GEV distribution.
 It uses L-moment estimates as a starting point and then generates additional
-sets of parameters using random perturbations. This approach increases the
-likelihood of finding a global optimum in the subsequent optimization process.
-
-The function ensures that:
-1. The scale parameter (sigma) is always positive.
-2. The shape parameter (xi) is constrained between -0.7 and 0.7.
+sets of parameters using random perturbations.
 }
 \author{
-[Jeong-Soo Park]
+Jeong-Soo Park
 }

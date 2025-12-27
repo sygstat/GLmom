@@ -1,5 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-.claude
-new/
+^\.claude$
+^new$
+^cran-comments\.md$
+^README\.md$
+^README\.pdf$
+^\.gitignore$
+^\.git$
+^GLmomentEst.*\.tar\.gz$

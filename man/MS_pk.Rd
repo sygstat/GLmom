@@ -17,7 +17,7 @@ MS_pk(para = para, p = 6, q = 9)
 Prior probability value.
 }
 \description{
-Calculates the Martins-Stedinger prior function for the shape parameter.
+Martins-Stedinger prior function
 }
 \author{
 Jeong-Soo Park

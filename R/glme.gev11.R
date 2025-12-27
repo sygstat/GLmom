@@ -196,6 +196,18 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' }
 #'
 #' @author Jeong-Soo Park
+#'
+#' @examples
+#' # Load example streamflow data
+#' data(streamflow)
+#' x <- streamflow$r1
+#'
+#' # Estimate non-stationary GEV11 parameters
+#' \donttest{
+#' result <- glme.gev11(x, ntry = 5)
+#' print(result$para.prop)
+#' }
+#'
 #' @export
 glme.gev11 = function(xdat, ntry=10, ftol=1e-6, init.rob=TRUE,
                       pen='beta', pen.choice=NULL, mu=-0.55, std=0.3,

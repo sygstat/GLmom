@@ -4,9 +4,19 @@
 \alias{glme.gev11}
 \title{Generalized L-moments estimation for non-stationary GEV11 model}
 \usage{
-glme.gev11(xdat, ntry = 10, ftol = 1e-6, init.rob = TRUE,
-           pen = "beta", pen.choice = NULL, mu = -0.55, std = 0.3,
-           p = 6, c1 = 10, c2 = 5)
+glme.gev11(
+  xdat,
+  ntry = 10,
+  ftol = 1e-06,
+  init.rob = TRUE,
+  pen = "beta",
+  pen.choice = NULL,
+  mu = -0.55,
+  std = 0.3,
+  p = 6,
+  c1 = 10,
+  c2 = 5
+)
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted.}
@@ -34,7 +44,7 @@ glme.gev11(xdat, ntry = 10, ftol = 1e-6, init.rob = TRUE,
 \value{
 A list containing:
 \itemize{
-  \item para.prop - Proposed GLME estimates (5 parameters: mu0, mu1, sigma0, sigma1, xi).
+  \item para.prop - Proposed GLME estimates (5 parameters).
   \item para.gado - GN16 original estimates.
   \item strup.sta - Stationary WLSE.
   \item strup.org - WLSE by strup.
@@ -48,6 +58,18 @@ A list containing:
 \description{
 This function estimates parameters of the non-stationary GEV11 model
 where mu(t) = mu0 + mu1*t and sigma(t) = exp(sigma0 + sigma1*t).
+}
+\examples{
+# Load example streamflow data
+data(streamflow)
+x <- streamflow$r1
+
+# Estimate non-stationary GEV11 parameters
+\donttest{
+result <- glme.gev11(x, ntry = 5)
+print(result$para.prop)
+}
+
 }
 \author{
 Jeong-Soo Park

@@ -19,7 +19,7 @@ pargev.kfix(lmom, kfix = 0.1, checklmom = TRUE, ...)
 A list with GEV parameters.
 }
 \description{
-Estimates GEV parameters from L-moments with a fixed shape parameter.
+GEV parameter estimation with fixed shape parameter
 }
 \author{
 Jeong-Soo Park

@@ -4,7 +4,14 @@
 \alias{pk.beta.stnary}
 \title{Beta preference function for stationary GEV}
 \usage{
-pk.beta.stnary(para = NULL, lme.center = NULL, p = NULL, c0 = 0.3, c1 = 10, c2 = 5)
+pk.beta.stnary(
+  para = NULL,
+  lme.center = NULL,
+  p = NULL,
+  c0 = 0.3,
+  c1 = 10,
+  c2 = 5
+)
 }
 \arguments{
 \item{para}{A vector of GEV parameters.}
@@ -23,7 +30,7 @@ pk.beta.stnary(para = NULL, lme.center = NULL, p = NULL, c0 = 0.3, c1 = 10, c2 =
 A list containing pk.one (preference value), p, and q.
 }
 \description{
-Calculates a beta preference function for the stationary GEV shape parameter.
+Beta preference function for stationary GEV
 }
 \author{
 Jeong-Soo Park

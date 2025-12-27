@@ -279,6 +279,20 @@ init.glme <-function(xdat, ntry=ntry){
 #' }
 #'
 #' @author Jeong-Soo Park
+#'
+#' @examples
+#' # Load example streamflow data
+#' data(streamflow)
+#' x <- streamflow$r1
+#'
+#' # Estimate GEV parameters using beta penalty (default)
+#' result <- glme.gev(x, ntry = 5)
+#' print(result$glme)
+#'
+#' # Using Martins-Stedinger penalty
+#' result_ms <- glme.gev(x, ntry = 5, pen = "ms")
+#' print(result_ms$glme)
+#'
 #' @export
 glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
                    mu= -0.5, std= 0.2, p=6, c1=10, c2=5){
