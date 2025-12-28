@@ -78,6 +78,11 @@ result_ms <- glme.gev(x, ntry = 5, pen = "ms")
 print(result_ms$glme)
 
 }
+\references{
+Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
+L-moment estimation for stationary and nonstationary extreme value models.
+arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+}
 \author{
 Jeong-Soo Park
 }
