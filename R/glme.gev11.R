@@ -201,6 +201,10 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' L-moment estimation for stationary and nonstationary extreme value models.
 #' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
 #'
+#' Shin, Y., Shin, Y. & Park, J.-S. (2025). Building nonstationary extreme value
+#' model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
+#' \doi{10.1007/s42952-025-00325-3}
+#'
 #' @author Jeong-Soo Park
 #'
 #' @examples
