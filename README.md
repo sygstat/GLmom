@@ -65,7 +65,7 @@ result <- glme.gev11(PhliuAgromet$prec)
 
 # Results
 result$para.glme   # Proposed GLME estimates (mu0, mu1, sigma0, sigma1, xi)
-result$para.jkss   # JKSS(2025) SSP estimates
+result$para.jkss   # L-moment based estimates for non-stationary model
 result$lme.sta     # Stationary L-moment estimates
 result$para.gado   # GN16 original estimates
 result$strup.final # Weighted least squares estimates
@@ -97,18 +97,15 @@ result$strup.final # Weighted least squares estimates
 ## Authors
 
 - **Yonggwan Shin**, Ph.D, Research & Development Center, XRAI Inc., Gwangju 61186, Korea, [syg.stat@gmail.com](mailto:syg.stat@gmail.com)
-- **Yire Shin**, Ph.D, Department of Mathematics and Statistics, Chonnam National University, Republic of Korea, [shinyire87@gmail.com](mailto:shinyire87@gmail.com)
-- **Jeong-Soo Park**, Professor, Department of Mathematics and Statistics, Chonnam National University, Republic of Korea, [jspark@jnu.ac.kr](mailto:jspark@jnu.ac.kr)
+- **Yire Shin**, Ph.D, Department of Statistics, Chonnam National University, Republic of Korea, [shinyire87@gmail.com](mailto:shinyire87@gmail.com)
+- **Jihong Park**, Department of Mathematics and Statistics, Chonnam National University, Republic of Korea
+- **Jeong-Soo Park**, Professor, Department of Statistics, Chonnam National University, Republic of Korea, [jspark@jnu.ac.kr](mailto:jspark@jnu.ac.kr)
 
 ## Citation
 
 If you use this package, please cite:
 
-**For stationary GLME:**
 > Shin, Y., Shin, Y., Park, J., & Park, J.-S. (2025). Generalized method of L-moment estimation for stationary and nonstationary extreme value models. *arXiv preprint* arXiv:2512.20385. https://doi.org/10.48550/arXiv.2512.20385
-
-**For non-stationary GEV11:**
-> Shin, Y., Shin, Y. & Park, J.-S. (2025). Building nonstationary extreme value model using L-moments. *Journal of the Korean Statistical Society*, 54, 947-970. https://doi.org/10.1007/s42952-025-00325-3
 
 ## License
 

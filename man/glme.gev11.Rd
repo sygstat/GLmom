@@ -45,7 +45,7 @@ glme.gev11(
 A list containing:
 \itemize{
   \item para.glme - Proposed GLME estimates (5 parameters: mu0, mu1, sigma0, sigma1, xi).
-  \item para.jkss - Parameter estimates by SSP method from Shin et al. (2025) JKSS paper.
+  \item para.jkss - L-moment based estimates for non-stationary model.
   \item para.gado - GN16 original estimates.
   \item strup.sta - Stationary WLSE.
   \item strup.org - WLSE by strup.
@@ -69,14 +69,14 @@ x <- streamflow$r1
 \donttest{
 result <- glme.gev11(x, ntry = 5)
 print(result$para.glme)  # Proposed GLME estimates
-print(result$para.jkss)  # JKSS(2025) estimates
+print(result$para.jkss)  # L-moment based estimates
 }
 
 }
 \references{
-Shin, Y., Shin, Y. & Park, J.S. (2025). Building nonstationary extreme value
-model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
-\doi{10.1007/s42952-025-00325-3}
+Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
+L-moment estimation for stationary and nonstationary extreme value models.
+arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
 }
 \author{
 Jeong-Soo Park
