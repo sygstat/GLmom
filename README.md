@@ -1,6 +1,3 @@
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # GLmomentEst
 
 An R package for Generalized L-moments Estimation of the Generalized Extreme Value (GEV) Distribution.
