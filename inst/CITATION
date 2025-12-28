@@ -21,3 +21,25 @@ bibentry(
     "https://doi.org/10.48550/arXiv.2512.20385"
   )
 )
+
+bibentry(
+  bibtype  = "Article",
+  title    = "Building nonstationary extreme value model using L-moments",
+  author   = c(
+    person("Yonggwan", "Shin"),
+    person("Yire", "Shin"),
+    person("Jeong-Soo", "Park")
+  ),
+  year     = "2025",
+  journal  = "Journal of the Korean Statistical Society",
+  volume   = "54",
+  pages    = "947-970",
+  doi      = "10.1007/s42952-025-00325-3",
+  header   = "For non-stationary GEV11 model, also cite:",
+  textVersion = paste(
+    "Shin, Y., Shin, Y. & Park, J.-S. (2025).",
+    "Building nonstationary extreme value model using L-moments.",
+    "Journal of the Korean Statistical Society, 54, 947-970.",
+    "https://doi.org/10.1007/s42952-025-00325-3"
+  )
+)

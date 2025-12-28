@@ -184,7 +184,8 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #'
 #' @return A list containing:
 #' \itemize{
-#'   \item para.prop - Proposed GLME estimates (5 parameters).
+#'   \item para.glme - Proposed GLME estimates (5 parameters: mu0, mu1, sigma0, sigma1, xi).
+#'   \item para.jkss - Parameter estimates by SSP method from Shin et al. (2025) JKSS paper.
 #'   \item para.gado - GN16 original estimates.
 #'   \item strup.sta - Stationary WLSE.
 #'   \item strup.org - WLSE by strup.
@@ -194,6 +195,11 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #'   \item p_q - (for beta) p and q values.
 #'   \item c1_c2 - (for beta) c1 and c2 values.
 #' }
+#'
+#' @references
+#' Shin, Y., Shin, Y. & Park, J.S. (2025). Building nonstationary extreme value
+#' model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
+#' \doi{10.1007/s42952-025-00325-3}
 #'
 #' @author Jeong-Soo Park
 #'
@@ -205,7 +211,8 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' # Estimate non-stationary GEV11 parameters
 #' \donttest{
 #' result <- glme.gev11(x, ntry = 5)
-#' print(result$para.prop)
+#' print(result$para.glme)  # Proposed GLME estimates
+#' print(result$para.jkss)  # JKSS(2025) estimates
 #' }
 #'
 #' @export
@@ -279,7 +286,7 @@ glme.gev11 = function(xdat, ntry=10, ftol=1e-6, init.rob=TRUE,
                     pen=pen, mu=mu, std=std,
                     p=p,c1=c1,c2=c2)
 
-  if(z$precis > ftol) { z$para.prop = gado.rob$para.org
+  if(z$precis > ftol) { z$para.jkss = gado.rob$para.org
   cat("no optim for proposed","\n") }
 
   # --------------------------------------------------------------------
@@ -290,7 +297,8 @@ glme.gev11 = function(xdat, ntry=10, ftol=1e-6, init.rob=TRUE,
 
   z$lme.sta = pargev(lmoms(xdat,nmom=5))$para   # stationary L-ME
 
-  names(z$para.prop)     <-name_gev11_ns
+  names(z$para.glme)     <-name_gev11_ns
+  names(z$para.jkss)     <-name_gev11_ns
   names(z$para.gado)     <-name_gev11_ns
   names(z$strup.org)     <-name_gev11_ns
   names(z$strup.final)   <-name_gev11_ns
@@ -298,7 +306,7 @@ glme.gev11 = function(xdat, ntry=10, ftol=1e-6, init.rob=TRUE,
   names(z$lme.sta)       <-name_gev00_sta
 
   if(pen=='beta'){
-    ww=pk.beta.ns(para=z$prop.glme.beta[c(1,3,5)], lme.center=z$lme.sta,
+    ww=pk.beta.ns(para=z$para.glme[c(1,3,5)], lme.center=z$lme.sta,
                   p=p, c1=c1,c2=c2)
     z$p_q= c(ww$p,ww$q)
     z$c1_c2=c(c1,c2)
@@ -422,7 +430,7 @@ multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
     }
   })
 
-  zm$para.prop =sel.para_all(xdat, para.sel, model)$para
+  zm$para.jkss =sel.para_all(xdat, para.sel, model)$para  # para est. SSP JKSS (2025)
   zm$precis =precis[which.min(precis)]
 
   if(pen != "no"){   #  perform glme
@@ -431,14 +439,14 @@ multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
     gev11.cov =list()
     isol = 0
 
-    gev11.cov =gev11.GLD(par=zm$para.prop, xdat=xdat)
+    gev11.cov =gev11.GLD(par=zm$para.jkss, xdat=xdat)
 
     covinv = gev11.cov$covinv
     lcovdet= gev11.cov$lcovdet
 
     my.nllh=rep(1e6,gntry)
 
-    newtheta= zm$para.prop
+    newtheta= zm$para.jkss
     init[2,1:3] = c(newtheta[1],newtheta[3],newtheta[5]-.01)
 
     tryCatch(
@@ -479,13 +487,8 @@ multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
 
     x  <- k[[selc_num]]
 
-    if(pen=='beta' | pen=='ms' | pen=='park' | pen=='cannon' | pen=='cd'){
-      zm$nllh.pref.beta = k[[selc_num]]$fvec
-      zm$prop.glme.beta = c(x$root[1],newtheta[2],x$root[2],newtheta[4],x$root[3])
-    }else if(pen=='norm'){
-      zm$nllh.pref.norm = k[[selc_num]]$fvec
-      zm$prop.glme.norm = c(x$root[1],newtheta[2],x$root[2],newtheta[4],x$root[3])
-    }
+    zm$nllh.glme = k[[selc_num]]$fvec
+    zm$para.glme = c(x$root[1],newtheta[2],x$root[2],newtheta[4],x$root[3])
 
   }
 
