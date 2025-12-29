@@ -62,5 +62,5 @@ The function performs the following steps:
 6. Returns the sum of the L-moments distance and the penalization term.
 }
 \author{
-Jeong-Soo Park
+Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }

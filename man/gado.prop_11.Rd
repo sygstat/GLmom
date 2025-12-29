@@ -51,5 +51,5 @@ model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
   \code{\link{nsgev}} for the simple interface.
 }
 \author{
-Jeong-Soo Park
+Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }

@@ -33,5 +33,5 @@ A list containing pk.one (preference value), p, and q.
 Beta preference function for stationary GEV
 }
 \author{
-Jeong-Soo Park
+Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }

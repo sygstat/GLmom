@@ -26,6 +26,6 @@ A list containing pk.one, p, and q.
 Beta preference function for non-stationary GEV
 }
 \author{
-Jeong-Soo Park
+Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }
 \keyword{internal}

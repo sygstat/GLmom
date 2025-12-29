@@ -20,5 +20,5 @@ Prior probability value.
 Martins-Stedinger prior function
 }
 \author{
-Jeong-Soo Park
+Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }

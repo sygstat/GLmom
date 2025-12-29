@@ -25,5 +25,5 @@ It uses L-moment estimates as a starting point and then generates additional
 sets of parameters using random perturbations.
 }
 \author{
-Jeong-Soo Park
+Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }

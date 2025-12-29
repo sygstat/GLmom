@@ -19,7 +19,7 @@
 #' @param p Shape parameter for beta distribution (default 6).
 #' @param q Shape parameter for beta distribution (default 9).
 #' @return Prior probability value.
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 MS_pk = function(para=para, p=6, q=9){
 
@@ -42,7 +42,7 @@ MS_pk = function(para=para, p=6, q=9){
 #' @param mu Mean for normal distribution.
 #' @param std Standard deviation for normal distribution.
 #' @return Preference function value.
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 new_pf_norm = function(para=NULL, mu=NULL, std=NULL){
 
@@ -61,7 +61,7 @@ new_pf_norm = function(para=NULL, mu=NULL, std=NULL){
 #' @param c1 Scaling parameter (default 10).
 #' @param c2 Upper limit parameter (default 5).
 #' @return A list containing pk.one (preference value), p, and q.
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 pk.beta.stnary = function(para=NULL, lme.center=NULL,
                           p=NULL, c0=0.3, c1=10, c2=5){
@@ -126,7 +126,7 @@ pk.beta.stnary = function(para=NULL, lme.center=NULL,
 #' @return A numeric value representing the penalized negative log-likelihood.
 #' A lower value indicates a better fit.
 #'
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
                      lcovdet=lcovdet, mu=mu, std=std, lme=lme, pen=pen,
@@ -211,7 +211,7 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 #' @return A matrix with `ntry` rows and 3 columns, where each row represents
 #' a set of initial parameters (location, scale, shape) for the GEV distribution.
 #'
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 init.glme <-function(xdat, ntry=ntry){
 
@@ -283,7 +283,7 @@ init.glme <-function(xdat, ntry=ntry){
 #' L-moment estimation for stationary and nonstationary extreme value models.
 #' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
 #'
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #'
 #' @examples
 #' # Load example streamflow data
@@ -430,7 +430,7 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
 #' @param checklmom Whether to check L-moment validity.
 #' @param ... Additional arguments.
 #' @return A list with GEV parameters.
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 pargev.kfix= function (lmom, kfix= 0.1, checklmom = TRUE, ...)
 {

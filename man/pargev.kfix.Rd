@@ -22,5 +22,5 @@ A list with GEV parameters.
 GEV parameter estimation with fixed shape parameter
 }
 \author{
-Jeong-Soo Park
+Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }

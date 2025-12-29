@@ -8,7 +8,7 @@
 #' @param mu Mean for normal distribution.
 #' @param std Standard deviation for normal distribution.
 #' @return Preference function value.
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @keywords internal
 pk.norm.ns = function(para=NULL, mu=NULL, std=NULL){
   Brone = 1 + dnorm(para[3], mean= mu, sd=std)
@@ -25,7 +25,7 @@ pk.norm.ns = function(para=NULL, mu=NULL, std=NULL){
 #' @param c1 Scaling parameter (default 10).
 #' @param c2 Upper limit parameter (default 5).
 #' @return A list containing pk.one, p, and q.
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @keywords internal
 pk.beta.ns = function(para=NULL, lme.center=NULL, p=NULL,
                       c0=0.3, c1=10, c2=5){
@@ -73,7 +73,7 @@ pk.beta.ns = function(para=NULL, lme.center=NULL, p=NULL,
 #' @param c1 Beta penalty scaling.
 #' @param c2 Beta penalty limit.
 #' @return Negative log-likelihood value.
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @keywords internal
 gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
                              covinv=covinv, lcovdet=lcovdet,
@@ -205,7 +205,7 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
 #' \doi{10.1007/s42952-025-00325-3}
 #'
-#' @author Jeong-Soo Park
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #'
 #' @examples
 #' # Load example streamflow data

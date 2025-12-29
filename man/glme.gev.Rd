@@ -84,5 +84,5 @@ L-moment estimation for stationary and nonstationary extreme value models.
 arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
 }
 \author{
-Jeong-Soo Park
+Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }
