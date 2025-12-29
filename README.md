@@ -110,7 +110,7 @@ result$para.jkss
 
 ### 3. Shin et al. (2025b) Compatibility Functions
 
-For users following the methodology in Shin et al. (2025, J. Korean Stat. Soc.):
+For users following the methodology in Shin et al. (2025b):
 
 ``` r
 library(GLmomentEst)
@@ -201,7 +201,7 @@ head(Trehafod)
 
 | Penalty | Description | Parameters | Reference |
 |---------|-------------|------------|-----------|
-| `beta` | Adaptive beta (default) | `p`, `c1`, `c2` | Shin et al. (2025) |
+| `beta` | Adaptive beta (default) | `p`, `c1`, `c2` | Shin et al. (2025a) |
 | `norm` | Normal distribution | `mu`, `std` | - |
 | `ms` | Martins-Stedinger | Beta(6,9) fixed | Martins & Stedinger (2000) |
 | `park` | Park | Beta(2.5,2.5) fixed | - |
@@ -234,8 +234,8 @@ If you use this package, please cite:
 
 ## References
 
-- Shin, Y., Shin, Y., Park, J., & Park, J.-S. (2025). Generalized method of L-moment estimation for stationary and nonstationary extreme value models. *arXiv preprint* arXiv:2512.20385.
-- Shin, Y., Shin, Y., & Park, J.-S. (2025). Building nonstationary extreme value model using L-moments. *Journal of the Korean Statistical Society*, 54, 947-970.
+- Shin, Y., Shin, Y., Park, J., & Park, J.-S. (2025a). Generalized method of L-moment estimation for stationary and nonstationary extreme value models. *arXiv preprint* arXiv:2512.20385.
+- Shin, Y., Shin, Y., & Park, J.-S. (2025b). Building nonstationary extreme value model using L-moments. *Journal of the Korean Statistical Society*, 54, 947-970.
 - Hosking, J.R.M. (1990). L-moments: Analysis and estimation of distributions using linear combinations of order statistics. *Journal of the Royal Statistical Society B*, 52, 105-124.
 - Martins, E.S., & Stedinger, J.R. (2000). Generalized maximum-likelihood generalized extreme-value quantile estimators for hydrologic data. *Water Resources Research*, 36, 737-744.
 
