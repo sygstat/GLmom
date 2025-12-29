@@ -9,3 +9,6 @@
 ^\.gitignore$
 ^\.git$
 ^GLmomentEst.*\.tar\.gz$
+^non_stationary-GEV$
+^CHANGES_SUMMARY\.md$
+^CITATION\.cff$

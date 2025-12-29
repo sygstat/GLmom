@@ -25,6 +25,7 @@ Thumbs.db
 
 # Development files
 new/
+non_stationary-GEV/
 
 # Byte-compiled files
 *.rdb

@@ -434,7 +434,7 @@ multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
     }
   })
 
-  zm$para.jkss =sel.para_all(xdat, para.sel, model)$para  # para est. SSP JKSS (2025)
+  zm$para.jkss =sel.para_all(xdat, para.sel, model)$para  # L-moment estimates
   zm$precis =precis[which.min(precis)]
 
   if(pen != "no"){   #  perform glme
@@ -494,6 +494,11 @@ multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
     zm$nllh.glme = k[[selc_num]]$fvec
     zm$para.glme = c(x$root[1],newtheta[2],x$root[2],newtheta[4],x$root[3])
 
+  }
+
+  # When pen="no", set para.glme same as para.jkss
+  if(pen == "no"){
+    zm$para.glme = zm$para.jkss
   }
 
   zm$pen=pen

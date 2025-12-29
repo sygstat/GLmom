@@ -8,6 +8,10 @@ export(MS_pk)
 export(new_pf_norm)
 export(pk.beta.stnary)
 
+# Shin et al. (2025b) compatibility functions
+export(nsgev)
+export(gado.prop_11)
+
 # Imports
 importFrom("lmomco", "lmoms", "pargev", "lmoms.cov", "vec2par", "lmomgev", "lmorph", "are.lmom.valid", "TLmoms", "lmomgum")
 importFrom("stats", "optim", "rnorm", "runif", "integrate", "dnorm", "lm", "var", "cov")
