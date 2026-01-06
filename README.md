@@ -6,11 +6,11 @@ An R package for **Generalized L-moments Estimation** of the Generalized Extreme
 
 This package provides three main estimation approaches for extreme value analysis:
 
-1. **GLME (Generalized L-Moment Estimation)**: Combines L-moments with penalty functions to regularize the shape parameter, providing more stable estimates especially for small samples.
+1. **GLME (Generalized L-Moment Estimation)**: Combines L-moments (Hosking, 1990) with penalty functions to regularize the shape parameter, providing more stable estimates especially for small samples (Shin et al., 2025a).
 
-2. **L-moment based estimation**: Pure L-moment equations for non-stationary models without penalty.
+2. **L-moment based estimation**: Pure L-moment equations for non-stationary models without penalty (Shin et al., 2025b).
 
-3. **MAGEV (Model Averaging GEV)**: Combines MLE and L-moment estimates through weighted model averaging for robust high quantile estimation.
+3. **MAGEV (Model Averaging GEV)**: Combines MLE and L-moment estimates through weighted model averaging for robust high quantile estimation (Shin et al., 2025c).
 
 ### The GEV Distribution
 
@@ -284,6 +284,7 @@ If you use this package, please cite:
 - Shin, Y., Shin, Y., & Park, J.-S. (2025c). Model averaging with mixed criteria for estimating high quantiles of extreme values: Application to heavy rainfall. *arXiv preprint* arXiv:2505.21417.
 - Hosking, J.R.M. (1990). L-moments: Analysis and estimation of distributions using linear combinations of order statistics. *Journal of the Royal Statistical Society B*, 52, 105-124.
 - Martins, E.S., & Stedinger, J.R. (2000). Generalized maximum-likelihood generalized extreme-value quantile estimators for hydrologic data. *Water Resources Research*, 36, 737-744.
+- Coles, S., & Dixon, M. (1999). Likelihood-based inference for extreme value models. *Extremes*, 2, 5-23.
 
 ## License
 
