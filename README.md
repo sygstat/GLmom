@@ -8,7 +8,7 @@ This package provides three main estimation approaches for extreme value analysi
 
 1. **GLME (Generalized L-Moment Estimation)**: Combines L-moments (Hosking, 1990) with penalty functions to regularize the shape parameter, providing more stable estimates especially for small samples (Shin et al., 2025a).
 
-2. **L-moment based estimation**: Pure L-moment equations for non-stationary models without penalty (Shin et al., 2025b).
+2. **NS L-moment based estimation**: Pure L-moment equations for non-stationary models without penalty (Shin et al., 2025b).
 
 3. **MAGEV (Model Averaging GEV)**: Combines MLE and L-moment estimates through weighted model averaging for robust high quantile estimation (Shin et al., 2025c).
 
