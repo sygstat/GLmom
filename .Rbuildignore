@@ -8,7 +8,9 @@
 ^README\.pdf$
 ^\.gitignore$
 ^\.git$
-^GLmomentEst.*\.tar\.gz$
+^GLmom.*\.tar\.gz$
 ^non_stationary-GEV$
 ^CHANGES_SUMMARY\.md$
 ^CITATION\.cff$
+^CLAUDE\.md$
+^ref$

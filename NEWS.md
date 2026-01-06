@@ -1,4 +1,14 @@
-# GLmomentEst 1.0.0
+# GLmom 1.1.0
+
+* Added Model Averaging GEV estimation (`ma.gev()`) for high quantile estimation.
+  - Combines MLE and L-moment estimates through weighted model averaging
+  - Multiple weighting schemes: `like`, `gLd`, `med`, `cvt` and variants
+  - Optional Bayesian model averaging (`bma=TRUE`) with normal/beta priors
+  - Returns model-averaged quantiles (`zp.ma`) with standard errors
+* New dependencies: `ismev`, `Rsolnp`, `zoo`.
+* Reference: Shin et al. (2025c) arXiv:2505.21417 (MAGEV method)
+
+# GLmom 1.0.0
 
 * Initial CRAN release.
 * Stationary GEV parameter estimation using generalized L-moments (`glme.gev()`).

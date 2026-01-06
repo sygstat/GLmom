@@ -1,18 +1,18 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
-title: "GLmomentEst: Generalized L-Moments Estimation for Extreme Value Distributions"
-version: 1.0.0
+title: "GLmom: Generalized L-Moments Estimation for Extreme Value Distributions"
+version: 1.1.0
 date-released: 2025-01-01
-url: "https://github.com/sygstat/GL-momentEst"
-repository-code: "https://github.com/sygstat/GL-momentEst"
+url: "https://github.com/sygstat/GLmom"
+repository-code: "https://github.com/sygstat/GLmom"
 license: GPL-3.0-or-later
 authors:
   - family-names: Shin
     given-names: Yonggwan
-    email: syg.stat@gmail.com
+    email: syg.stat@etri.re.kr
     orcid: "https://orcid.org/0000-0001-6966-6511"
-    affiliation: "XRAI Inc., Korea"
+    affiliation: "Electronics and Telecommunications Research Institute, Korea"
   - family-names: Shin
     given-names: Yire
     email: shinyire87@gmail.com
@@ -37,10 +37,9 @@ keywords:
   - climatology
 abstract: >-
   An R package for Generalized L-moments Estimation of the Generalized
-  Extreme Value (GEV) Distribution. Implements both stationary GEV and
-  non-stationary GEV11 models where location and scale parameters vary
-  with time. Includes various penalty functions for shape parameter
-  regularization.
+  Extreme Value (GEV) Distribution. Implements stationary GEV, non-stationary
+  GEV11 models, and model averaging (MAGEV) for robust high quantile estimation.
+  Includes various penalty functions for shape parameter regularization.
 preferred-citation:
   type: article
   authors:
@@ -74,3 +73,17 @@ references:
     start: 947
     end: 970
     doi: "10.1007/s42952-025-00325-3"
+  - type: article
+    authors:
+      - family-names: Shin
+        given-names: Yonggwan
+      - family-names: Shin
+        given-names: Yire
+      - family-names: Park
+        given-names: Jeong-Soo
+    title: "Model averaging with mixed criteria for estimating high quantiles of extreme values: Application to heavy rainfall"
+    journal: "arXiv preprint"
+    year: 2025
+    volume: "arXiv:2505.21417"
+    doi: "10.48550/arXiv.2505.21417"
+    url: "https://arxiv.org/abs/2505.21417"

@@ -10,7 +10,7 @@
 
 1. **New submission**
    ```
-   Maintainer: 'Yonggwan Shin <syg.stat@gmail.com>'
+   Maintainer: 'Yonggwan Shin <syg.stat@etri.re.kr>'
    New submission
    ```
    This is the first submission of this package to CRAN.
@@ -45,10 +45,15 @@ generalized extreme value (GEV) distribution:
 - **Stationary GEV**: `glme.gev()` estimates GEV parameters with various
   penalty functions for shape parameter regularization.
 - **Non-stationary GEV11**: `glme.gev11()` estimates time-varying GEV
-  parameters where location μ(t) and scale σ(t) change linearly with time.
+  parameters where location mu(t) and scale sigma(t) change linearly with time.
+- **Model Averaging (MAGEV)**: `ma.gev()` combines MLE and L-moment estimates
+  through weighted model averaging for robust high quantile estimation.
 - **Penalty functions**: beta (adaptive), normal, Martins-Stedinger, Park,
   Cannon, Coles-Dixon, and no penalty options.
+- **Weighting schemes** (for MAGEV): likelihood-based (AIC), generalized
+  L-moment distance, median-based, and conventional AIC.
 
 The methodology is described in:
-- Shin et al. (2025) arXiv:2512.20385
-- Shin et al. (2025) J. Korean Stat. Soc. 54:947-970
+- Shin et al. (2025a) arXiv:2512.20385 (GLME method)
+- Shin et al. (2025b) J. Korean Stat. Soc. 54:947-970 (Non-stationary L-moment)
+- Shin et al. (2025c) arXiv:2505.21417 (MAGEV method)

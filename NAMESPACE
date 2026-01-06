@@ -12,9 +12,26 @@ export(pk.beta.stnary)
 export(nsgev)
 export(gado.prop_11)
 
-# Imports
-importFrom("lmomco", "lmoms", "pargev", "lmoms.cov", "vec2par", "lmomgev", "lmorph", "are.lmom.valid", "TLmoms", "lmomgum")
-importFrom("stats", "optim", "rnorm", "runif", "integrate", "dnorm", "lm", "var", "cov")
+# Shin et al. (2025c) Model Averaging function
+export(ma.gev)
+
+# Imports from lmomco
+importFrom("lmomco", "lmoms", "pargev", "lmoms.cov", "vec2par", "lmomgev", "lmorph", "are.lmom.valid", "TLmoms", "lmomgum", "quagev", "pargum")
+
+# Imports from stats
+importFrom("stats", "optim", "rnorm", "runif", "integrate", "dnorm", "lm", "var", "cov", "median", "quantile", "cor", "spline", "qchisq", "na.omit")
+
+# Imports from methods
 importFrom("methods", "is")
+
+# Imports from nleqslv
 importFrom("nleqslv", "nleqslv")
+
+# Imports from robustbase
 importFrom("robustbase", "lmrob")
+
+# Imports for MAGEV
+importFrom("ismev", "gev.fit")
+importFrom("Rsolnp", "solnp")
+importFrom("zoo", "rollmean")
+importFrom("graphics", "plot", "abline", "text", "par", "axis")

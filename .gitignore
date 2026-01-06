@@ -8,7 +8,7 @@
 # R package build
 *.tar.gz
 *.Rcheck/
-GLmomentEst.Rcheck/
+GLmom.Rcheck/
 
 # IDE
 .idea/
@@ -22,10 +22,10 @@ Thumbs.db
 
 # Claude Code
 .claude/
+CLAUDE.md
 
-# Development files
-new/
-non_stationary-GEV/
+# Development files (reference papers and scripts)
+ref/
 
 # Byte-compiled files
 *.rdb

@@ -1,14 +1,16 @@
-# GLmomentEst
+# GLmom
 
 An R package for **Generalized L-moments Estimation** of the Generalized Extreme Value (GEV) Distribution.
 
 ## Overview
 
-This package provides two main estimation approaches for extreme value analysis:
+This package provides three main estimation approaches for extreme value analysis:
 
 1. **GLME (Generalized L-Moment Estimation)**: Combines L-moments with penalty functions to regularize the shape parameter, providing more stable estimates especially for small samples.
 
 2. **L-moment based estimation**: Pure L-moment equations for non-stationary models without penalty.
+
+3. **MAGEV (Model Averaging GEV)**: Combines MLE and L-moment estimates through weighted model averaging for robust high quantile estimation.
 
 ### The GEV Distribution
 
@@ -31,21 +33,23 @@ For time-varying extremes, the GEV11 model allows:
 
 - **Stationary GEV estimation** (`glme.gev`): GLME with various penalty functions
 - **Non-stationary GEV11 estimation** (`glme.gev11`): Time-varying parameters with GLME
+- **Model averaging estimation** (`ma.gev`): High quantile estimation with multiple weighting schemes
 - **Shin et al. (2025b) compatibility** (`nsgev`, `gado.prop_11`): Pure L-moment based estimation
 - **Multiple penalty functions**: `beta`, `norm`, `ms`, `park`, `cannon`, `cd`, `no`
+- **Multiple weighting schemes** (MAGEV): `like`, `gLd`, `med`, `cvt`
 - **Example datasets**: `streamflow`, `PhliuAgromet`, `Trehafod`
 
 ## Installation
 
 ``` r
 # Install from GitHub
-remotes::install_github("sygstat/GL-momentEst")
+remotes::install_github("sygstat/GLmom")
 ```
 
 ## Quick Start
 
 ``` r
-library(GLmomentEst)
+library(GLmom)
 
 # Stationary GEV
 data(streamflow)
@@ -63,7 +67,7 @@ result$para.glme  # (mu0, mu1, sigma0, sigma1, xi)
 ### 1. Stationary GEV Estimation
 
 ``` r
-library(GLmomentEst)
+library(GLmom)
 data(streamflow)
 x <- streamflow$r1
 
@@ -84,7 +88,7 @@ glme.gev(x, pen = "no")$glme[3]      # xi = -0.4999 (no penalty = L-moment)
 ### 2. Non-stationary GEV11 Estimation
 
 ``` r
-library(GLmomentEst)
+library(GLmom)
 data(Trehafod)
 x <- Trehafod$r1  # 53 years of river flow data
 
@@ -113,7 +117,7 @@ result$para.jkss
 For users following the methodology in Shin et al. (2025b):
 
 ``` r
-library(GLmomentEst)
+library(GLmom)
 data(Trehafod)
 
 # Simple interface - returns proposed L-moment estimates
@@ -135,7 +139,7 @@ result2$lme.sta      # Stationary L-moments (mu, sigma, xi)
 ### 4. Comparing Penalty Functions
 
 ``` r
-library(GLmomentEst)
+library(GLmom)
 data(Trehafod)
 
 # All penalty options for non-stationary model
@@ -154,7 +158,7 @@ print(round(results, 4))
 ### 5. Custom Hyperparameters
 
 ``` r
-library(GLmomentEst)
+library(GLmom)
 data(streamflow)
 
 # Beta penalty with custom hyperparameters
@@ -166,6 +170,37 @@ glme.gev(streamflow$r1, pen = "norm", pen.choice = 1)
 
 # Normal penalty with custom mean and std
 glme.gev(streamflow$r1, pen = "norm", mu = -0.5, std = 0.2)
+```
+
+### 6. Model Averaging for High Quantiles (MAGEV)
+
+``` r
+library(GLmom)
+data(streamflow)
+x <- streamflow$r1
+
+# Model averaging with likelihood weights (default)
+result <- ma.gev(x, quant = c(0.95, 0.99, 0.995), weight = 'like1', B = 200)
+
+# Compare estimates
+result$qua.mle    # MLE quantiles
+#> [1]  72.52  85.57  93.45
+result$qua.lme    # L-moment quantiles
+#> [1]  72.95  87.75  97.20
+result$zp.ma      # Model-averaged quantiles (recommended)
+#> [1]  72.78  86.52  94.89
+
+# Standard errors
+result$fin.se.ma  # SE under fixed weights
+result$adj.se.ma  # SE under random weights
+
+# Using generalized L-moment distance weights
+result2 <- ma.gev(x, quant = c(0.99), weight = 'gLd')
+print(result2$w.ma)  # Model weights across K submodels
+
+# Using Bayesian Model Averaging
+result3 <- ma.gev(x, quant = c(0.99), bma = TRUE, pen = "norm")
+print(result3$zp.bma)
 ```
 
 ## Datasets
@@ -194,6 +229,7 @@ head(Trehafod)
 |----------|-------------|--------|
 | `glme.gev()` | Stationary GEV estimation | `glme`, `lme`, `nllh` |
 | `glme.gev11()` | Non-stationary GEV11 | `para.glme`, `para.jkss`, `para.gado`, ... |
+| `ma.gev()` | Model averaging for high quantiles | `zp.ma`, `qua.mle`, `qua.lme`, `w.ma`, ... |
 | `nsgev()` | Simple L-moment interface | `para.prop`, `precis` |
 | `gado.prop_11()` | Comprehensive L-moment | `para.prop`, `para.gado`, `strup.*`, `lme.sta` |
 
@@ -209,6 +245,15 @@ head(Trehafod)
 | `cd` | Coles-Dixon | exponential | Coles & Dixon (1999) |
 | `no` | No penalty | - | Pure L-moments |
 
+### Weighting Schemes (MAGEV)
+
+| Weight | Description | Trim |
+|--------|-------------|------|
+| `like`, `like0`, `like1` | Likelihood-based (AIC) | 0, 0, 1 |
+| `gLd`, `gLd0`, `gLd1`, `gLd2` | Generalized L-moment distance | 0, 0, 1, 2 |
+| `med`, `med1`, `med2` | Median + L-moment distance | 0, 1, 2 |
+| `cvt` | Conventional AIC | - |
+
 ### Helper Functions
 
 | Function | Description |
@@ -221,7 +266,7 @@ head(Trehafod)
 
 ## Authors
 
-- **Yonggwan Shin**, Ph.D, XRAI Inc., Korea ([syg.stat@gmail.com](mailto:syg.stat@gmail.com))
+- **Yonggwan Shin**, Senior Researcher, Electronics and Telecommunications Research Institute, Korea ([syg.stat@etri.re.kr](mailto:syg.stat@etri.re.kr))
 - **Yire Shin**, Ph.D, Chonnam National University, Korea
 - **Jihong Park**, Chonnam National University, Korea
 - **Jeong-Soo Park**, Professor, Chonnam National University, Korea
@@ -236,6 +281,7 @@ If you use this package, please cite:
 
 - Shin, Y., Shin, Y., Park, J., & Park, J.-S. (2025a). Generalized method of L-moment estimation for stationary and nonstationary extreme value models. *arXiv preprint* arXiv:2512.20385.
 - Shin, Y., Shin, Y., & Park, J.-S. (2025b). Building nonstationary extreme value model using L-moments. *Journal of the Korean Statistical Society*, 54, 947-970.
+- Shin, Y., Shin, Y., & Park, J.-S. (2025c). Model averaging with mixed criteria for estimating high quantiles of extreme values: Application to heavy rainfall. *arXiv preprint* arXiv:2505.21417.
 - Hosking, J.R.M. (1990). L-moments: Analysis and estimation of distributions using linear combinations of order statistics. *Journal of the Royal Statistical Society B*, 52, 105-124.
 - Martins, E.S., & Stedinger, J.R. (2000). Generalized maximum-likelihood generalized extreme-value quantile estimators for hydrologic data. *Water Resources Research*, 36, 737-744.
 
