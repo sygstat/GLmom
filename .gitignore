@@ -26,6 +26,8 @@ CLAUDE.md
 
 # Development files (reference papers and scripts)
 ref/
+paper/
+temp/
 
 # Byte-compiled files
 *.rdb
