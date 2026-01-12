@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "GLmom: Generalized L-Moments Estimation for Extreme Value Distributions"
-version: 1.1.0
+version: 1.2.0
 date-released: 2025-01-01
 url: "https://github.com/sygstat/GLmom"
 repository-code: "https://github.com/sygstat/GLmom"

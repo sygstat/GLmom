@@ -49,7 +49,7 @@ nsgev <- function(xdat, ntry = 20, ftol = 1e-6) {
                        init.rob = TRUE, pen = "no")
 
   # Return in nsgev format
-  z$para.prop <- result$para.jkss
+  z$para.prop <- result$para.lme
   z$precis <- result$precis
 
   return(z)
@@ -73,9 +73,8 @@ nsgev <- function(xdat, ntry = 20, ftol = 1e-6) {
 #' \itemize{
 #'   \item \code{para.prop} - L-moment based estimates (proposed method).
 #'   \item \code{para.gado} - GN16 method estimates.
-#'   \item \code{strup.sta} - Stationary WLSE estimates.
+#'   \item \code{para.wls} - Weighted least squares estimates.
 #'   \item \code{strup.org} - Original non-stationary WLSE by Strup method.
-#'   \item \code{strup.final} - Final adjusted WLSE estimates.
 #'   \item \code{lme.sta} - Stationary L-moment estimates.
 #' }
 #'
@@ -106,11 +105,10 @@ gado.prop_11 <- function(xdat, ntry = 20, ftol = 1e-6) {
                        init.rob = TRUE, pen = "no")
 
   # Return in gado.prop_11 format
-  z$para.prop <- result$para.jkss
+  z$para.prop <- result$para.lme
   z$para.gado <- result$para.gado
-  z$strup.sta <- result$strup.sta
+  z$para.wls <- result$para.wls
   z$strup.org <- result$strup.org
-  z$strup.final <- result$strup.final
   z$lme.sta <- result$lme.sta
 
   return(z)

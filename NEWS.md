@@ -1,3 +1,39 @@
+# GLmom 1.2.0
+
+## Breaking Changes
+
+* **BREAKING**: `glme.gev11()` output `para.jkss` renamed to `para.lme` for consistency.
+  Users accessing `result$para.jkss` should update their code to use `result$para.lme`.
+* **BREAKING**: `glme.gev11()` and `gado.prop_11()` output `strup.final` renamed to `para.wls`.
+  Users accessing `result$strup.final` should update their code to use `result$para.wls`.
+* **BREAKING**: `glme.gev11()` no longer returns `strup.sta` in its output.
+
+## New Features
+
+* Enhanced `glme.gev11()` with new parameters:
+  - `glme.pre = "wls"`: Pre-estimation method selection ("wls" or "gado")
+  - `choose = "gof"`: Model selection criterion ("gof" for goodness-of-fit, "nllh" for negative log-likelihood)
+  - `pen.choice = 6`: Default penalty hyperparameter choice changed from NULL to 6
+* New `quagev.NS()` function for calculating quantiles from non-stationary GEV models
+  - Supports GEV11, GEV10, GEV20, and stationary GEV00 models
+  - Returns time-varying quantiles as vector or matrix
+* Enhanced `ma.gev()` with new estimation options:
+  - `CD = TRUE`: Coles-Dixon penalized MLE for shape parameter regularization
+  - `remle = TRUE`: Restricted MLE with mean/median constraints
+  - Returns `mle.CD`, `qua.CD`, `remle1`, `remle2`, `qua.remle1`, `qua.remle2`
+  - Returns `quant` in output for convenience
+  - BMA outputs now include `bma.se.between` and `bma.se.within`
+* New diagnostic plotting functions for MAGEV:
+  - `magev.ksensplot()`: K sensitivity analysis to select optimal number of submodels
+  - `magev.qqplot()`: 2x2 Q-Q diagnostic plot comparing MLE, LME, surrogate, and REMLE
+  - `magev.rlplot()`: Return level plot with 95% confidence intervals
+* Added `bangkok` dataset: Annual maximum daily rainfall from Bangkok, Thailand
+* Added `haenam` dataset: Annual maximum daily rainfall from Haenam, South Korea
+
+## Bug Fixes
+
+* Improved handling of single quantile (`numq = 1`) in `ma.gev()`
+
 # GLmom 1.1.0
 
 * Added Model Averaging GEV estimation (`ma.gev()`) for high quantile estimation.
@@ -15,7 +51,7 @@
 * Non-stationary GEV11 model estimation (`glme.gev11()`) where location
   (mu) and scale (sigma) parameters vary linearly with time.
   - `para.glme`: Proposed GLME estimates
-  - `para.jkss`: L-moment based estimates for non-stationary model
+  - `para.lme`: L-moment based estimates for non-stationary model
 * Compatibility functions for Shin et al. (2025, J. Korean Stat. Soc.):
   - `nsgev()`: Simple interface for L-moment based non-stationary estimation
   - `gado.prop_11()`: Comprehensive estimation with multiple methods

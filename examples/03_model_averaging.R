@@ -160,4 +160,66 @@ full_table <- data.frame(
 )
 print(full_table, row.names = FALSE)
 
+# -----------------------------------------------------------------------------
+# 8. Coles-Dixon Penalized MLE (CD option)
+# -----------------------------------------------------------------------------
+cat("\n--- 8. Coles-Dixon Penalized MLE ---\n")
+cat("CD=TRUE adds Coles-Dixon penalized MLE for shape parameter regularization.\n\n")
+
+set.seed(123)
+result_cd <- ma.gev(x, quant = c(0.99, 0.995), weight = "like1",
+                    B = 50, CD = TRUE)
+
+cat("Standard MLE:\n")
+cat("  par:", round(result_cd$mle.hosking, 4), "\n")
+cat("  99% quantile:", round(result_cd$qua.mle[1], 2), "\n")
+
+cat("\nColes-Dixon penalized MLE:\n")
+cat("  par:", round(result_cd$mle.CD, 4), "\n")
+cat("  99% quantile:", round(result_cd$qua.CD[1], 2), "\n")
+
+# -----------------------------------------------------------------------------
+# 9. Restricted MLE (REMLE option)
+# -----------------------------------------------------------------------------
+cat("\n--- 9. Restricted MLE (REMLE) ---\n")
+cat("remle=TRUE computes REMLE with mean and median constraints.\n\n")
+
+set.seed(123)
+result_remle <- ma.gev(x, quant = c(0.99, 0.995), weight = "like1",
+                       B = 50, remle = TRUE)
+
+cat("Standard MLE 99% quantile:", round(result_remle$qua.mle[1], 2), "\n")
+cat("REMLE (mean constraint) 99% quantile:", round(result_remle$qua.remle1[1], 2), "\n")
+cat("REMLE (median constraint) 99% quantile:", round(result_remle$qua.remle2[1], 2), "\n")
+
+cat("\nREMLE parameters:\n")
+cat("  remle1 (mean):", round(result_remle$remle1, 4), "\n")
+cat("  remle2 (median):", round(result_remle$remle2, 4), "\n")
+
+# -----------------------------------------------------------------------------
+# 10. Combined CD and REMLE
+# -----------------------------------------------------------------------------
+cat("\n--- 10. Combined CD and REMLE estimation ---\n")
+set.seed(123)
+result_both <- ma.gev(x, quant = c(0.98, 0.99, 0.995), weight = "like1",
+                      B = 50, CD = TRUE, remle = TRUE)
+
+cat("\nQuantile comparison (all methods):\n")
+comparison_all <- data.frame(
+  Quantile = c("98%", "99%", "99.5%"),
+  MLE = round(result_both$qua.mle, 2),
+  CD = round(result_both$qua.CD, 2),
+  REMLE_mean = round(result_both$qua.remle1, 2),
+  REMLE_median = round(result_both$qua.remle2, 2),
+  MA = round(result_both$zp.ma, 2)
+)
+print(comparison_all, row.names = FALSE)
+
+# -----------------------------------------------------------------------------
+# 11. Output quant field
+# -----------------------------------------------------------------------------
+cat("\n--- 11. Accessing requested quantiles ---\n")
+cat("The 'quant' field returns the requested quantiles for convenience:\n")
+cat("  result$quant:", result_both$quant, "\n")
+
 cat("\n=== Example 3 completed ===\n")

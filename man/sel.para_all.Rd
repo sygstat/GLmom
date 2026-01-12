@@ -4,7 +4,7 @@
 \alias{sel.para_all}
 \title{Select best parameters based on GOF}
 \usage{
-sel.para_all(xdat, para.sel, model = NULL)
+sel.para_all(xdat, para.sel = NULL, model = NULL, obj.fun = NULL)
 }
 \description{
 Select best parameters based on GOF

@@ -37,7 +37,8 @@ For time-varying extremes, the GEV11 model allows:
 - **Shin et al. (2025b) compatibility** (`nsgev`, `gado.prop_11`): Pure L-moment based estimation
 - **Multiple penalty functions**: `beta`, `norm`, `ms`, `park`, `cannon`, `cd`, `no`
 - **Multiple weighting schemes** (MAGEV): `like`, `gLd`, `med`, `cvt`
-- **Example datasets**: `streamflow`, `PhliuAgromet`, `Trehafod`
+- **MAGEV diagnostic plots**: `magev.ksensplot`, `magev.qqplot`, `magev.rlplot`
+- **Example datasets**: `streamflow`, `PhliuAgromet`, `Trehafod`, `bangkok`, `haenam`
 
 ## Installation
 
@@ -101,7 +102,7 @@ result$para.glme
 #>  84.549596   1.027800   2.910336   0.008994  -0.089364
 
 # L-moment estimates (no penalty) - Shin et al. (2025b)
-result$para.jkss
+result$para.lme
 #>        mu0        mu1     sigma0     sigma1         xi
 #>  84.556050   1.027800   2.915524   0.008994  -0.078462
 
@@ -132,7 +133,7 @@ result2 <- gado.prop_11(Trehafod$r1, ntry = 10)
 # Compare methods:
 result2$para.prop    # Proposed L-moment method
 result2$para.gado    # GN16 method
-result2$strup.final  # Weighted Least Squares
+result2$para.wls     # Weighted Least Squares
 result2$lme.sta      # Stationary L-moments (mu, sigma, xi)
 ```
 
@@ -210,6 +211,8 @@ print(result3$zp.bma)
 | `streamflow` | Annual maximum streamflow | 50 | Year, r1 |
 | `PhliuAgromet` | Meteorological data from Thailand | - | prec, ... |
 | `Trehafod` | River flow from Wales, UK | 53 | Year, r1 |
+| `bangkok` | Annual max daily rainfall, Bangkok | 52 | rainfall |
+| `haenam` | Annual max daily rainfall, Haenam | 49 | rainfall |
 
 ``` r
 # Load and explore datasets
@@ -228,10 +231,14 @@ head(Trehafod)
 | Function | Description | Output |
 |----------|-------------|--------|
 | `glme.gev()` | Stationary GEV estimation | `glme`, `lme`, `nllh` |
-| `glme.gev11()` | Non-stationary GEV11 | `para.glme`, `para.jkss`, `para.gado`, ... |
-| `ma.gev()` | Model averaging for high quantiles | `zp.ma`, `qua.mle`, `qua.lme`, `w.ma`, ... |
+| `glme.gev11()` | Non-stationary GEV11 | `para.glme`, `para.lme`, `para.gado`, `para.wls`, ... |
+| `ma.gev()` | Model averaging for high quantiles | `zp.ma`, `qua.mle`, `qua.lme`, `w.ma`, `qua.CD`, `qua.remle1`, ... |
 | `nsgev()` | Simple L-moment interface | `para.prop`, `precis` |
-| `gado.prop_11()` | Comprehensive L-moment | `para.prop`, `para.gado`, `strup.*`, `lme.sta` |
+| `gado.prop_11()` | Comprehensive L-moment | `para.prop`, `para.gado`, `para.wls`, `lme.sta` |
+| `quagev.NS()` | NS GEV quantile function | quantiles (vector/matrix) |
+| `magev.ksensplot()` | K sensitivity plot | optimal K value |
+| `magev.qqplot()` | Q-Q diagnostic plot | (graphical) |
+| `magev.rlplot()` | Return level plot | (graphical) |
 
 ### Penalty Functions
 

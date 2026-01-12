@@ -682,6 +682,355 @@ cov.dir <- function(wtgd) {
 
 
 # ============================================================
+# Coles-Dixon penalized MLE and Restricted MLE functions
+# ============================================================
+
+#' Coles-Dixon Penalized MLE for GEV
+#'
+#' Computes maximum penalized likelihood estimates for GEV parameters
+#' using the Coles and Dixon (1999) prior penalty on the shape parameter.
+#'
+#' @param xdat Numeric vector of data.
+#' @param ntry Number of random starting points for optimization. Default is 10.
+#'
+#' @return A list containing:
+#'   \item{mle}{MLE estimates (mu, sigma, xi) in Hosking style}
+#'   \item{nllh}{Negative log-likelihood at the optimum}
+#'   \item{conv}{Convergence status (0 = success)}
+#'   \item{nsample}{Sample size}
+#'
+#' @references
+#' Coles, S., & Dixon, M. (1999). Likelihood-based inference for extreme
+#' value models. Extremes, 2(1), 5-23.
+#'
+#' @keywords internal
+gev1.CD <- function(xdat, ntry = 10) {
+  z <- list()
+  k <- list()
+  n <- ntry
+
+  nsample <- length(xdat)
+  z$nsample <- nsample
+
+  init <- matrix(0, nrow = ntry, ncol = 3)
+  init <- ginit.max(xdat, ntry)
+
+  # Likelihood with Coles-Dixon penalty
+  gev1.lik.CD.h <- function(a) {
+    mu <- a[1]
+    sc <- a[2]
+    xi <- a[3]
+
+    y <- (xdat - mu) / sc
+    y <- 1 - xi * y  # Hosking style
+
+    for (i in 1:nsample) {
+      y[i] <- max(0, y[i], na.rm = TRUE)
+    }
+
+    if (any(y <= 0) || any(sc <= 0))
+      return(10^6)
+
+    if (abs(xi) >= 10^(-5)) {
+      ooxi <- 1 / xi
+    } else {
+      ooxi <- sign(xi) * 10^5
+    }
+
+    zz <- nsample * (log(sc)) + sum(exp(ooxi * log(y))) + sum(log(y) * (1 - (ooxi)))
+
+    # Coles-Dixon penalty
+    zz <- zz - log(cd.hos(xi))
+
+    return(zz)
+  }
+
+  mup <- abs(mean(xdat)) * 3
+  sigup <- sqrt(var(xdat)) * 5
+
+  tryCatch(
+    for (i in 1:nrow(init)) {
+      value <- try(solnp(init[i, ], fun = gev1.lik.CD.h,
+                         LB = c(-mup, 0, -0.99), UB = c(mup, sigup, 0.499),
+                         control = list(trace = 0, outer.iter = 20,
+                                        delta = 1.e-7, inner.iter = 200, tol = 1.e-5)))
+
+      if (is(value)[1] == "try-error") {
+        k[[i]] <- list(value = 10^6)
+      } else {
+        k[[i]] <- value
+      }
+    }
+  )
+
+  optim_value <- data.frame(num = 1:n, value = sapply(k, function(x) x$value[which.min(x$value)]))
+  optim_table1 <- optim_value[order(optim_value$value), ]
+  selc_num <- optim_table1[1, "num"]
+
+  x <- k[[selc_num]]
+
+  z$conv <- x$convergence
+  z$nllh <- x$value[which.min(x$value)]
+  z$mle <- x$par  # Hosking style parameter
+
+  return(z)
+}
+
+
+#' Coles-Dixon Penalty Function
+#'
+#' Computes the Coles-Dixon prior probability for the shape parameter.
+#'
+#' @param sxi Shape parameter value (Hosking style, negative for heavy tails).
+#'
+#' @return Prior probability value.
+#'
+#' @keywords internal
+cd.hos <- function(sxi) {
+  if (sxi >= 0) {
+    pf <- 1.0
+  } else if (sxi <= -1) {
+    pf <- 1.e-20
+  } else {
+    pf <- exp(-((1 / (1 + sxi)) - 1))  # Hosking style xi
+  }
+  return(pf)
+}
+
+
+#' Restricted MLE for GEV (Mixed Estimation)
+#'
+#' Computes restricted maximum likelihood estimates for GEV parameters
+#' with constraints on the mean or median matching the sample statistics.
+#'
+#' @param xdat Numeric vector of data.
+#' @param ntry Number of random starting points. Default is 5.
+#' @param rest Restriction type: 'mean' (default) or 'median'.
+#' @param quant Probabilities for quantile estimation. Default is c(0.99, 0.995).
+#' @param trim Left trimming level. Default is 0.
+#' @param CD.mle Coles-Dixon MLE (optional). If NULL, computed internally.
+#' @param mle Standard MLE (optional). If NULL, computed internally.
+#' @param second Logical. If TRUE, compute second-stage REMLE. Default is TRUE.
+#' @param w.mpse Logical. If TRUE, compute MPSE. Default is FALSE.
+#'
+#' @return A list containing:
+#'   \item{remle1}{First-stage REMLE estimates}
+#'   \item{qua.remle1}{Quantiles from first-stage REMLE}
+#'   \item{remle2}{Second-stage REMLE estimates (if second=TRUE)}
+#'   \item{qua.remle2}{Quantiles from second-stage REMLE}
+#'   \item{rest.method}{Restriction method used}
+#'
+#' @keywords internal
+gev.remle <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
+                      trim = 0, CD.mle = NULL, mle = NULL, second = TRUE,
+                      w.mpse = FALSE) {
+  z <- list()
+  k <- list()
+  data <- xdat
+  if (rest == 'med') rest <- 'median'
+
+  nsample <- length(xdat)
+  z$nsample <- nsample
+
+  if (is.null(CD.mle)) {
+    CD.mle <- rep(NA, 3)
+    CD.mle <- gev1.CD(xdat = data, ntry = 5)$mle  # Hosking style xi
+  }
+  if (is.null(mle)) {
+    mle <- rep(NA, 3)
+    mle <- gev.max(xdat = data, ntry = 5)$mle  # Hosking style xi
+  }
+
+  if (ntry < 4) ntry <- 4
+  init <- matrix(NA, ntry, 3)
+  init <- ginit.max(data = xdat, ntry = ntry - 2)
+  init <- rbind(init, matrix(NA, 2, 3))
+  init[ntry - 1, 1:3] <- mle[1:3]
+  init[ntry, 1:3] <- CD.mle[1:3]
+
+  init <- na.omit(init)
+  ntry <- nrow(init)
+
+  upsig <- sqrt(var(xdat)) * 3
+  upmu <- abs(mean(xdat)) * 3
+
+  ntrim <- trim
+  med.dat <- median(data)
+  mean.dat <- mean(data)
+  lmx <- lmoms(data, nmom = 3)
+
+  nar <- c('rest.Ex', 'rest.med')
+  if (rest == 'mean') {
+    sel <- 1
+  } else if (rest == 'median') {
+    sel <- 2
+  }
+
+  # Define constraint functions in parent environment
+  rest.Ex <- function(a, xdat, lmx, med.dat, mean.dat) {
+    lam1 <- lmomgev(para = vec2par(a, 'gev'))$lambdas[1]
+    return(lam1 - mean.dat)
+  }
+
+  rest.med <- function(a, xdat, lmx, med.dat, mean.dat) {
+    med <- quagev(0.5, vec2par(a, 'gev'))
+    return(med - med.dat)
+  }
+
+  rest.Ex2 <- function(a, xdat, lmx, med.dat, mean.dat) {
+    lamp <- lmomgev(para = vec2par(a, 'gev'))$lambdas[1:2]
+    return(c(lamp[1] - lmx$lambdas[1], lamp[2] - lmx$lambdas[2]))
+  }
+
+  rest.med2 <- function(a, xdat, lmx, med.dat, mean.dat) {
+    medx <- quagev(0.5, vec2par(a, 'gev'))
+    lam2 <- lmomgev(para = vec2par(a, 'gev'))$lambdas[2]
+    return(c(medx - med.dat, lam2 - lmx$lambdas[2]))
+  }
+
+  gev.lik.remax <- function(a, xdat, lmx, med.dat, mean.dat) {
+    mu <- a[1]
+    sc <- a[2]
+    xi <- a[3]
+
+    y <- (xdat - mu) / sc
+    y <- 1 - xi * y  # Hosking style
+
+    nsample <- length(xdat)
+    for (i in 1:nsample) {
+      y[i] <- max(0, y[i], na.rm = TRUE)
+    }
+
+    if (any(y <= 0) || any(sc <= 0))
+      return(10^6)
+
+    if (abs(xi) >= 10^(-5)) {
+      ooxi <- 1 / xi
+    } else {
+      ooxi <- sign(xi) * 10^5
+    }
+
+    zz <- nsample * (log(sc)) + sum(exp(ooxi * log(y))) + sum(log(y) * (1 - (ooxi)))
+    return(zz)
+  }
+
+  # Select constraint function
+  if (sel == 1) {
+    eq_fun <- rest.Ex
+  } else {
+    eq_fun <- rest.med
+  }
+
+  tryCatch(
+    for (i in 1:ntry) {
+      work <- list()
+      work <- try(solnp(init[i, ], fun = gev.lik.remax,
+                        eqfun = eq_fun, eqB = 0,
+                        LB = c(-upmu, 0, -0.99), UB = c(upmu, upsig, 0.99),
+                        control = list(trace = 0, outer.iter = 20,
+                                        delta = 1.e-6, inner.iter = 200, tol = 1.e-5),
+                        xdat = xdat, lmx = lmx, med.dat = med.dat,
+                        mean.dat = mean.dat))
+
+      if (is(work)[1] == "try-error") {
+        k[[i]] <- list(values = 10^6)
+      } else if (work$convergence != 0) {
+        k[[i]] <- list(values = 10^6)
+      } else {
+        k[[i]] <- work
+      }
+    }
+  )
+
+  optim_value <- data.frame(num = 1:ntry, values = sapply(k, function(x) x$values[which.min(x$values)]))
+  optim_table1 <- optim_value[order(optim_value$values), ]
+  selc_num <- optim_table1[1, "num"]
+  x <- list()
+
+  x <- k[[selc_num]]
+
+  z$remle1.value <- x$values[which.min(x$values)]
+  z$remle1 <- x$pars
+
+  if (is.null(x$pars) | any(is.na(x$pars)) | z$remle1.value == 10^6) {
+    x$pars <- NA
+    z$remle1 <- NA
+    z$qua.remle1 <- NA
+  } else if (x$pars[2] <= 0 | abs(x$pars[3]) >= 1.0) {
+    x$pars <- NA
+    z$remle1 <- NA
+    z$qua.remle1 <- NA
+  } else {
+    z$qua.remle1 <- quagev(quant, vec2par(x$pars, 'gev'))
+  }
+
+  z$rest.method <- rest
+
+  if (second == TRUE) {
+    k2 <- list()
+    if (sel == 1) {
+      eq_fun2 <- rest.Ex2
+    } else {
+      eq_fun2 <- rest.med2
+    }
+
+    init2 <- rbind(init, rep(NA, 3))
+    init2[nrow(init2), 1:3] <- z$remle1[1:3]
+    init2 <- na.omit(init2)
+    xtry <- nrow(init2)
+
+    tryCatch(
+      for (i in 1:xtry) {
+        value2 <- list()
+        value2 <- try(solnp(init2[i, ], fun = gev.lik.remax,
+                            eqfun = eq_fun2, eqB = c(0, 0),
+                            LB = c(-upmu, 0, -0.99), UB = c(upmu, upsig, 0.99),
+                            control = list(trace = 0, outer.iter = 20,
+                                            delta = 1.e-6, inner.iter = 200, tol = 1.e-5),
+                            xdat = xdat, lmx = lmx, med.dat = med.dat,
+                            mean.dat = mean.dat))
+
+        if (is(value2)[1] == "try-error") {
+          k2[[i]] <- list(values = 10^6)
+        } else if (value2$convergence != 0) {
+          k2[[i]] <- list(values = 10^6)
+        } else {
+          k2[[i]] <- value2
+        }
+      }
+    )
+
+    optim_value <- data.frame(num = 1:xtry, values = sapply(k2, function(x) x$values[which.min(x$values)]))
+    optim_table1 <- optim_value[order(optim_value$values), ]
+    selc_num <- optim_table1[1, "num"]
+    xw <- list()
+
+    xw <- k2[[selc_num]]
+
+    z$remle2.value <- xw$values[which.min(xw$values)]
+    z$remle2 <- xw$pars
+
+    if (is.null(xw$pars) | any(is.na(xw$pars)) | z$remle2.value == 10^6) {
+      xw$pars <- NA
+      z$remle2 <- NA
+      z$qua.remle2 <- NA
+    } else if (xw$pars[2] <= 0 | abs(xw$pars[3]) >= 1.0) {
+      xw$pars <- NA
+      z$remle2 <- NA
+      z$qua.remle2 <- NA
+    } else {
+      z$qua.remle2 <- quagev(quant, vec2par(xw$pars, 'gev'))
+    }
+  }
+
+  z$mpse <- NA
+  z$qua.mpse <- NA
+
+  return(z)
+}
+
+
+# ============================================================
 # Weight computation functions (from weight.com.BMA_15Dec25.R)
 # ============================================================
 

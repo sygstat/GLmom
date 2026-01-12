@@ -14,3 +14,7 @@
 ^CITATION\.cff$
 ^CLAUDE\.md$
 ^ref$
+^paper$
+^examples$
+^temp$
+^Dockerfile$

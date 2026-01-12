@@ -15,7 +15,7 @@
 #'
 #' @param data A numeric vector of data to be fitted (e.g., annual maxima).
 #' @param quant The probabilities corresponding to high quantiles to be estimated.
-#'   Default is c(0.95, 0.98, 0.99, 0.995).
+#'   Default is c(0.98, 0.99, 0.995).
 #' @param weight The weighting method name. Options are:
 #'   \itemize{
 #'     \item 'like', 'like0', 'like1' (default): Likelihood-based weights (AIC)
@@ -32,6 +32,8 @@
 #' @param fig Logical. Whether to produce diagnostic plots. Default is FALSE.
 #' @param bma Logical. Whether to use Bayesian Model Averaging. Default is FALSE.
 #' @param pen Penalty type for BMA prior: 'norm' (normal, default) or 'beta'.
+#' @param CD Logical. Whether to compute Coles-Dixon penalized MLE. Default is FALSE.
+#' @param remle Logical. Whether to compute restricted MLE. Default is FALSE.
 #'
 #' @details
 #' The model averaging approach works as follows:
@@ -71,6 +73,13 @@
 #'   \item pick_xi_ma - Selected xi values for K submodels
 #'   \item zp.bma - (if bma=TRUE) BMA quantile estimates
 #'   \item w.bma - (if bma=TRUE) BMA weights
+#'   \item mle.CD - (if CD=TRUE) Coles-Dixon penalized MLE
+#'   \item qua.CD - (if CD=TRUE) Quantile estimates from CD-MLE
+#'   \item remle1 - (if remle=TRUE) Restricted MLE (first constraint)
+#'   \item qua.remle1 - (if remle=TRUE) Quantile estimates from remle1
+#'   \item remle2 - (if remle=TRUE) Restricted MLE (second constraint)
+#'   \item qua.remle2 - (if remle=TRUE) Quantile estimates from remle2
+#'   \item quant - The quantile probabilities used
 #' }
 #'
 #' @references
@@ -98,9 +107,10 @@
 #' }
 #'
 #' @export
-ma.gev <- function(data = NULL, quant = c(0.95, 0.98, 0.99, 0.995),
+ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
                    weight = 'like1', numk = 12, B = 200, varcom = TRUE,
-                   trim = 0, fig = FALSE, bma = FALSE, pen = "norm") {
+                   trim = 0, fig = FALSE, bma = FALSE, pen = "norm",
+                   CD = FALSE, remle = FALSE) {
 
   zx <- list()
   SMALL <- 1e-05
@@ -108,6 +118,7 @@ ma.gev <- function(data = NULL, quant = c(0.95, 0.98, 0.99, 0.995),
   zx$weight <- weight
   start <- "mle"
   zx$start <- start
+  zx$quant <- quant
 
   # Internal defaults
   pick <- 0.95
@@ -217,6 +228,35 @@ ma.gev <- function(data = NULL, quant = c(0.95, 0.98, 0.99, 0.995),
   hosking$mle <- delta$mle
 
   xi.hat <- (delta$mle[3] + hosking$lme[3]) / 2
+
+  # ---- CD penalized MLE and restricted MLE ------------------------------------------
+  if (CD == TRUE) {
+    CD.mle <- rep(NA, 3)
+    CD.mle <- gev1.CD(xdat = data, ntry = 5)$mle  # hosking style xi
+
+    if (any(is.na(CD.mle))) {
+      zx$qua.CD <- NA
+      zx$mle.CD <- NA
+      CD.mle <- NULL
+    } else {
+      zx$qua.CD <- quagev(quant, vec2par(CD.mle, 'gev'))
+      zx$mle.CD <- CD.mle
+    }
+  }
+
+  if (remle == TRUE) {
+    if (CD != TRUE) CD.mle <- hosking$lme
+    rem.try <- list()
+    rem.try <- gev.remle(xdat = data, ntry = 5, rest = 'mean', quant = quant,
+                         trim = 0, CD.mle = CD.mle, mle = delta$mle,
+                         second = TRUE, w.mpse = FALSE)
+
+    zx$remle1 <- rem.try$remle1
+    zx$qua.remle1 <- rem.try$qua.remle1
+    zx$remle2 <- rem.try$remle2
+    zx$qua.remle2 <- rem.try$qua.remle2
+  }
+  # --------------------------------------------------------------
 
   hosking$start <- start
   hosking$numk <- numk
@@ -362,11 +402,21 @@ ma.gev <- function(data = NULL, quant = c(0.95, 0.98, 0.99, 0.995),
     bmaw[idp3] <- 0
   }
 
-  id <- which(is.na(t(zp)[, 1]))
-  if (length(id) > 0) {
-    zp[, id] <- 0
-    wtgd[id] <- 0
-    bmaw[id] <- 0
+  # Handle NA in zp - different handling for numq==1 vs numq>1
+  if (numq > 1) {
+    id <- which(is.na(t(zp)[, 1]))
+    if (length(id) > 0) {
+      zp[, id] <- 0
+      wtgd[id] <- 0
+      bmaw[id] <- 0
+    }
+  } else if (numq == 1) {
+    id <- which(is.na(zp))
+    if (length(id) > 0) {
+      zp[id] <- 0
+      wtgd[id] <- 0
+      bmaw[id] <- 0
+    }
   }
 
   if (all(wtgd == 0)) {
@@ -381,9 +431,14 @@ ma.gev <- function(data = NULL, quant = c(0.95, 0.98, 0.99, 0.995),
 
   zpf <- rep(NA, numq)
   zpf.bma <- rep(NA, numq)
-  for (iq in 1:numq) {
-    zpf[iq] <- t(wtgd) %*% t(zp)[1:numk, iq]
-    if (bma == TRUE) zpf.bma[iq] <- t(bmaw) %*% t(zp)[1:numk, iq]
+  if (numq > 1) {
+    for (iq in 1:numq) {
+      zpf[iq] <- t(wtgd) %*% t(zp)[1:numk, iq]
+      if (bma == TRUE) zpf.bma[iq] <- t(bmaw) %*% t(zp)[1:numk, iq]
+    }
+  } else if (numq == 1) {
+    zpf[1] <- sum(wtgd * as.vector(zp))
+    if (bma == TRUE) zpf.bma[1] <- sum(bmaw * as.vector(zp))
   }
 
   # ---- calculating asymptotic SE by delta method -----------------
@@ -406,7 +461,11 @@ ma.gev <- function(data = NULL, quant = c(0.95, 0.98, 0.99, 0.995),
     zpdiff <- matrix(NA, numq, numk)
     loc.var <- matrix(NA, numq, numk)
     for (ip in 1:numk) {
-      zpdiff[1:numq, ip] <- (zp[1:numq, ip] - zpf.bma[1:numq])^2
+      if (numq > 1) {
+        zpdiff[1:numq, ip] <- (zp[1:numq, ip] - zpf.bma[1:numq])^2
+      } else if (numq == 1) {
+        zpdiff[1:numq, ip] <- (zp[ip] - zpf.bma[1:numq])^2
+      }
       loc.var[1:numq, ip] <- avar$MatC[ip, ip, 1:numq]
     }
     msm <- t(bmaw) %*% t(zpdiff)
@@ -416,7 +475,11 @@ ma.gev <- function(data = NULL, quant = c(0.95, 0.98, 0.99, 0.995),
   if (varcom == TRUE) {
     zx$fin.se.ma <- avar$fin.se.MA.qua
     zx$adj.se.ma <- avar$adj.se.MA.qua
-    if (bma == TRUE) zx$pred.se.bma <- as.vector(sqrt(msm + mse))
+    if (bma == TRUE) {
+      zx$pred.se.bma <- as.vector(sqrt(msm + mse))
+      zx$bma.se.between <- sqrt(msm)
+      zx$bma.se.within <- sqrt(mse)
+    }
   }
 
   if (boot.lme == TRUE) {

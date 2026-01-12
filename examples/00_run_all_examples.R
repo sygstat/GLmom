@@ -9,6 +9,7 @@
 #'   02_nonstationary_gev11.R - Non-stationary GEV11 with glme.gev11()
 #'   03_model_averaging.R    - Model averaging with ma.gev()
 #'   04_compatibility_functions.R - nsgev() and gado.prop_11()
+#'   05_magev_diagnostics.R  - MAGEV diagnostic plots and new datasets
 #'
 #' Usage:
 #'   source("00_run_all_examples.R")
@@ -50,7 +51,8 @@ examples <- c(
   "01_stationary_gev.R",
   "02_nonstationary_gev11.R",
   "03_model_averaging.R",
-  "04_compatibility_functions.R"
+  "04_compatibility_functions.R",
+  "05_magev_diagnostics.R"
 )
 
 # Run each example

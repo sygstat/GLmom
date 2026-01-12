@@ -4,7 +4,7 @@
 \alias{calc_time_m_11}
 \title{Time-varying moment estimation}
 \usage{
-calc_time_m_11(qmax = NULL, orig.para = NULL)
+calc_time_m_11(qmax = NULL, orig.para = NULL, rob = FALSE, mdfy = FALSE)
 }
 \description{
 Time-varying moment estimation

@@ -174,8 +174,10 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' @param ntry Number of attempts for parameter estimation (default 10).
 #' @param ftol Tolerance for convergence (default 1e-6).
 #' @param init.rob Use robust regression for initialization (default TRUE).
+#' @param glme.pre Pre-estimation method: "wls" (default) or "gado".
+#' @param choose Selection criterion: "gof" (default, goodness-of-fit) or "nllh" (negative log-likelihood).
 #' @param pen Type of penalty function: "norm", "beta" (default), "ms", "park", "cannon", "cd", or "no".
-#' @param pen.choice Choice number for penalty hyperparameters.
+#' @param pen.choice Choice number for penalty hyperparameters (default 6 for beta).
 #' @param mu Mean for normal penalty (default -0.55).
 #' @param std Std for normal penalty (default 0.3).
 #' @param p Shape for beta penalty (default 6).
@@ -185,11 +187,10 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' @return A list containing:
 #' \itemize{
 #'   \item para.glme - Proposed GLME estimates (5 parameters: mu0, mu1, sigma0, sigma1, xi).
-#'   \item para.jkss - L-moment based estimates for non-stationary model.
+#'   \item para.lme - L-moment based estimates for non-stationary model.
 #'   \item para.gado - GN16 original estimates.
-#'   \item strup.sta - Stationary WLSE.
-#'   \item strup.org - WLSE by strup.
-#'   \item strup.final - Specified WLSE.
+#'   \item para.wls - Weighted least squares estimates (WLS).
+#'   \item strup.org - WLSE by strup method.
 #'   \item lme.sta - Stationary L-moment estimates.
 #'   \item pen - Penalty method used.
 #'   \item p_q - (for beta) p and q values.
@@ -216,12 +217,13 @@ gev.glme.m0s0_11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' \donttest{
 #' result <- glme.gev11(x, ntry = 5)
 #' print(result$para.glme)  # Proposed GLME estimates
-#' print(result$para.jkss)  # L-moment based estimates
+#' print(result$para.lme)  # L-moment based estimates
 #' }
 #'
 #' @export
 glme.gev11 = function(xdat, ntry=10, ftol=1e-6, init.rob=TRUE,
-                      pen='beta', pen.choice=NULL, mu=-0.55, std=0.3,
+                      glme.pre="wls", choose="gof",
+                      pen='beta', pen.choice=6, mu=-0.55, std=0.3,
                       p=6, c1=10, c2=5){
 
   z <- list()
@@ -252,7 +254,7 @@ glme.gev11 = function(xdat, ntry=10, ftol=1e-6, init.rob=TRUE,
   # --------------Strup WLS ---------------------------------------------
   reg.dat=data.frame( cbind(year, xdat) )
 
-  mu.init= lmrob(xdat~year, reg.dat)$coefficients      # robust regression
+  mu.init= lm(xdat~year, reg.dat)$coefficients  # OLS regression
   m0= mu.init[1]
   m1= mu.init[2]
 
@@ -265,7 +267,8 @@ glme.gev11 = function(xdat, ntry=10, ftol=1e-6, init.rob=TRUE,
 
   orig.para=c(m0,m1, qlist$sig0, qlist$sig1, 0)
 
-  gado = calc_time_m_11(qmax=qlist$qmax, orig.para=orig.para)  # GN16
+  gado = calc_time_m_11(qmax=qlist$qmax, orig.para=orig.para,
+                        rob=FALSE, mdfy=FALSE)  # GN16
 
   #------ proposed method --------------------------------------------
   if(init.rob==TRUE){
@@ -279,34 +282,47 @@ glme.gev11 = function(xdat, ntry=10, ftol=1e-6, init.rob=TRUE,
 
   orig.para=c(m0.rob, m1.rob, 1.0,-0.001,0)
 
-  qlist= make.qmax_11(xdat, orig.para=orig.para, rob=TRUE)
+  # Pre-estimation method selection
+  if(glme.pre=="gado"){
+    qlist= make.qmax_11(xdat, orig.para=orig.para, rob=TRUE)
 
-  orig.para=c(m0.rob, m1.rob, qlist$sig0, qlist$sig1, 0)
+    orig.para=c(m0.rob, m1.rob, qlist$sig0, qlist$sig1, 0)
 
-  gado.rob = calc_time_m_11(qmax=qlist$qmax, orig.para=orig.para)
+    gado.rob = calc_time_m_11(qmax=qlist$qmax, orig.para=orig.para,
+                              rob=TRUE, mdfy=TRUE)
+
+    pretheta= gado.rob$para.org
+
+  }else if(glme.pre=="wls"){
+    orig.para=c(m0.rob, m1.rob, strup$strup.final[3],
+                strup$strup.final[4], 0)
+
+    strup.glme = strup_11_glme_const_lmrob(xdat, orig.para=orig.para,
+                                           const=FALSE)
+
+    pretheta= strup.glme$strup.final
+  }
 
   z = multi.m0s0_11(xdat, ntry=ntry, ftol=ftol,
-                    pretheta=gado.rob$para.org, model=model,
+                    pretheta=pretheta, model=model,
                     pen=pen, mu=mu, std=std,
-                    p=p,c1=c1,c2=c2)
+                    p=p, c1=c1, c2=c2, choose=choose)
 
-  if(z$precis > ftol) { z$para.jkss = gado.rob$para.org
-  cat("no optim for proposed","\n") }
+  if(z$precis > ftol) { z$para.lme = pretheta
+  cat("no optim for proposed lme","\n") }
 
   # --------------------------------------------------------------------
-  z$para.gado   = gado$para.org            # GN16 orginal est
-  z$strup.sta   = strup$strup.sta          # stationary wlse
+  z$para.gado   = gado$para.org            # GN16 original est
   z$strup.org   = strup$strup.para         # wlse by strup
-  z$strup.final = strup$strup.final        # specified WLSE
+  z$para.wls    = strup$strup.final        # specified WLSE
 
-  z$lme.sta = pargev(lmoms(xdat,nmom=5))$para   # stationary L-ME
+  z$lme.sta = pargev(lmoms(xdat,nmom=3))$para   # stationary L-ME
 
   names(z$para.glme)     <-name_gev11_ns
-  names(z$para.jkss)     <-name_gev11_ns
+  names(z$para.lme)     <-name_gev11_ns
   names(z$para.gado)     <-name_gev11_ns
   names(z$strup.org)     <-name_gev11_ns
-  names(z$strup.final)   <-name_gev11_ns
-  names(z$strup.sta)     <-name_gev00_sta
+  names(z$para.wls)      <-name_gev11_ns
   names(z$lme.sta)       <-name_gev00_sta
 
   if(pen=='beta'){
@@ -389,7 +405,8 @@ gev.Ldist.m0s0_11 <- function(a, xdat=xdat, pretheta=pretheta)
 #' @keywords internal
 multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
                         pretheta=pretheta, model=model,
-                        pen='beta', mu=mu, p=p, std=std, c1=c1, c2=c2)
+                        pen='beta', mu=mu, p=p, std=std, c1=c1, c2=c2,
+                        choose="gof")
 {
   zm=list()
   value=list()
@@ -403,7 +420,7 @@ multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
   if(model=='gev11') npar=5
 
   precis=rep(1000, ntry)
-  para.sel=matrix(NA,ntry+1,ncol=npar)
+  para.sel=matrix(NA,ntry,ncol=npar)
 
   tryCatch({
     for(i in 1:ntry) {
@@ -434,23 +451,25 @@ multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
     }
   })
 
-  zm$para.jkss =sel.para_all(xdat, para.sel, model)$para  # L-moment estimates
-  zm$precis =precis[which.min(precis)]
+  sel.fin = sel.para_all(xdat, para.sel, model, obj.fun=abs(precis))
+  zm$para.lme = sel.fin$para  # L-moment estimates
+  zm$precis = precis[sel.fin$min.itry]
 
   if(pen != "no"){   #  perform glme
 
-    gntry= 3
+    gntry= min(5, ntry)
     gev11.cov =list()
     isol = 0
 
-    gev11.cov =gev11.GLD(par=zm$para.jkss, xdat=xdat)
+    gev11.cov =gev11.GLD(par=zm$para.lme, xdat=xdat)
 
     covinv = gev11.cov$covinv
     lcovdet= gev11.cov$lcovdet
 
     my.nllh=rep(1e6,gntry)
+    para.sel=matrix(NA,gntry,ncol=npar)
 
-    newtheta= zm$para.jkss
+    newtheta= zm$para.lme
     init[2,1:3] = c(newtheta[1],newtheta[3],newtheta[5]-.01)
 
     tryCatch(
@@ -475,30 +494,39 @@ multi.m0s0_11= function(xdat, ntry=10, ftol=1e-6,
 
         if( value$convergence != 0) {my.nllh[i]=10^6
         }else{
-          isol=isol+1
           my.nllh[i] = k[[i]]$fvec
+          para.sel[i,1:5]=c( k[[i]]$root[1], newtheta[2],
+                             k[[i]]$root[2], newtheta[4], k[[i]]$root[3])
         }
 
       }
     )
 
-    if(isol==0) {
-      cat("-- No solution was found in nleqslv or optim --","\n")
+    if(all(my.nllh==1e6)) {
+      cat("-- No solution was found in optim for glme --","\n")
       return(zm)
     }
 
-    selc_num = which.min( my.nllh )
+    if(choose=="nllh"){
+      selc_num = which.min( my.nllh )
 
-    x  <- k[[selc_num]]
+      x  <- k[[selc_num]]
 
-    zm$nllh.glme = k[[selc_num]]$fvec
-    zm$para.glme = c(x$root[1],newtheta[2],x$root[2],newtheta[4],x$root[3])
+      zm$para.glme = c(x$root[1],newtheta[2],x$root[2],newtheta[4],x$root[3])
+      zm$nllh.glme = x$fvec
+
+    }else if(choose=="gof"){
+      sel.fin = sel.para_all(xdat, para.sel, model, obj.fun=my.nllh)
+
+      zm$para.glme = sel.fin$para
+      zm$nllh.glme = my.nllh[sel.fin$min.itry]
+    }
 
   }
 
-  # When pen="no", set para.glme same as para.jkss
+  # When pen="no", set para.glme same as para.lme
   if(pen == "no"){
-    zm$para.glme = zm$para.jkss
+    zm$para.glme = zm$para.lme
   }
 
   zm$pen=pen
@@ -571,7 +599,7 @@ gev11.GLD <- function(par=NULL, xdat=xdat)
 #-------------------------------------------------
 #' Select best parameters based on GOF
 #' @keywords internal
-sel.para_all =function(xdat, para.sel, model=NULL){
+sel.para_all =function(xdat, para.sel=NULL, model=NULL, obj.fun=NULL){
 
   z=list()
   upara.sel = para.sel
@@ -590,12 +618,15 @@ sel.para_all =function(xdat, para.sel, model=NULL){
   }
 
   if(length(unique(gof))==1) {
-    z$para =upara.sel[length(gof),]
+    z$para =upara.sel[which.min(obj.fun),]
+    z$min.itry = which.min(obj.fun)
   }else{
     z$para =upara.sel[which.min(gof),]
+    z$min.itry = which.min(gof)
   }
 
   z$gof=gof
+  z$obj.fun= obj.fun
   return(z)
 }
 
@@ -1006,7 +1037,7 @@ wls.park_11 = function(xdat,res ){
 #------------------------------------------------------
 #' Time-varying moment estimation
 #' @keywords internal
-calc_time_m_11 = function(qmax=NULL, orig.para=NULL){
+calc_time_m_11 = function(qmax=NULL, orig.para=NULL, rob=FALSE, mdfy=FALSE){
 
   z=list()
   para.gado=rep(NA,5)
@@ -1021,7 +1052,6 @@ calc_time_m_11 = function(qmax=NULL, orig.para=NULL){
   lmom_q = lmoms(qmax)
   q.sta = pargev(lmom_q)$para
   xi = q.sta[3]
-  if( xi <= -0.5) xi = -0.4999
 
   cd = sqrt( (xi^2) /( gamma(1+2*xi) - gamma(1+xi)^2 ) )
   alpha_t = exp(sig0 +sig1*year) * cd
@@ -1033,12 +1063,82 @@ calc_time_m_11 = function(qmax=NULL, orig.para=NULL){
   mu.gado[nh+1] = mu.gado[nh+1] - 0.02
 
   mu.data= data.frame( cbind(year, mu.gado) )
-  loc.gado =lm(mu.gado~year, mu.data)$coefficients
+  if(rob==TRUE){
+    loc.gado =lmrob(mu.gado~year, mu.data)$coefficients
+  }else if(rob==FALSE){
+    loc.gado =lm(mu.gado~year, mu.data)$coefficients
+  }
 
   alpha0 = log(cd) + sig0
   alpha1 = sig1
 
-  z$para.org= c(loc.gado, alpha0, alpha1, xi )
+  if(mdfy != TRUE){
+    z$para.org= c(loc.gado, alpha0, alpha1, xi )
+
+  }else if(mdfy==TRUE){
+    # modify GN16
+    alpha0_up = log(q.sta[2])- sig1*nh
+    z$para.org = c(loc.gado, alpha0_up, alpha1, xi )
+
+    alpha_t = exp(alpha0_up +sig1*year)
+    z$mu_t.up=  - (1-gamma(1+ xi) )*alpha_t/xi  + m0+ m1*year
+  }
 
   return(z)
+}
+
+#----------------------------------------------------
+#' Quantile function for non-stationary GEV models
+#'
+#' @description
+#' Calculates quantiles for non-stationary GEV models including GEV11,
+#' GEV10, GEV20, and stationary GEV00.
+#'
+#' @param f Probability (or vector of probabilities) for quantile calculation.
+#' @param para Parameter vector. For GEV11: (mu0, mu1, sigma0, sigma1, xi).
+#' @param nsample Number of time points (sample size).
+#' @param model Model type: "gev11", "gev10", "gev20", or "gev00"/"gev".
+#'
+#' @return A matrix of quantiles (nsample x length(f)) or a vector if f is scalar.
+#'
+#' @references
+#' Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
+#' L-moment estimation for stationary and nonstationary extreme value models.
+#' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+#'
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#'
+#' @examples
+#' # GEV11 model: time-varying quantiles
+#' para <- c(84.55, 1.03, 2.91, 0.009, -0.08)  # mu0, mu1, sigma0, sigma1, xi
+#' q99 <- quagev.NS(f = 0.99, para = para, nsample = 53, model = "gev11")
+#' print(q99)
+#'
+#' @export
+quagev.NS = function(f=NULL, para=NULL, nsample=NULL, model=NULL){
+
+  if(model=='gev00' | model=='gev'){
+    zpT = quagev(f, vec2par(para, 'gev'))
+    return(zpT)
+
+  }else{  # if(model !='gev00')
+
+    ns=nsample
+    year=seq(1:ns)
+    numq=length(f)
+    zpT= matrix(NA,ns,numq)
+
+    sp=set.para.model(para,model)
+
+    xi= sp$xi
+    zpc= (1- (-log(f))^xi) /xi
+    vec = sp$mu[1] + sp$mu[2]*year[1:ns] +sp$mu[3]*(year[1:ns]^2)
+
+    for(iq in 1:numq){
+      zpT[1:ns,iq] = vec[1:ns]+ zpc[iq]* exp( sp$sig[1]
+                                               +sp$sig[2]*year[1:ns] )
+    }
+    if(numq==1) zpT= as.vector(zpT)
+    zpT
+  }
 }

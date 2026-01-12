@@ -11,9 +11,15 @@ export(pk.beta.stnary)
 # Shin et al. (2025b) compatibility functions
 export(nsgev)
 export(gado.prop_11)
+export(quagev.NS)
 
 # Shin et al. (2025c) Model Averaging function
 export(ma.gev)
+
+# MAGEV Plotting functions
+export(magev.ksensplot)
+export(magev.qqplot)
+export(magev.rlplot)
 
 # Imports from lmomco
 importFrom("lmomco", "lmoms", "pargev", "lmoms.cov", "vec2par", "lmomgev", "lmorph", "are.lmom.valid", "TLmoms", "lmomgum", "quagev", "pargum")
@@ -34,4 +40,4 @@ importFrom("robustbase", "lmrob")
 importFrom("ismev", "gev.fit")
 importFrom("Rsolnp", "solnp")
 importFrom("zoo", "rollmean")
-importFrom("graphics", "plot", "abline", "text", "par", "axis")
+importFrom("graphics", "plot", "abline", "text", "par", "axis", "lines", "points")

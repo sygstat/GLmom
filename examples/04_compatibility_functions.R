@@ -52,11 +52,11 @@ result2 <- gado.prop_11(x, ntry = 10)
 cat("Method comparison:\n\n")
 
 # Create comparison table
-methods <- c("Proposed (L-moment)", "GN16", "WLS (strup.final)")
+methods <- c("Proposed (L-moment)", "GN16", "WLS (para.wls)")
 estimates <- rbind(
   result2$para.prop,
   result2$para.gado,
-  result2$strup.final
+  result2$para.wls
 )
 
 comparison <- data.frame(
@@ -74,14 +74,11 @@ print(comparison, row.names = FALSE)
 # -----------------------------------------------------------------------------
 cat("\n--- 3. Additional WLS estimates ---\n")
 
-cat("\nStationary WLS (strup.sta) - initial values:\n")
-cat("  ", round(result2$strup.sta, 4), "\n")
-
 cat("\nOriginal WLS (strup.org):\n")
 cat("  ", round(result2$strup.org, 4), "\n")
 
-cat("\nFinal WLS (strup.final):\n")
-cat("  ", round(result2$strup.final, 4), "\n")
+cat("\nFinal WLS (para.wls):\n")
+cat("  ", round(result2$para.wls, 4), "\n")
 
 cat("\nStationary L-moments (lme.sta) - (mu, sigma, xi):\n")
 cat("  mu =", round(result2$lme.sta[1], 4), "\n")
@@ -99,10 +96,10 @@ result_glme <- glme.gev11(x, ntry = 10, pen = "no")
 
 cat("Comparison of outputs:\n")
 cat("\nnsgev()$para.prop:\n  ", round(result1$para.prop, 4), "\n")
-cat("\nglme.gev11(pen='no')$para.jkss:\n  ", round(result_glme$para.jkss, 4), "\n")
+cat("\nglme.gev11(pen='no')$para.lme:\n  ", round(result_glme$para.lme, 4), "\n")
 
 # Check if they match
-if (all(abs(result1$para.prop - result_glme$para.jkss) < 1e-6)) {
+if (all(abs(result1$para.prop - result_glme$para.lme) < 1e-6)) {
   cat("\nThe results match exactly.\n")
 } else {
   cat("\nNote: Results may differ slightly due to random initialization.\n")

@@ -6,7 +6,7 @@
 \usage{
 ma.gev(
   data = NULL,
-  quant = c(0.95, 0.98, 0.99, 0.995),
+  quant = c(0.98, 0.99, 0.995),
   weight = "like1",
   numk = 12,
   B = 200,
@@ -14,14 +14,16 @@ ma.gev(
   trim = 0,
   fig = FALSE,
   bma = FALSE,
-  pen = "norm"
+  pen = "norm",
+  CD = FALSE,
+  remle = FALSE
 )
 }
 \arguments{
 \item{data}{A numeric vector of data to be fitted (e.g., annual maxima).}
 
 \item{quant}{The probabilities corresponding to high quantiles to be estimated.
-Default is c(0.95, 0.98, 0.99, 0.995).}
+Default is c(0.98, 0.99, 0.995).}
 
 \item{weight}{The weighting method name. Options are:
 \itemize{
@@ -46,6 +48,10 @@ Default is TRUE.}
 \item{bma}{Logical. Whether to use Bayesian Model Averaging. Default is FALSE.}
 
 \item{pen}{Penalty type for BMA prior: 'norm' (normal, default) or 'beta'.}
+
+\item{CD}{Logical. Whether to compute Coles-Dixon penalized MLE. Default is FALSE.}
+
+\item{remle}{Logical. Whether to compute restricted MLE (REMLE). Default is FALSE.}
 }
 \value{
 A list containing:
@@ -66,6 +72,13 @@ A list containing:
   \item pick_xi_ma - Selected xi values for K submodels
   \item zp.bma - (if bma=TRUE) BMA quantile estimates
   \item w.bma - (if bma=TRUE) BMA weights
+  \item mle.CD - (if CD=TRUE) Coles-Dixon penalized MLE parameters
+  \item qua.CD - (if CD=TRUE) Quantile estimates from CD-MLE
+  \item remle1 - (if remle=TRUE) REMLE parameters (first stage)
+  \item remle2 - (if remle=TRUE) REMLE parameters (second stage)
+  \item qua.remle1 - (if remle=TRUE) Quantile estimates from REMLE (first stage)
+  \item qua.remle2 - (if remle=TRUE) Quantile estimates from REMLE (second stage)
+  \item quant - The probability values used for quantile estimation
 }
 }
 \description{

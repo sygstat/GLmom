@@ -5,6 +5,8 @@
 .Ruserdata
 .Rapp.history
 
+Dockerfile
+
 # R package build
 *.tar.gz
 *.Rcheck/

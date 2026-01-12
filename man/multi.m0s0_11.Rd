@@ -15,7 +15,8 @@ multi.m0s0_11(
   p = p,
   std = std,
   c1 = c1,
-  c2 = c2
+  c2 = c2,
+  choose = "gof"
 )
 }
 \description{

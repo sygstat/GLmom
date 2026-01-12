@@ -9,8 +9,10 @@ glme.gev11(
   ntry = 10,
   ftol = 1e-06,
   init.rob = TRUE,
+  glme.pre = "wls",
+  choose = "gof",
   pen = "beta",
-  pen.choice = NULL,
+  pen.choice = 6,
   mu = -0.55,
   std = 0.3,
   p = 6,
@@ -27,9 +29,13 @@ glme.gev11(
 
 \item{init.rob}{Use robust regression for initialization (default TRUE).}
 
+\item{glme.pre}{Pre-estimation method: "wls" (default) or "gado".}
+
+\item{choose}{Selection criterion: "gof" (default, goodness-of-fit) or "nllh" (negative log-likelihood).}
+
 \item{pen}{Type of penalty function: "norm", "beta" (default), "ms", "park", "cannon", "cd", or "no".}
 
-\item{pen.choice}{Choice number for penalty hyperparameters.}
+\item{pen.choice}{Choice number for penalty hyperparameters (default 6 for beta).}
 
 \item{mu}{Mean for normal penalty (default -0.55).}
 
@@ -45,11 +51,10 @@ glme.gev11(
 A list containing:
 \itemize{
   \item para.glme - Proposed GLME estimates (5 parameters: mu0, mu1, sigma0, sigma1, xi).
-  \item para.jkss - L-moment based estimates for non-stationary model.
+  \item para.lme - L-moment based estimates for non-stationary model.
   \item para.gado - GN16 original estimates.
-  \item strup.sta - Stationary WLSE.
-  \item strup.org - WLSE by strup.
-  \item strup.final - Specified WLSE.
+  \item para.wls - Weighted least squares estimates (WLS).
+  \item strup.org - WLSE by strup method.
   \item lme.sta - Stationary L-moment estimates.
   \item pen - Penalty method used.
   \item p_q - (for beta) p and q values.
@@ -69,7 +74,7 @@ x <- streamflow$r1
 \donttest{
 result <- glme.gev11(x, ntry = 5)
 print(result$para.glme)  # Proposed GLME estimates
-print(result$para.jkss)  # L-moment based estimates
+print(result$para.lme)  # L-moment based estimates
 }
 
 }

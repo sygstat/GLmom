@@ -18,9 +18,8 @@ A list containing:
 \itemize{
   \item \code{para.prop} - L-moment based estimates (proposed method).
   \item \code{para.gado} - GN16 method estimates.
-  \item \code{strup.sta} - Stationary WLSE estimates.
+  \item \code{para.wls} - Weighted least squares estimates.
   \item \code{strup.org} - Original non-stationary WLSE by Strup method.
-  \item \code{strup.final} - Final adjusted WLSE estimates.
   \item \code{lme.sta} - Stationary L-moment estimates.
 }
 }
