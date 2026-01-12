@@ -25,6 +25,7 @@ Thumbs.db
 # Claude Code
 .claude/
 CLAUDE.md
+tmpclaude-*
 
 # Development files (reference papers and scripts)
 ref/
