@@ -265,8 +265,9 @@ magev.qqplot <- function(data = NULL, zx = NULL) {
 #' @examples
 #' \donttest{
 #' data(streamflow)
-#' ff <- c(seq(0.01, 0.09, by = 0.01), seq(0.1, 0.9, by = 0.1),
-#'         0.93, 0.95, 0.98, 0.99, 0.995, 0.999)
+#' ff <- c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5,
+#'         0.6, 0.7, 0.8, 0.9, 0.93, 0.95, 0.98, 0.99,
+#'         0.993, 0.995, 0.998, 0.999)
 #' zx <- ma.gev(streamflow$r1, quant = ff, weight = 'like1',
 #'              numk = 9, varcom = TRUE)
 #' magev.rlplot(par = zx$surr$par, se.vec = zx$adj.se.ma, data = streamflow$r1)

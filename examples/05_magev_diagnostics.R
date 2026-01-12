@@ -97,8 +97,9 @@ cat("Y-axis: Return level (quantile)\n\n")
 
 # Compute MAGEV estimates with variance components
 cat("Computing MAGEV estimates with varcom=TRUE...\n")
-ff <- c(seq(0.01, 0.09, by = 0.01), seq(0.1, 0.9, by = 0.1),
-        0.93, 0.95, 0.98, 0.99, 0.995, 0.999)
+ff <- c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5,
+        0.6, 0.7, 0.8, 0.9, 0.93, 0.95, 0.98, 0.99,
+        0.993, 0.995, 0.998, 0.999)
 set.seed(123)
 zx_rl <- ma.gev(data = data_bkk, quant = ff, weight = 'like1',
                 numk = 9, varcom = TRUE, B = 100)
