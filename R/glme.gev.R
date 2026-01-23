@@ -13,6 +13,20 @@
 # L-me under a preference (prior) function for stationary GEV ---
 # ---------------------------------------------------------------
 
+#' Beta function integrand for penalty calculation
+#'
+#' @param w Integration variable.
+#' @param al Lower bound.
+#' @param bl Upper bound.
+#' @param p Shape parameter p.
+#' @param q Shape parameter q.
+#' @return Integrand value.
+#' @keywords internal
+Befun <- function(w, al=al, bl=bl, p=p, q=q) {
+  ((-al+w)^(p-1)) * ((bl-w)^(q-1))
+}
+
+
 #' Martins-Stedinger prior function
 #'
 #' @param para A vector of GEV parameters (location, scale, shape).
@@ -36,7 +50,7 @@ MS_pk = function(para=para, p=6, q=9){
 }
 
 
-#' Normal preference function for shape parameter
+#' Normal preference function for shape parameter (stationary GEV)
 #'
 #' @param para A vector of GEV parameters.
 #' @param mu Mean for normal distribution.
@@ -44,12 +58,13 @@ MS_pk = function(para=para, p=6, q=9){
 #' @return Preference function value.
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
-new_pf_norm = function(para=NULL, mu=NULL, std=NULL){
-
-  Brone = 1 + dnorm(para[3], mean= mu, sd=std)
-
-  return(Brone)
+pk.norm.stnary = function(para=NULL, mu=NULL, std=NULL){
+  1 + dnorm(para[3], mean= mu, sd=std)
 }
+
+#' @rdname pk.norm.stnary
+#' @export
+new_pf_norm = pk.norm.stnary
 
 
 #' Beta preference function for stationary GEV
@@ -57,34 +72,43 @@ new_pf_norm = function(para=NULL, mu=NULL, std=NULL){
 #' @param para A vector of GEV parameters.
 #' @param lme.center L-moment estimates as center.
 #' @param p Shape parameter (default 6).
+#' @param q Shape parameter q (optional, if provided uses fixed limits).
 #' @param c0 Limit parameter (default 0.3).
 #' @param c1 Scaling parameter (default 10).
 #' @param c2 Upper limit parameter (default 5).
 #' @return A list containing pk.one (preference value), p, and q.
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
-pk.beta.stnary = function(para=NULL, lme.center=NULL,
-                          p=NULL, c0=0.3, c1=10, c2=5){
+pk.beta.stnary = function(para=NULL, lme.center=NULL, p=NULL,
+                          q=NULL, c0=0.3, c1=10, c2=5){
 
   pk=list()
   pk.one = 1e-10
-  ulim= c0
-  aa= max(-1, lme.center[3]-ulim)
-  bb= min(0.3, lme.center[3]+ulim)
-  al=min(aa,bb)
-  bl=max(aa,bb)
 
-  if(lme.center[3] <= 0) {
-    qlim= min(0.0 +abs(lme.center[3])*c1, c2)
-  }else{ qlim =0.0 }
+  if(is.null(q)){
 
-  p=p; q=p+qlim
+    ulim= c0                      #min(0.3, abs(lme[3])*3 )
+    aa= max(-1, lme.center[3]-ulim)
+    bb= min(0.5, lme.center[3]+ulim)
+    al=min(aa,bb)
+    bl=max(aa,bb)
 
-  Bef <- function(x) { ((-al+x)^(p-1)) * ((bl-x)^(q-1)) }
-  Be  <- integrate(Bef, lower=al, upper=bl)[1]$value
+    if(lme.center[3] <= 0) {
+      qlim= min(abs(lme.center[3])*c1, c2)
+    }else{ qlim =0.0 }
+
+    q=p+qlim
+
+  }else if(!is.null(q)){
+    lme.center[3]=0
+    al= -0.5; bl=0.5
+  }
+
+  Be  <- integrate(Befun, lower=al, upper=bl,
+                   al=al, bl=bl, p=p, q=q)[1]$value
 
   pk$pk.one=1
-  if(lme.center[3] <= 0.3){
+  if(lme.center[3] < 0.5){
     if( (para[3] > al) & (para[3] < bl) ) {
       pk$pk.one <- ((-al+para[3])^(p-1))*((bl-para[3])^(q-1))/ Be
     }}
@@ -156,7 +180,7 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 
   if(pen=='norm' | pen=="normal"){
 
-    pk_beta = -log( new_pf_norm(para=par, mu= mu, std= std) )
+    pk_beta = -log( pk.norm.stnary(para=par, mu= mu, std= std) )
 
   }else if(pen=='beta' | pen=="Beta"){
 
@@ -166,15 +190,15 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 
   }else if(pen=='ms' | pen=="MS"){
 
-    pk_beta = -log( MS_pk(para=par, p=6, q=9))
+    pk_beta = -log( pk.beta.stnary(para=par, p=6, q=9)$pk.one)
 
   }else if(pen=="park" | pen=="Park"){
 
-    pk_beta = -log( MS_pk(para=par, p=2.5, q=2.5))
+    pk_beta = -log( pk.beta.stnary(para=par, p=2.5, q=2.5)$pk.one)
 
   }else if(pen=="cannon" | pen=="Cannon"){
 
-    pk_beta = -log( MS_pk(para=par, p=2, q=3.3)  )
+    pk_beta = -log( pk.beta.stnary(para=par, p=2, q=3.3)$pk.one  )
 
   }else if(pen=="cd" | pen=="CD"){
 
@@ -194,13 +218,12 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 }
 
 
-#' Initialize parameters for Generalized L-moments estimation of GEV distribution
+#' Initialize parameters for GEV MLE estimation
 #'
 #' @description
-#' This function initializes parameters for the Generalized L-moments estimation
-#' of the Generalized Extreme Value (GEV) distribution.
+#' This function initializes parameters for GEV maximum likelihood estimation.
 #'
-#' @param xdat A numeric vector of data to be fitted.
+#' @param data A numeric vector of data to be fitted.
 #' @param ntry Number of initial parameter sets to generate.
 #'
 #' @details
@@ -213,28 +236,31 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 #'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
-init.glme <-function(xdat, ntry=ntry){
+init.gevmax <-function(data=NULL, ntry=NULL){
 
-  init <-matrix(0, nrow=ntry, ncol=3)
+  if(ntry < 3) ntry=3
+  init <-matrix(NA, ntry, 3)
 
-  lmom_init = lmoms(xdat)
-  lmom_est <- pargev(lmom_init)
+  lmom_init = lmoms(data, nmom=3)
+  init[1,] <- pargev(lmom_init)$para
 
-  init[1,]=lmom_est$para
-
-  sd1= max(abs(init[1,1])*0.1, 2)
+  sd1= max(abs(init[1,1])*0.1, 5)
   sd2= max(init[1,2]*2, 2)
 
-  init[2:ntry,1] <- init[1,1]+rnorm(n=(ntry-1),mean=0, sd = sd1)
-  init[2:ntry,2] <- runif(n=(ntry-1), min= init[1,2]*0.5, max= sd2)
-  init[2:ntry,3] <- runif(n=(ntry-1), min= -.5, max=.5)
-
-  for (i in 1:ntry){
-    if(init[i,2] <= 0) init[i,2] = 1.0
-    if(abs(init[i,3]) >= 0.5 ) init[i,3]= 0.49*sign(init[i,3])
-  }
+  maxm2=ntry-1
+  init[2:ntry,1] <- init[1,1]+rnorm(n=maxm2, mean=0, sd = sd1)
+  init[2:ntry,2] <- init[1,2]+rnorm(n=maxm2, mean=4, sd = sd2)
+  init[2:ntry,3] <- runif(n=maxm2, min= -0.45, max=0.4)
+  init[2:ntry,2] = pmax(0.1, init[2:ntry,2])
 
   return(init)
+}
+
+#' @rdname init.gevmax
+#' @param xdat Alias for data parameter (for backward compatibility).
+#' @export
+init.glme <-function(xdat, ntry=ntry){
+  init.gevmax(data=xdat, ntry=ntry)
 }
 
 
@@ -267,11 +293,11 @@ init.glme <-function(xdat, ntry=ntry){
 #'
 #' @return The glme.gev function returns a list containing the following elements:
 #' \itemize{
-#'  \item glme - The estimated parameters of the Generalized Extreme Value distribution.
-#'  \item lme - The L-moment estimates of the parameters.
-#'  \item covinv - The inverse of the covariance matrix of the L-moments.
+#'  \item para.glme - The estimated parameters of the Generalized Extreme Value distribution.
+#'  \item para.lme - The L-moment estimates of the parameters.
+#'  \item covinv.lmom - The inverse of the covariance matrix of the L-moments.
 #'  \item lcovdet - The log determinant of the covariance matrix.
-#'  \item nllh.pref - The negative log-likelihood of the preferred solution.
+#'  \item nllh.glme - The negative log-likelihood of the GLME solution.
 #'  \item pen - The penalization method used.
 #'  \item p_q - (for beta penalty) The p and q values used.
 #'  \item c1_c2 - (for beta penalty) The c1 and c2 values used.
@@ -292,11 +318,11 @@ init.glme <-function(xdat, ntry=ntry){
 #'
 #' # Estimate GEV parameters using beta penalty (default)
 #' result <- glme.gev(x, ntry = 5)
-#' print(result$glme)
+#' print(result$para.glme)
 #'
 #' # Using Martins-Stedinger penalty
 #' result_ms <- glme.gev(x, ntry = 5, pen = "ms")
-#' print(result_ms$glme)
+#' print(result_ms$para.glme)
 #'
 #' @export
 glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
@@ -304,8 +330,13 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
 
   z=list()
   k =list()
+  if(is.null(pen) | !is.character(pen)) {
+    stop("pen should be given as a character")}
 
   if(pen=='beta' & !is.null(pen.choice)){
+    if(pen.choice %% 1 != 0 | pen.choice < 1 | pen.choice > 6 ){
+      stop("pen.choice for beta should be an integer: 1~6")
+    }
     pc1c2= matrix(c(6,6,6,2,2,2,10,20,30,10,20,30,5,7,9,5,7,9),
                   6,3, byrow=FALSE)
     p= pc1c2[pen.choice,1]
@@ -313,6 +344,9 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
     c2=pc1c2[pen.choice,3]
   }
   if(pen=='norm' & !is.null(pen.choice)){
+    if(pen.choice %% 1 != 0 | pen.choice < 1 | pen.choice > 4 ){
+      stop("pen.choice for norm should be an integer: 1~4")
+    }
     mustd= matrix(c(-.5,.2,-.5,.1,-.6,.2,-.6,.1),4,2, byrow=TRUE)
     mu= mustd[pen.choice,1]
     std=mustd[pen.choice,2]
@@ -322,13 +356,13 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
   nsample=length(xdat)
   sinit=matrix(0, nrow=ntry, ncol=3)
 
-  sinit <- init.glme(xdat, ntry=ntry)
+  sinit <- init.gevmax(xdat, ntry=ntry)
 
   lmom_init = lmoms(xdat)
   lmom_est <- pargev(lmom_init)
 
   lme = lmom_est$para
-  z$lme =  lmom_est$para
+  z$para.lme =  lmom_est$para
 
   precis=rep(NA, ntry)
   pk.ms=rep(NA, ntry)
@@ -362,7 +396,7 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
   }
 
   lcovdet=log(detc)
-  z$covinv =covinv
+  z$covinv.lmom =covinv
   z$lcovdet =lcovdet
 
   #-------------------------------------------------------
@@ -398,7 +432,7 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
 
   if(isol==0) {
     cat("-- No solution was found in nleqslv or optim --","\n")
-    z$glme = z$lme
+    z$para.glme = z$para.lme
     return(z)
   }
 
@@ -406,12 +440,12 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
 
   x  <- k[[selc_num]]
 
-  z$nllh.pref = k[[selc_num]]$fvec
-  z$glme = x$root
+  z$para.glme = x$root
+  z$nllh.glme = k[[selc_num]]$fvec
   z$pen = pen
 
   if(pen=="beta" | pen=="Beta"){
-    ww = pk.beta.stnary(para= z$glme, lme.center=lme, p=p,
+    ww = pk.beta.stnary(para= z$para.glme, lme.center=lme, p=p,
                         c1=c1, c2=c2)
     z$p_q= c(ww$p, ww$q); z$c1_c2=c(c1,c2)
 

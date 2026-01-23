@@ -1,3 +1,40 @@
+# GLmom 1.3.0
+
+## Breaking Changes
+
+* **BREAKING**: `glme.gev()` output names changed for consistency:
+  - `lme` → `para.lme`
+  - `glme` → `para.glme`
+  - `nllh.pref` → `nllh.glme`
+  - `covinv` → `covinv.lmom`
+* **BREAKING**: `ma.gev()` output names changed for consistency:
+  - `zp.ma` → `qua.ma`
+  - `zp.bma` → `qua.bma`
+  - `fin.se.ma` → `fixw.se.ma`
+  - `adj.se.ma` → `ranw.se.ma`
+  - `numk_ma` and `numk_bma` → `run.numk`
+  - `pick_xi_ma` and `pick_xi_bma` → `pick_xi`
+  - `remle1` → `para.remle1` (in return and internal use)
+  - `remle2` → `para.remle2` (in return and internal use)
+
+## Internal Function Renames
+
+* Renamed internal functions for consistency (these are not exported but may affect code using `:::` accessor):
+  - `init.glme()` → `init.gevmax()`
+  - `new_pf_norm()` → `pk.norm.stnary()` (with backward-compatible alias)
+  - `gev.rl.delta_new()` → `gev.rl.delta()`
+  - `lme.boots.new()` → `lme.boots()`
+  - `cand.xi.new.paper()` → `cand.xi()`
+  - `weight.com.new()` → `weight.com()`
+  - `cov.interp.new()` → `cov.interp()`
+  - `gev.profxi.mdfy.paper()` → `gev.profxi.mdfy()`
+  - `comp.prof.ci.new()` → `comp.prof.ci()`
+  - `gev1.CD()` → `mle.gev.CD()`
+  - `gev.remle()` → `remle.gev()`
+  - `ginit.max()` → `init.gevmax()`
+  - `pargev.xifix.ma()` → `pargev.xifix()`
+* Penalty functions in `set.prior()` now use `pk.beta.stnary()` from glme.gev.R
+
 # GLmom 1.2.0
 
 ## Breaking Changes
@@ -40,7 +77,7 @@
   - Combines MLE and L-moment estimates through weighted model averaging
   - Multiple weighting schemes: `like`, `gLd`, `med`, `cvt` and variants
   - Optional Bayesian model averaging (`bma=TRUE`) with normal/beta priors
-  - Returns model-averaged quantiles (`zp.ma`) with standard errors
+  - Returns model-averaged quantiles (`qua.ma`) with standard errors
 * New dependencies: `ismev`, `Rsolnp`, `zoo`.
 * Reference: Shin et al. (2025c) arXiv:2505.21417 (MAGEV method)
 

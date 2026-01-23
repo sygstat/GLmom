@@ -1,7 +1,7 @@
 Package: GLmom
 Type: Package
 Title: Generalized L-Moments Estimation for Extreme Value Distributions
-Version: 1.2.0
+Version: 1.3.0
 Authors@R: c(
       person(given = "Yonggwan",
              family = "Shin",

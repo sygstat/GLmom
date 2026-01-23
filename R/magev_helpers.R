@@ -16,7 +16,7 @@ gev.max <- function(xdat, ntry = 5) {
   z$nsample <- nsample
 
   init <- matrix(0, nrow = ntry, ncol = 3)
-  init <- ginit.max(xdat, ntry)
+  init <- init.gevmax(xdat, ntry)
   upsig <- sqrt(var(xdat)) * 5
   upmu <- abs(mean(xdat)) * 3
 
@@ -75,7 +75,7 @@ gev.max <- function(xdat, ntry = 5) {
 
 
 #' @keywords internal
-ginit.max <- function(data = NULL, ntry = NULL) {
+init.gevmax <- function(data = NULL, ntry = NULL) {
   if (ntry < 2) ntry <- 2
   n <- ntry
   init <- matrix(NA, ntry, 3)
@@ -99,7 +99,7 @@ ginit.max <- function(data = NULL, ntry = NULL) {
 
 
 #' @keywords internal
-pargev.xifix.ma <- function(lmom, xifix = 0.1, checklmom = TRUE, ...) {
+pargev.xifix <- function(lmom, xifix = 0.1, checklmom = TRUE, ...) {
   para <- rep(NA, 3)
   G <- xifix
   para[3] <- G
@@ -123,7 +123,7 @@ pargev.xifix.ma <- function(lmom, xifix = 0.1, checklmom = TRUE, ...) {
 
 
 #' @keywords internal
-gev.rl.delta_new <- function(data, ntry = 5, quant) {
+gev.rl.delta <- function(data, ntry = 5, quant) {
   zg <- list()
   numq <- length(quant)
 
@@ -349,7 +349,7 @@ gev.xilik <- function(a, xifix = NULL, xdat = NULL) {
 
 
 #' @keywords internal
-lme.boots.new <- function(data, B = NULL, quant, boot = TRUE, trim = NULL) {
+lme.boots <- function(data, B = NULL, quant, boot = TRUE, trim = NULL) {
   z <- list()
   numq <- length(quant)
   sam.bootL <- list()
@@ -583,7 +583,7 @@ surrogate <- function(zpf.surr = NULL, xqa, init.surr) {
 
 
 #' @keywords internal
-cov.interp.new <- function(numk, para3, cov2 = NULL) {
+cov.interp <- function(numk, para3, cov2 = NULL) {
   cov22 <- array(NA, c(2, 2, numk))
 
   for (ik in 1:numk) {
@@ -704,7 +704,7 @@ cov.dir <- function(wtgd) {
 #' value models. Extremes, 2(1), 5-23.
 #'
 #' @keywords internal
-gev1.CD <- function(xdat, ntry = 10) {
+mle.gev.CD <- function(xdat, ntry = 10) {
   z <- list()
   k <- list()
   n <- ntry
@@ -713,7 +713,7 @@ gev1.CD <- function(xdat, ntry = 10) {
   z$nsample <- nsample
 
   init <- matrix(0, nrow = ntry, ncol = 3)
-  init <- ginit.max(xdat, ntry)
+  init <- init.gevmax(xdat, ntry)
 
   # Likelihood with Coles-Dixon penalty
   gev1.lik.CD.h <- function(a) {
@@ -821,7 +821,7 @@ cd.hos <- function(sxi) {
 #'   \item{rest.method}{Restriction method used}
 #'
 #' @keywords internal
-gev.remle <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
+remle.gev <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
                       trim = 0, CD.mle = NULL, mle = NULL, second = TRUE,
                       w.mpse = FALSE) {
   z <- list()
@@ -834,7 +834,7 @@ gev.remle <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
 
   if (is.null(CD.mle)) {
     CD.mle <- rep(NA, 3)
-    CD.mle <- gev1.CD(xdat = data, ntry = 5)$mle  # Hosking style xi
+    CD.mle <- mle.gev.CD(xdat = data, ntry = 5)$mle  # Hosking style xi
   }
   if (is.null(mle)) {
     mle <- rep(NA, 3)
@@ -843,7 +843,7 @@ gev.remle <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
 
   if (ntry < 4) ntry <- 4
   init <- matrix(NA, ntry, 3)
-  init <- ginit.max(data = xdat, ntry = ntry - 2)
+  init <- init.gevmax(data = xdat, ntry = ntry - 2)
   init <- rbind(init, matrix(NA, 2, 3))
   init[ntry - 1, 1:3] <- mle[1:3]
   init[ntry, 1:3] <- CD.mle[1:3]
@@ -950,15 +950,15 @@ gev.remle <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
   x <- k[[selc_num]]
 
   z$remle1.value <- x$values[which.min(x$values)]
-  z$remle1 <- x$pars
+  z$para.remle1 <- x$pars
 
   if (is.null(x$pars) | any(is.na(x$pars)) | z$remle1.value == 10^6) {
     x$pars <- NA
-    z$remle1 <- NA
+    z$para.remle1 <- NA
     z$qua.remle1 <- NA
   } else if (x$pars[2] <= 0 | abs(x$pars[3]) >= 1.0) {
     x$pars <- NA
-    z$remle1 <- NA
+    z$para.remle1 <- NA
     z$qua.remle1 <- NA
   } else {
     z$qua.remle1 <- quagev(quant, vec2par(x$pars, 'gev'))
@@ -975,7 +975,7 @@ gev.remle <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
     }
 
     init2 <- rbind(init, rep(NA, 3))
-    init2[nrow(init2), 1:3] <- z$remle1[1:3]
+    init2[nrow(init2), 1:3] <- z$para.remle1[1:3]
     init2 <- na.omit(init2)
     xtry <- nrow(init2)
 
@@ -1008,15 +1008,15 @@ gev.remle <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
     xw <- k2[[selc_num]]
 
     z$remle2.value <- xw$values[which.min(xw$values)]
-    z$remle2 <- xw$pars
+    z$para.remle2 <- xw$pars
 
     if (is.null(xw$pars) | any(is.na(xw$pars)) | z$remle2.value == 10^6) {
       xw$pars <- NA
-      z$remle2 <- NA
+      z$para.remle2 <- NA
       z$qua.remle2 <- NA
     } else if (xw$pars[2] <= 0 | abs(xw$pars[3]) >= 1.0) {
       xw$pars <- NA
-      z$remle2 <- NA
+      z$para.remle2 <- NA
       z$qua.remle2 <- NA
     } else {
       z$qua.remle2 <- quagev(quant, vec2par(xw$pars, 'gev'))
@@ -1070,7 +1070,7 @@ set.prior <- function(pen = NULL, numk = NULL, xi_lme = NULL, kpar = NULL,
       c1 <- 40
       c2 <- 12
     } else if (pen == "norm") {
-      multa <- 2.1
+      multa <- 2.2
       lme.cut <- -0.5
       std.cut <- -0.45
     }
@@ -1121,35 +1121,23 @@ set.prior <- function(pen = NULL, numk = NULL, xi_lme = NULL, kpar = NULL,
       }
     }
   } else if (pen == "beta") {
-    aa <- max(-1, xi_lme - c0)
-    bb <- min(0.5, xi_lme + c0)
-    al <- min(aa, bb)
-    bl <- max(aa, bb)
-
-    if (xi_lme <= 0) {
-      qlim <- min(abs(xi_lme) * c1, c2)
-    } else {
-      qlim <- 0.0
-    }
-
-    p <- p
-    q <- p + qlim
-
     for (i in 1:numk) {
-      prior[i] <- prior.beta.stnary.ma(x = kpar[i], xi_lme = lme,
-                                        p = p, q = q, al = al, bl = bl)
+      pklist <- pk.beta.stnary(para = c(1, 0, kpar[i]),
+                               lme.center = c(1, 0, xi_lme),
+                               p = p, c0 = c0, c1 = c1, c2 = c2)
+      prior[i] <- pklist$pk.one
     }
   }
 
   zp$prior <- prior
   if (pen == "norm") zp$prior_mu_std <- c(mu.prior, std.prior)
-  if (pen == "beta") zp$p_q_beta <- round(c(p, q), 2)
+  if (pen == "beta") zp$p_q_beta <- round(c(p, pklist$q), 2)
   return(zp)
 }
 
 
 #' @keywords internal
-weight.com.new <- function(data = NULL, numk = NULL, hosking = NULL,
+weight.com <- function(data = NULL, numk = NULL, hosking = NULL,
                            kpar = NULL, numom = 3, xqa = NULL, varcom = TRUE,
                            boot.lme = TRUE, cov.lme = NULL, surr = FALSE,
                            type = 'full', trim = NULL, cov.type = 'ratio',
@@ -1303,7 +1291,7 @@ wlik.xifix <- function(data = NULL, numk = NULL, kpar = NULL, weight = NULL,
   cov2.cv <- list()
 
   for (ip in 1:numk) {
-    kfix[1:3, ip] <- pargev.xifix.ma(lmtrim, xifix = kpar[ip])$para[1:3]
+    kfix[1:3, ip] <- pargev.xifix(lmtrim, xifix = kpar[ip])$para[1:3]
 
     if (varcom == TRUE) {
       Hess <- PrescottW(par2 = as.vector(kfix[1:2, ip]), xifix = kpar[ip],
@@ -1390,7 +1378,7 @@ dist.noboot <- function(data = NULL, numk = NULL, hosking = NULL, boot.lme = TRU
   if (all(is.na(mle3[1:numk, 1]))) {
     lm3 <- lmoms(data, nmom = 3)
     for (ip in 1:numk) {
-      mle3[ip, 1:3] <- pargev.xifix.ma(lm3, xifix = kpar[ip])$para[1:3]
+      mle3[ip, 1:3] <- pargev.xifix(lm3, xifix = kpar[ip])$para[1:3]
     }
   }
 
@@ -1647,7 +1635,7 @@ new.kpar2 <- function(wtgd = NULL, numk = NULL, kpar = NULL,
 # ============================================================
 
 #' @keywords internal
-cand.xi.new.paper <- function(data, hosking = NULL, mle = NULL, pick0 = 0.95,
+cand.xi <- function(data, hosking = NULL, mle = NULL, pick0 = 0.95,
                               nint = 256, start = 'mle', numk = NULL,
                               figure = TRUE, cov.lme = NULL, bma = FALSE,
                               pen = "beta") {
@@ -1680,7 +1668,7 @@ cand.xi.new.paper <- function(data, hosking = NULL, mle = NULL, pick0 = 0.95,
       pipick[i] <- 1 - 2 * eqpr[i]
     }
 
-    get.ci <- gev.profxi.mdfy.paper(data, mle = mle.coles,
+    get.ci <- gev.profxi.mdfy(data, mle = mle.coles,
                                     xlow = xlow2, xup = xup2,
                                     pick.v = pipick, nint = nint, figure = figure)
 
@@ -1729,7 +1717,7 @@ cand.xi.new.paper <- function(data, hosking = NULL, mle = NULL, pick0 = 0.95,
       if (hosking$boot.lme == FALSE & move == TRUE) {
         Bnew <- hosking$B
         qua <- hosking$quant
-        hosking <- lme.boots.new(data = data, B = Bnew, quant = qua, boot = TRUE)
+        hosking <- lme.boots(data = data, B = Bnew, quant = qua, boot = TRUE)
       }
     }
 
@@ -1773,7 +1761,7 @@ is.odd.me <- function(x) {
 
 
 #' @keywords internal
-gev.profxi.mdfy.paper <- function(data = NULL, mle = NULL, xlow, xup,
+gev.profxi.mdfy <- function(data = NULL, mle = NULL, xlow, xup,
                                   pick.v = NULL, nint = 256,
                                   figure = FALSE) {
   pick <- pick.v[1]
@@ -1876,7 +1864,7 @@ gev.profxi.mdfy.paper <- function(data = NULL, mle = NULL, xlow, xup,
   msp1 <- data.frame(x = c(extra.bef, d$x, extra.over), y = c(yleft, d$v, yright))
   dv1 <- msp1$y
 
-  w1 <- comp.prof.ci.new(d = msp1, v = dv1, conf = conf)
+  w1 <- comp.prof.ci(d = msp1, v = dv1, conf = conf)
 
   w$w1 <- w1
   inter <- 1
@@ -1925,7 +1913,7 @@ gev.profxi.mdfy.paper <- function(data = NULL, mle = NULL, xlow, xup,
 
 
 #' @keywords internal
-comp.prof.ci.new <- function(d, v, conf = NULL) {
+comp.prof.ci <- function(d, v, conf = NULL) {
   w <- list()
   numcf <- length(conf)
   d$v <- v

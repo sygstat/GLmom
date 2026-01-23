@@ -65,13 +65,13 @@
 #'   \item lme.cov3 - Covariance matrix of LME (bootstrap)
 #'   \item qua.lme - Quantile estimates from LME
 #'   \item qua.se.lme.boots - Standard errors of LME quantiles (bootstrap)
-#'   \item zp.ma - Model-averaged quantile estimates
+#'   \item qua.ma - Model-averaged quantile estimates
 #'   \item w.ma - Weights used for model averaging
-#'   \item fin.se.ma - Asymptotic SE under fixed weights
-#'   \item adj.se.ma - Asymptotic SE under random weights
+#'   \item fixw.se.ma - Asymptotic SE under fixed weights
+#'   \item ranw.se.ma - Asymptotic SE under random weights
 #'   \item surr - Surrogate model parameters (mu, sigma, xi)
-#'   \item pick_xi_ma - Selected xi values for K submodels
-#'   \item zp.bma - (if bma=TRUE) BMA quantile estimates
+#'   \item pick_xi - Selected xi values for K submodels
+#'   \item qua.bma - (if bma=TRUE) BMA quantile estimates
 #'   \item w.bma - (if bma=TRUE) BMA weights
 #'   \item mle.CD - (if CD=TRUE) Coles-Dixon penalized MLE
 #'   \item qua.CD - (if CD=TRUE) Quantile estimates from CD-MLE
@@ -97,7 +97,7 @@
 #'
 #' # Basic usage with likelihood weights
 #' result <- ma.gev(x, quant = c(0.95, 0.99), weight = 'like1', B = 100)
-#' print(result$zp.ma)      # Model-averaged quantiles
+#' print(result$qua.ma)     # Model-averaged quantiles
 #' print(result$qua.mle)    # MLE quantiles for comparison
 #' print(result$qua.lme)    # LME quantiles for comparison
 #'
@@ -190,7 +190,7 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   delta <- list()
 
   # ------- MLE and SE by delta method -------------------
-  delta <- gev.rl.delta_new(data = data, ntry = 10, quant = quant)
+  delta <- gev.rl.delta(data = data, ntry = 10, quant = quant)
 
   zx$mle.hosking <- delta$mle
   zx$qua.mle <- delta$qua.mle
@@ -213,7 +213,7 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   }
 
   hosking <- list()
-  hosking <- lme.boots.new(data = data, B = B, quant = quant,
+  hosking <- lme.boots(data = data, B = B, quant = quant,
                            boot = boot.lme, trim = trim)
 
   if (boot.lme == TRUE) {
@@ -232,7 +232,7 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   # ---- CD penalized MLE and restricted MLE ------------------------------------------
   if (CD == TRUE) {
     CD.mle <- rep(NA, 3)
-    CD.mle <- gev1.CD(xdat = data, ntry = 5)$mle  # hosking style xi
+    CD.mle <- mle.gev.CD(xdat = data, ntry = 5)$mle  # hosking style xi
 
     if (any(is.na(CD.mle))) {
       zx$qua.CD <- NA
@@ -247,13 +247,13 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   if (remle == TRUE) {
     if (CD != TRUE) CD.mle <- hosking$lme
     rem.try <- list()
-    rem.try <- gev.remle(xdat = data, ntry = 5, rest = 'mean', quant = quant,
-                         trim = 0, CD.mle = CD.mle, mle = delta$mle,
+    rem.try <- remle.gev(xdat = data, ntry = 5, rest = 'mean', quant = quant,
+                         CD.mle = CD.mle, mle = delta$mle,
                          second = TRUE, w.mpse = FALSE)
 
-    zx$remle1 <- rem.try$remle1
+    zx$remle1 <- rem.try$para.remle1
     zx$qua.remle1 <- rem.try$qua.remle1
-    zx$remle2 <- rem.try$remle2
+    zx$remle2 <- rem.try$para.remle2
     zx$qua.remle2 <- rem.try$qua.remle2
   }
   # --------------------------------------------------------------
@@ -273,7 +273,7 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   if (fix.kpar == FALSE) {
     kpar.list <- list()
 
-    kpar.list <- cand.xi.new.paper(data, hosking = hosking, mle = zx$mle.hosking,
+    kpar.list <- cand.xi(data, hosking = hosking, mle = zx$mle.hosking,
                                    pick0 = pick, nint = 256, start = start,
                                    numk = numk, figure = fig, bma = bma, pen = pen)
 
@@ -296,7 +296,7 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   bmaw <- rep(0, numk)
   wtgd <- rep(NA, numk)
 
-  mywt <- weight.com.new(data, numk = numk, hosking = hosking,
+  mywt <- weight.com(data, numk = numk, hosking = hosking,
                          kpar = kpar, numom = numom,
                          xqa = xqa, varcom = varcom, boot.lme = boot.lme,
                          cov.lme = cov.lme, surr = surr,
@@ -340,7 +340,7 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
     para3 <- matrix(NA, nrow = numk, ncol = 3)
     zp <- matrix(NA, numq, numk)
 
-    mywt <- weight.com.new(data, numk = numk, hosking = hosking,
+    mywt <- weight.com(data, numk = numk, hosking = hosking,
                            kpar = newk$kpar2, numom = numom,
                            xqa = xqa, varcom = varcom, boot.lme = boot.lme,
                            cov.lme = cov.lme, surr = surr,
@@ -421,8 +421,8 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
 
   if (all(wtgd == 0)) {
     message("All return levels are NA, returning LME quantiles")
-    zx$zp.ma <- zx$qua.lme
-    zx$zp.bma <- zx$qua.lme
+    zx$qua.ma <- zx$qua.lme
+    zx$qua.bma <- zx$qua.lme
     return(zx)
   }
 
@@ -443,7 +443,7 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
 
   # ---- calculating asymptotic SE by delta method -----------------
   if (varcom == TRUE) {
-    covint <- cov.interp.new(numk, para3, cov2 = mywt$prob.call$cov2)
+    covint <- cov.interp(numk, para3, cov2 = mywt$prob.call$cov2)
     avar <- asymp.var(mywt, covint, qqq = quant, order)
   }
 
@@ -473,8 +473,8 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   }
 
   if (varcom == TRUE) {
-    zx$fin.se.ma <- avar$fin.se.MA.qua
-    zx$adj.se.ma <- avar$adj.se.MA.qua
+    zx$fixw.se.ma <- avar$fin.se.MA.qua
+    zx$ranw.se.ma <- avar$adj.se.MA.qua
     if (bma == TRUE) {
       zx$pred.se.bma <- as.vector(sqrt(msm + mse))
       zx$bma.se.between <- sqrt(msm)
@@ -491,15 +491,14 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   # ------- finalization ---------------------------
   if (bma != TRUE) {
     zx$zp <- zp
-    zx$zp.ma <- zpf
+    zx$qua.ma <- zpf
     zx$w.ma <- wtgd
-    zx$pick_xi_ma <- kpar
-    zx$numk_ma <- numk
+    zx$pick_xi <- kpar
+    zx$run.numk <- numk
   }
 
   if (bma == TRUE) {
-    zx$zp.ma <- zpf.bma
-    zx$zp.bma <- zpf.bma
+    zx$qua.bma <- zpf.bma
     zx$pen <- pen
     zx$w.bma <- bmaw
 
@@ -508,8 +507,8 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
     if (pen == "norm") zx$prior_mu_std <- set$prior_mu_std
     if (pen == "beta") zx$p_q_beta <- set$p_q_beta
 
-    zx$pick_xi_bma <- kpar
-    zx$numk_bma <- numk
+    zx$pick_xi <- kpar
+    zx$run.numk <- numk
   }
 
   zx$run_kpar <- run

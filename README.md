@@ -55,7 +55,7 @@ library(GLmom)
 # Stationary GEV
 data(streamflow)
 result <- glme.gev(streamflow$r1)
-result$glme  # GLME estimates: (mu, sigma, xi)
+result$para.glme  # GLME estimates: (mu, sigma, xi)
 
 # Non-stationary GEV11
 data(Trehafod)
@@ -74,16 +74,16 @@ x <- streamflow$r1
 
 # Default: beta penalty (adaptive)
 result <- glme.gev(x)
-result$glme  # GLME estimates
+result$para.glme  # GLME estimates
 #> [1]  55.5348   8.7204  -0.4508
-result$lme   # Traditional L-moment estimates
+result$para.lme   # Traditional L-moment estimates
 #> [1]  55.5286   8.8033  -0.4999
 
 # Compare different penalty functions
-glme.gev(x, pen = "beta")$glme[3]    # xi = -0.4508
-glme.gev(x, pen = "ms")$glme[3]      # xi = -0.3678 (Martins-Stedinger)
-glme.gev(x, pen = "park")$glme[3]    # xi = -0.4648
-glme.gev(x, pen = "no")$glme[3]      # xi = -0.4999 (no penalty = L-moment)
+glme.gev(x, pen = "beta")$para.glme[3]    # xi = -0.4508
+glme.gev(x, pen = "ms")$para.glme[3]      # xi = -0.3678 (Martins-Stedinger)
+glme.gev(x, pen = "park")$para.glme[3]    # xi = -0.4648
+glme.gev(x, pen = "no")$para.glme[3]      # xi = -0.4999 (no penalty = L-moment)
 ```
 
 ### 2. Non-stationary GEV11 Estimation
@@ -188,12 +188,12 @@ result$qua.mle    # MLE quantiles
 #> [1]  72.52  85.57  93.45
 result$qua.lme    # L-moment quantiles
 #> [1]  72.95  87.75  97.20
-result$zp.ma      # Model-averaged quantiles (recommended)
+result$qua.ma     # Model-averaged quantiles (recommended)
 #> [1]  72.78  86.52  94.89
 
 # Standard errors
-result$fin.se.ma  # SE under fixed weights
-result$adj.se.ma  # SE under random weights
+result$fixw.se.ma # SE under fixed weights
+result$ranw.se.ma # SE under random weights
 
 # Using generalized L-moment distance weights
 result2 <- ma.gev(x, quant = c(0.99), weight = 'gLd')
@@ -201,7 +201,7 @@ print(result2$w.ma)  # Model weights across K submodels
 
 # Using Bayesian Model Averaging
 result3 <- ma.gev(x, quant = c(0.99), bma = TRUE, pen = "norm")
-print(result3$zp.bma)
+print(result3$qua.bma)
 ```
 
 ## Datasets
@@ -230,9 +230,9 @@ head(Trehafod)
 
 | Function | Description | Output |
 |----------|-------------|--------|
-| `glme.gev()` | Stationary GEV estimation | `glme`, `lme`, `nllh` |
+| `glme.gev()` | Stationary GEV estimation | `para.glme`, `para.lme`, `nllh.glme` |
 | `glme.gev11()` | Non-stationary GEV11 | `para.glme`, `para.lme`, `para.gado`, `para.wls`, ... |
-| `ma.gev()` | Model averaging for high quantiles | `zp.ma`, `qua.mle`, `qua.lme`, `w.ma`, `qua.CD`, `qua.remle1`, ... |
+| `ma.gev()` | Model averaging for high quantiles | `qua.ma`, `qua.mle`, `qua.lme`, `w.ma`, `qua.CD`, `qua.remle1`, ... |
 | `nsgev()` | Simple L-moment interface | `para.prop`, `precis` |
 | `gado.prop_11()` | Comprehensive L-moment | `para.prop`, `para.gado`, `para.wls`, `lme.sta` |
 | `quagev.NS()` | NS GEV quantile function | quantiles (vector/matrix) |
@@ -266,10 +266,11 @@ head(Trehafod)
 | Function | Description |
 |----------|-------------|
 | `glme.like()` | GLME likelihood function |
-| `init.glme()` | Parameter initialization |
+| `init.gevmax()` | Parameter initialization |
 | `pargev.kfix()` | GEV with fixed shape |
 | `MS_pk()` | Martins-Stedinger penalty |
 | `pk.beta.stnary()` | Beta penalty function |
+| `pk.norm.stnary()` | Normal penalty function |
 
 ## Authors
 

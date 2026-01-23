@@ -72,10 +72,10 @@ magev.ksensplot <- function(data = NULL, q.cut = 0.6, mink = 4,
                         fig = FALSE, bma = bma, pen = "norm", remle = FALSE)
 
     if (bma != TRUE) {
-      rt[k, id12] <- test[[k]]$zp.ma[id12]
-      se[k, id12] <- test[[k]]$adj.se.ma[id12]
+      rt[k, id12] <- test[[k]]$qua.ma[id12]
+      se[k, id12] <- test[[k]]$ranw.se.ma[id12]
     } else if (bma == TRUE) {
-      rt[k, id12] <- test[[k]]$zp.bma[id12]
+      rt[k, id12] <- test[[k]]$qua.bma[id12]
       se[k, id12] <- test[[k]]$pred.se.bma[id12]
     }
 
