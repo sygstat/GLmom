@@ -7,7 +7,7 @@
 \format{
 A data frame with 53 rows and 2 columns:
 \describe{
-  \item{Year}{Year of observation (1968-2020)}
+  \item{Year}{Year of observation (integer, 1968-2021)}
   \item{r1}{Annual maximum river flow in cubic meters per second (m^3/s)}
 }
 }

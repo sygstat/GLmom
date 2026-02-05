@@ -8,8 +8,18 @@
 #'   \item{r1}{Annual maximum streamflow value (numeric)}
 #' }
 #'
-#' @source Hydrological data for extreme value analysis.
+#' @source UK National River Flow Archive, Peak Flow Dataset
+#'   (\url{https://nrfa.ceh.ac.uk/peak-flow-dataset}).
 #'
+#' @references 
+#' Grego, J. M., Yates, P. A., & Mai, K. (2015). Standard error estimation
+#' for mixed flood distributions with historic maxima. Environmetrics, 26(3), 229-242.
+#' \doi{10.1002/env.2333}
+#' 
+#' Shin, Y., Shin, Y., & Park, J. S. (2025). Building nonstationary extreme value
+#' model using L-moments. Journal of the Korean Statistical Society, 1-24.
+#' \doi{10.1007/s42952-025-00325-3}
+#' 
 #' @examples
 #' data(streamflow)
 #' head(streamflow)
@@ -21,9 +31,25 @@
 #' Climate or meteorological data from the Phliu Agrometeorological Station
 #' for extreme value analysis.
 #'
-#' @format A data frame containing meteorological measurements.
+#' @format A data frame with 40 rows and 9 columns:
+#' \describe{
+#'   \item{Station.ID}{Station identifier (character)}
+#'   \item{year}{Year of observation (numeric, 1984-2023)}
+#'   \item{prec}{Annual maximum daily precipitation in mm (numeric)}
+#'   \item{Name}{Station name (character)}
+#'   \item{zone}{Climate zone code (character)}
+#'   \item{latitude}{Station latitude in degrees (numeric)}
+#'   \item{longitude}{Station longitude in degrees (numeric)}
+#'   \item{Starting.year}{Record start year (integer)}
+#'   \item{Ending.year}{Record end year (numeric)}
+#' }
 #'
-#' @source Phliu Agrometeorological Station.
+#' @source Phliu Agrometeorological Station, Thailand.
+#' 
+#' @references 
+#' Shin, Y., Shin, Y., Park, J., & Park, J. S. (2025). Generalized method of L-moment estimation
+#' for stationary and nonstationary extreme value models. arXiv preprint arXiv:2512.20385.
+#' \doi{10.48550/arXiv.2512.20385}
 #'
 #' @examples
 #' data(PhliuAgromet)
@@ -39,7 +65,7 @@
 #'
 #' @format A data frame with 53 rows and 2 columns:
 #' \describe{
-#'   \item{Year}{Year of observation (1968-2020)}
+#'   \item{Year}{Year of observation (integer, 1968-2021)}
 #'   \item{r1}{Annual maximum river flow in cubic meters per second (m^3/s)}
 #' }
 #'
@@ -68,7 +94,14 @@
 #' This dataset is used for demonstrating model averaging methods
 #' for high quantile estimation in extreme value analysis.
 #'
-#' @format A data frame containing annual maximum daily rainfall values.
+#' @format A data frame with 58 rows and 5 columns:
+#' \describe{
+#'   \item{X1}{Annual maximum daily rainfall in mm (numeric)}
+#'   \item{X2}{2nd largest annual daily rainfall in mm (numeric)}
+#'   \item{X3}{3rd largest annual daily rainfall in mm (numeric)}
+#'   \item{X4}{4th largest annual daily rainfall in mm (numeric)}
+#'   \item{X5}{5th largest annual daily rainfall in mm (numeric)}
+#' }
 #'
 #' @source Thai Meteorological Department (TMD; \url{https://www.tmd.go.th})
 #'
@@ -84,7 +117,7 @@
 #'
 #' # Estimate high quantiles using model averaging
 #' \donttest{
-#' result <- ma.gev(bangkok[,1], quant = c(0.99, 0.995))
+#' result <- ma.gev(bangkok$X1, quant = c(0.99, 0.995))
 #' print(result$qua.ma)
 #' }
 #'
@@ -96,7 +129,11 @@
 #' This dataset is used for demonstrating model averaging methods
 #' for high quantile estimation in extreme value analysis.
 #'
-#' @format A data frame containing annual maximum daily rainfall values.
+#' @format A data frame with 52 rows and 2 columns:
+#' \describe{
+#'   \item{year}{Year of observation (integer, 1971-2022)}
+#'   \item{X1}{Annual maximum daily rainfall in mm (numeric)}
+#' }
 #'
 #' @source Korea Meteorological Administration (KMA; \url{https://www.kma.go.kr})
 #'
@@ -112,7 +149,7 @@
 #'
 #' # Estimate high quantiles using model averaging
 #' \donttest{
-#' result <- ma.gev(haenam[,1], quant = c(0.98, 0.99, 0.995))
+#' result <- ma.gev(haenam$X1, quant = c(0.98, 0.99, 0.995))
 #' print(result$qua.ma)
 #' }
 #'

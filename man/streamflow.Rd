@@ -25,4 +25,8 @@ data(streamflow)
 head(streamflow)
 
 }
+\references{
+Grego, J. M., Yates, P. A., & Mai, K. (2015). Standard error estimation for mixed flood distributions with historic maxima. Environmetrics, 26(3), 229-242. \doi{10.1002/env.2333}
+Shin, Y., Shin, Y., & Park, J. S. (2025). Building nonstationary extreme value model using L-moments. Journal of the Korean Statistical Society, 1-24. \doi{10.1007/s42952-025-00325-3}
+}
 \keyword{datasets}

@@ -5,7 +5,14 @@
 \alias{bangkok}
 \title{Bangkok Maximum Rainfall Data}
 \format{
-A data frame containing annual maximum daily rainfall values.
+A data frame with 58 rows and 5 columns:
+\describe{
+  \item{X1}{Annual maximum daily rainfall in mm (numeric)}
+  \item{X2}{2nd largest annual daily rainfall in mm (numeric)}
+  \item{X3}{3rd largest annual daily rainfall in mm (numeric)}
+  \item{X4}{4th largest annual daily rainfall in mm (numeric)}
+  \item{X5}{5th largest annual daily rainfall in mm (numeric)}
+}
 }
 \source{
 Thai Meteorological Department (TMD; \url{https://www.tmd.go.th})
@@ -24,7 +31,7 @@ head(bangkok)
 
 # Estimate high quantiles using model averaging
 \donttest{
-result <- ma.gev(bangkok[,1], quant = c(0.99, 0.995))
+result <- ma.gev(bangkok$X1, quant = c(0.99, 0.995))
 print(result$qua.ma)
 }
 

@@ -5,10 +5,21 @@
 \alias{PhliuAgromet}
 \title{Phliu Agrometeorological Station Data}
 \format{
-A data frame containing meteorological measurements.
+A data frame with 40 rows and 9 columns:
+\describe{
+  \item{Station.ID}{Station identifier (character)}
+  \item{year}{Year of observation (numeric, 1984-2023)}
+  \item{prec}{Annual maximum daily precipitation in mm (numeric)}
+  \item{Name}{Station name (character)}
+  \item{zone}{Climate zone code (character)}
+  \item{latitude}{Station latitude in degrees (numeric)}
+  \item{longitude}{Station longitude in degrees (numeric)}
+  \item{Starting.year}{Record start year (integer)}
+  \item{Ending.year}{Record end year (numeric)}
+}
 }
 \source{
-Phliu Agrometeorological Station.
+Phliu Agrometeorological Station, Thailand.
 }
 \usage{
 PhliuAgromet
@@ -21,5 +32,8 @@ for extreme value analysis.
 data(PhliuAgromet)
 head(PhliuAgromet)
 
+}
+\references{
+Shin, Y., Shin, Y., Park, J., & Park, J. S. (2025). Generalized method of L-moment estimation for stationary and nonstationary extreme value models. arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
 }
 \keyword{datasets}

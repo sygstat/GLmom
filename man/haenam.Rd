@@ -5,7 +5,11 @@
 \alias{haenam}
 \title{Haenam Maximum Rainfall Data}
 \format{
-A data frame containing annual maximum daily rainfall values.
+A data frame with 52 rows and 2 columns:
+\describe{
+  \item{year}{Year of observation (integer, 1971-2022)}
+  \item{X1}{Annual maximum daily rainfall in mm (numeric)}
+}
 }
 \source{
 Korea Meteorological Administration (KMA; \url{https://www.kma.go.kr})
@@ -24,7 +28,7 @@ head(haenam)
 
 # Estimate high quantiles using model averaging
 \donttest{
-result <- ma.gev(haenam[,1], quant = c(0.98, 0.99, 0.995))
+result <- ma.gev(haenam$X1, quant = c(0.98, 0.99, 0.995))
 print(result$qua.ma)
 }
 
