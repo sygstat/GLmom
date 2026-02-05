@@ -51,7 +51,7 @@ Default is TRUE.}
 
 \item{CD}{Logical. Whether to compute Coles-Dixon penalized MLE. Default is FALSE.}
 
-\item{remle}{Logical. Whether to compute restricted MLE (REMLE). Default is FALSE.}
+\item{remle}{Logical. Whether to compute restricted MLE. Default is FALSE.}
 }
 \value{
 A list containing:
@@ -64,21 +64,21 @@ A list containing:
   \item lme.cov3 - Covariance matrix of LME (bootstrap)
   \item qua.lme - Quantile estimates from LME
   \item qua.se.lme.boots - Standard errors of LME quantiles (bootstrap)
-  \item zp.ma - Model-averaged quantile estimates
+  \item qua.ma - Model-averaged quantile estimates
   \item w.ma - Weights used for model averaging
-  \item fin.se.ma - Asymptotic SE under fixed weights
-  \item adj.se.ma - Asymptotic SE under random weights
+  \item fixw.se.ma - Asymptotic SE under fixed weights
+  \item ranw.se.ma - Asymptotic SE under random weights
   \item surr - Surrogate model parameters (mu, sigma, xi)
-  \item pick_xi_ma - Selected xi values for K submodels
-  \item zp.bma - (if bma=TRUE) BMA quantile estimates
+  \item pick_xi - Selected xi values for K submodels
+  \item qua.bma - (if bma=TRUE) BMA quantile estimates
   \item w.bma - (if bma=TRUE) BMA weights
-  \item mle.CD - (if CD=TRUE) Coles-Dixon penalized MLE parameters
+  \item mle.CD - (if CD=TRUE) Coles-Dixon penalized MLE
   \item qua.CD - (if CD=TRUE) Quantile estimates from CD-MLE
-  \item remle1 - (if remle=TRUE) REMLE parameters (first stage)
-  \item remle2 - (if remle=TRUE) REMLE parameters (second stage)
-  \item qua.remle1 - (if remle=TRUE) Quantile estimates from REMLE (first stage)
-  \item qua.remle2 - (if remle=TRUE) Quantile estimates from REMLE (second stage)
-  \item quant - The probability values used for quantile estimation
+  \item remle1 - (if remle=TRUE) Restricted MLE (first constraint)
+  \item qua.remle1 - (if remle=TRUE) Quantile estimates from remle1
+  \item remle2 - (if remle=TRUE) Restricted MLE (second constraint)
+  \item qua.remle2 - (if remle=TRUE) Quantile estimates from remle2
+  \item quant - The quantile probabilities used
 }
 }
 \description{
@@ -115,7 +115,7 @@ x <- streamflow$r1
 
 # Basic usage with likelihood weights
 result <- ma.gev(x, quant = c(0.95, 0.99), weight = 'like1', B = 100)
-print(result$zp.ma)      # Model-averaged quantiles
+print(result$qua.ma)     # Model-averaged quantiles
 print(result$qua.mle)    # MLE quantiles for comparison
 print(result$qua.lme)    # LME quantiles for comparison
 
@@ -126,9 +126,16 @@ print(result2$w.ma)      # Model weights
 
 }
 \references{
-Shin, Y., Shin, Y., & Park, J.-S. (2025). Model averaging with mixed criteria
+Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria
 for estimating high quantiles of extreme values: Application to heavy rainfall.
-arXiv preprint arXiv:2505.21417. \doi{10.48550/arXiv.2505.21417}
+\emph{Stochastic Environmental Research and Risk Assessment}, 40(2), 47.
+\doi{10.1007/s00477-025-03167-x}
+}
+\seealso{
+\code{\link{glme.gev}} for stationary GLME estimation,
+  \code{\link{magev.ksensplot}} for K sensitivity analysis,
+  \code{\link{magev.qqplot}} for Q-Q diagnostic plots,
+  \code{\link{magev.rlplot}} for return level plots.
 }
 \author{
 Yonggwan Shin, Yire Shin, Jeong-Soo Park

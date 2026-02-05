@@ -208,6 +208,10 @@ nllh.glme.gev11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
 #' \doi{10.1007/s42952-025-00325-3}
 #'
+#' @seealso \code{\link{glme.gev}} for stationary GEV estimation,
+#'   \code{\link{nsgev}} for the pure L-moment wrapper (no penalty),
+#'   \code{\link{quagev.NS}} for non-stationary quantile computation.
+#'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #'
 #' @examples
@@ -225,7 +229,7 @@ nllh.glme.gev11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' @export
 glme.gev11 = function(xdat, ntry=10, ftol=1e-6,
                       init.rob=TRUE, glme.pre="wls",
-                      opt.choose="gof", pen='beta', pen.choice=6,
+                      opt.choose="gof", pen='beta', pen.choice=NULL,
                       mu= -0.55, std=0.3, p=6, c1=10, c2=5){
 
   z <- list()
@@ -320,7 +324,7 @@ glme.gev11 = function(xdat, ntry=10, ftol=1e-6,
                        p=p,c1=c1,c2=c2, choose=opt.choose)
 
   if(z$precis > ftol) { z$para.lme = pretheta
-  cat("no optim for proposed lme","\n") }
+  message("no optim for proposed lme") }
 
   # --------------------------------------------------------------------
   z$para.gado   = gado$para.org            # GN16 original est
@@ -349,6 +353,18 @@ glme.gev11 = function(xdat, ntry=10, ftol=1e-6,
 
 #-------------------------------------------------
 #' L-moment distance function for GEV11 model
+#'
+#' @description Internal function that computes the L-moment distance vector
+#' for the GEV11 model. The residuals are formed from the difference
+#' between theoretical Gumbel L-moments and sample L-moments of
+#' standardized data.
+#'
+#' @param a Numeric vector (mu0, sigma0, xi) to optimize.
+#' @param xdat Numeric vector of data.
+#' @param pretheta Full parameter vector (mu0, mu1, sigma0, sigma1, xi) from pre-estimation.
+#'
+#' @return Numeric vector of length 3, representing L-moment equation residuals.
+#'
 #' @keywords internal
 obj.lme.gev11 <- function(a, xdat=xdat, pretheta=pretheta)
 {
@@ -414,6 +430,35 @@ obj.lme.gev11 <- function(a, xdat=xdat, pretheta=pretheta)
 
 #---------------------------------------------------
 #' Multi-start optimization for GEV11 model
+#'
+#' @description Internal function that performs multi-start optimization
+#' for the non-stationary GEV11 model. First solves L-moment equations
+#' via nleqslv (Broyden method), then optionally refines with penalized
+#' optimization via optim. Selects the best solution using goodness-of-fit
+#' or penalized negative log-likelihood.
+#'
+#' @param xdat Numeric vector of data.
+#' @param ntry Number of random starting points. Default is 10.
+#' @param ftol Tolerance for convergence. Default is 1e-6.
+#' @param pretheta Pre-estimated parameter vector (mu0, mu1, sigma0, sigma1, xi).
+#' @param model Model type: "gev11" (default), "gev10", or "gev20".
+#' @param pen Penalty type: "beta" (default), "norm", "ms", "park", "cannon", "cd", or "no".
+#' @param mu Normal penalty mean.
+#' @param std Normal penalty standard deviation.
+#' @param p Beta penalty shape parameter.
+#' @param c1 Beta penalty scaling parameter.
+#' @param c2 Beta penalty limit parameter.
+#' @param choose Selection method: "gof" (goodness-of-fit) or "nllh".
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{para.lme}{L-moment based estimates (5 parameters)}
+#'   \item{precis}{Precision of the best solution}
+#'   \item{para.glme}{GLME estimates (if pen != "no")}
+#'   \item{nllh.glme}{Penalized negative log-likelihood (if pen != "no")}
+#'   \item{pen}{Penalty type used}
+#' }
+#'
 #' @keywords internal
 optim.glme.gev11= function(xdat, ntry=10, ftol=1e-6,
                            pretheta=NULL, model="gev11",
@@ -518,7 +563,7 @@ optim.glme.gev11= function(xdat, ntry=10, ftol=1e-6,
     ) #tryCatch
 
     if(all(my.nllh==10^6)) {
-      cat("-- No solution was found in optim for glme --","\n")
+      message("-- No solution was found in optim for glme --")
       return(zm)
     }
 
@@ -551,6 +596,20 @@ optim.glme.gev11= function(xdat, ntry=10, ftol=1e-6,
 
 #-------------------------------------------------
 #' Calculate GLD covariance for GEV11 model
+#'
+#' @description Internal function that computes the generalized L-moment
+#' distance covariance matrix for standardized residuals from the GEV11 model.
+#' Uses bootstrap if the direct L-moment covariance matrix is singular.
+#'
+#' @param par Numeric vector of GEV11 parameters (mu0, mu1, sigma0, sigma1, xi).
+#' @param xdat Numeric vector of data.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{covinv}{3x3 inverse covariance matrix of L-moments}
+#'   \item{lcovdet}{Log determinant of the covariance matrix}
+#' }
+#'
 #' @keywords internal
 gev11.GLD <- function(par=NULL, xdat=NULL)
 {
@@ -600,7 +659,7 @@ gev11.GLD <- function(par=NULL, xdat=NULL)
     sam.lmom= matrix(NA,BB,3)
 
     for (ib in 1:BB){
-      sam.lmom[ib,1:3]=lmoms(sample(newg,size=ns,replace=T),
+      sam.lmom[ib,1:3]=lmoms(sample(newg,size=ns,replace=TRUE),
                              nmom=3)$lambdas
     }
     cov=cov(sam.lmom)
@@ -615,7 +674,25 @@ gev11.GLD <- function(par=NULL, xdat=NULL)
 }
 
 #-------------------------------------------------
-#' Select best parameters based on GOF
+#' Select best parameters based on goodness-of-fit
+#'
+#' @description Internal function that selects the best parameter estimate
+#' from multiple candidates using energy distance-based goodness-of-fit
+#' across multiple return periods.
+#'
+#' @param xdat Numeric vector of data.
+#' @param para.sel Matrix of candidate parameter sets (ntry x npar).
+#' @param model Model type: "gev11", "gev10", or "gev20".
+#' @param obj.fun Numeric vector of objective function values (tie-breaker).
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{para}{Best parameter vector}
+#'   \item{min.itry}{Index of the best candidate}
+#'   \item{gof}{Goodness-of-fit values for all candidates}
+#'   \item{obj.fun}{Input objective function values}
+#' }
+#'
 #' @keywords internal
 sel.para_all =function(xdat, para.sel=NULL, model=NULL,
                        obj.fun=NULL){
@@ -650,7 +727,19 @@ sel.para_all =function(xdat, para.sel=NULL, model=NULL,
 }
 
 #-------------------------------------------------
-#' Goodness-of-fit function
+#' Goodness-of-fit based on exceedance counts
+#'
+#' @description Internal function that computes goodness-of-fit by comparing
+#' observed vs expected exceedances above return level quantiles for multiple
+#' return periods.
+#'
+#' @param xdat Numeric vector of data.
+#' @param vecT Numeric vector of return periods. Default is c(5, 10, 20, 40, 80).
+#' @param para Parameter vector for the model.
+#' @param model Model type: "gev11", "gev10", "gev20", or "gev00".
+#'
+#' @return Sum of absolute relative exceedance errors (scalar).
+#'
 #' @keywords internal
 gof.ene_all = function(xdat, vecT=c(5,10,20,40,80),
                        para=NULL, model=NULL){
@@ -669,7 +758,21 @@ gof.ene_all = function(xdat, vecT=c(5,10,20,40,80),
 }
 
 #--------------------------------------------------
-#' Modified L-moments calculation
+#' Modified L-moments calculation with optional trimming
+#'
+#' @description Internal function that computes sample L-moments with an
+#' option for trimmed L-moments (TLmoms with left trimming). Includes
+#' a fail-safe mode for use in optimization loops.
+#'
+#' @param x Numeric vector of data.
+#' @param nmom Number of L-moments to compute. Default is 5.
+#' @param mtrim Logical. If TRUE, use left-trimmed L-moments (trim=5). Default is FALSE.
+#' @param no.stop Logical. If TRUE, return failure indicator instead of stopping. Default is FALSE.
+#' @param vecit Logical. If TRUE, return as a vector. Default is FALSE.
+#'
+#' @return A list (from \code{lmomco::TLmoms()}) with an additional \code{ifail}
+#'   component (0 = success, 1 = failure).
+#'
 #' @keywords internal
 lmoms.md.park = function (x, nmom = 5, mtrim=FALSE,
                           no.stop = FALSE, vecit = FALSE)
@@ -700,7 +803,7 @@ lmoms.md.park = function (x, nmom = 5, mtrim=FALSE,
 
     if(mtrim==FALSE){
       z <- TLmoms(x, nmom = nmom)
-    }else if(mtrim==T){
+    }else if(mtrim==TRUE){
       z <- TLmoms(x, nmom = nmom, leftrim=5)
     }
     z$source <- "lmoms"
@@ -727,7 +830,23 @@ lmoms.md.park = function (x, nmom = 5, mtrim=FALSE,
 }
 
 #-----------------------------------------------------
-#' Create qmax for GEV11 model
+#' Create maximum residual series for GEV11 model
+#'
+#' @description Internal function that constructs a modified residual series
+#' (qmax) from the data after removing estimated location trend, used for
+#' the GN16 time-varying moment method.
+#'
+#' @param xdat Numeric vector of data.
+#' @param orig.para Initial parameter vector (mu0, mu1, sigma0, sigma1, xi).
+#' @param rob Logical. If TRUE, use robust regression. If FALSE, use OLS.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{qmax}{Modified residual series (numeric vector)}
+#'   \item{sig0}{Log-scale intercept estimate}
+#'   \item{sig1}{Log-scale trend estimate}
+#' }
+#'
 #' @keywords internal
 make.qmax.gev11 =function(xdat=NULL, orig.para=NULL, rob=NULL)
 {
@@ -779,7 +898,18 @@ make.qmax.gev11 =function(xdat=NULL, orig.para=NULL, rob=NULL)
 }
 
 #------------------------------------------------------
-#' Initialize parameters for multi-start
+#' Initialize parameters for multi-start GEV11 optimization
+#'
+#' @description Internal function that generates initial parameter sets
+#' (mu0, sigma0, xi) for multi-start optimization in the GEV11 model.
+#' Uses stationary L-moment estimates and random perturbations.
+#'
+#' @param data Numeric vector of data.
+#' @param ntry Number of initial parameter sets to generate. Default is 10.
+#' @param pretheta Pre-estimated parameter vector (mu0, mu1, sigma0, sigma1, xi).
+#'
+#' @return A matrix with \code{ntry} rows and 3 columns (mu0, log(sigma), xi).
+#'
 #' @keywords internal
 init.glme.gev11 <-function(data, ntry=10, pretheta=NULL){
 
@@ -810,10 +940,14 @@ init.glme.gev11 <-function(data, ntry=10, pretheta=NULL){
 
 #----------------------------------------------------
 #' Quantile function for GEV11 model
+#'
+#' @description Internal wrapper that computes time-varying quantiles for the
+#' GEV11 model given a return period.
+#'
 #' @param Tp Return period.
-#' @param para Parameter vector.
+#' @param para Parameter vector (mu0, mu1, sigma0, sigma1, xi).
 #' @param year Time vector.
-#' @return Quantile values.
+#' @return Numeric vector of quantile values (one per time point).
 #' @keywords internal
 qns.gev11= function(Tp=NULL, para=NULL, year=NULL){
 
@@ -840,6 +974,9 @@ qns.gev11= function(Tp=NULL, para=NULL, year=NULL){
 #' Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
 #' L-moment estimation for stationary and nonstationary extreme value models.
 #' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+#'
+#' @seealso \code{\link{glme.gev11}} for non-stationary GEV estimation,
+#'   \code{\link{glme.gev}} for stationary GEV estimation.
 #'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #'
@@ -879,7 +1016,18 @@ quagev.NS= function(f=NULL, para=NULL, nsample=NULL, model=NULL){
 }
 
 #----------------------------------------------------
-#' Quantile function for non-stationary GEV
+#' Quantile function for non-stationary GEV (return period input)
+#'
+#' @description Internal function that computes time-varying quantiles for
+#' non-stationary GEV models given a return period.
+#'
+#' @param Tp Return period (scalar).
+#' @param para Parameter vector for the non-stationary model.
+#' @param year Numeric vector of time points.
+#' @param model Model type: "gev11", "gev10", "gev20", or "gev01".
+#'
+#' @return Numeric vector of quantile values (one per time point).
+#'
 #' @keywords internal
 qns.gev_all= function(Tp=NULL, para=NULL, year=NULL, model=NULL){
 
@@ -899,7 +1047,22 @@ qns.gev_all= function(Tp=NULL, para=NULL, year=NULL, model=NULL){
 }
 
 #--------------------------------------------
-#' Set parameters based on model type
+#' Set parameters based on non-stationary model type
+#'
+#' @description Internal function that maps a flat parameter vector to named
+#' location (mu), scale (sig), and shape (xi) components depending on the
+#' model specification (GEV00, GEV10, GEV11, GEV20, GEV01).
+#'
+#' @param para Parameter vector whose length and meaning depend on \code{model}.
+#' @param model Model type: "gev11", "gev10", "gev20", "gev01", or "gev00"/"gev".
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{mu}{Numeric vector c(mu0, mu1, mu2) for location}
+#'   \item{sig}{Numeric vector c(sigma0, sigma1) for log-scale}
+#'   \item{xi}{Shape parameter (scalar)}
+#' }
+#'
 #' @keywords internal
 set.para.model = function(para, model=NULL){
 
@@ -941,6 +1104,23 @@ set.para.model = function(para, model=NULL){
 
 #-----strup wls -----------------------------------
 #' Strup WLS estimation for GEV11
+#'
+#' @description Internal function that performs weighted least squares (WLS)
+#' estimation for the non-stationary GEV11 model using the Strup method.
+#' Estimates location trend and log-scale parameters through iterative
+#' regression steps.
+#'
+#' @param xdat Numeric vector of data.
+#' @param orig.para Initial parameter vector (mu0, mu1, sigma0, sigma1, xi).
+#' @param rob Logical. If TRUE, use robust regression. If FALSE, use OLS.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{strup.sta}{Stationary L-moment estimates of standardized residuals}
+#'   \item{strup.para}{Raw Strup parameter estimates (5 parameters)}
+#'   \item{strup.final}{Final adjusted parameter estimates (5 parameters)}
+#' }
+#'
 #' @keywords internal
 strup.glme.gev11 =function(xdat, orig.para=NULL, rob=NULL){
 
@@ -995,7 +1175,24 @@ strup.glme.gev11 =function(xdat, orig.para=NULL, rob=NULL){
 }
 
 #----------------------------------------------------------
-#' WLS estimation for GEV11
+#' Weighted least squares core estimation for GEV11
+#'
+#' @description Internal function that performs the core WLS steps:
+#' (Step 3) estimate log-scale trend from absolute residuals,
+#' (Step 4) estimate location trend from weighted data,
+#' (Step 5) compute standardized residuals.
+#'
+#' @param xdat Numeric vector of data.
+#' @param res Numeric vector of residuals from initial location regression.
+#' @param rob Logical. If TRUE, use robust regression. If FALSE, use OLS.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{sig}{Log-scale regression coefficients c(sigma0, sigma1)}
+#'   \item{m}{Location regression coefficients c(mu0, mu1)}
+#'   \item{res}{Standardized residuals}
+#' }
+#'
 #' @keywords internal
 wls.gev11 = function(xdat, res=NULL, rob=NULL){
 
@@ -1031,7 +1228,24 @@ wls.gev11 = function(xdat, res=NULL, rob=NULL){
 }
 
 #------------------------------------------------------
-#' Time-varying moment estimation
+#' Time-varying moment estimation (GN16 method)
+#'
+#' @description Internal function that implements the GN16 time-varying
+#' moment method for non-stationary GEV11 estimation. Computes time-varying
+#' location from the shape parameter and scale function.
+#'
+#' @param qmax Modified residual series from \code{make.qmax.gev11()}.
+#' @param orig.para Initial parameter vector (mu0, mu1, sigma0, sigma1, xi).
+#' @param rob Logical. If TRUE, use robust regression. Default is FALSE.
+#' @param mdfy Logical. If TRUE, apply modified GN16 with updated alpha0. Default is TRUE.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{mu_t}{Time-varying location values}
+#'   \item{para.org}{Estimated parameters (mu0, mu1, sigma0, sigma1, xi)}
+#'   \item{mu_t.up}{Updated time-varying location (if mdfy=TRUE)}
+#' }
+#'
 #' @keywords internal
 time.m.gev11 = function(qmax=NULL, orig.para=NULL, rob=FALSE,
                         mdfy=TRUE){

@@ -4,9 +4,23 @@
 \alias{gev11.GLD}
 \title{Calculate GLD covariance for GEV11 model}
 \usage{
-gev11.GLD(par = NULL, xdat = xdat)
+gev11.GLD(par = NULL, xdat = NULL)
+}
+\arguments{
+\item{par}{Numeric vector of GEV11 parameters (mu0, mu1, sigma0, sigma1, xi).}
+
+\item{xdat}{Numeric vector of data.}
+}
+\value{
+A list containing:
+\describe{
+  \item{covinv}{3x3 inverse covariance matrix of L-moments}
+  \item{lcovdet}{Log determinant of the covariance matrix}
+}
 }
 \description{
-Calculate GLD covariance for GEV11 model
+Internal function that computes the generalized L-moment
+distance covariance matrix for standardized residuals from the GEV11 model.
+Uses bootstrap if the direct L-moment covariance matrix is singular.
 }
 \keyword{internal}

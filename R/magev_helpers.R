@@ -1,11 +1,29 @@
 # Internal helper functions for MAGEV (Model Averaging GEV)
 # These functions are not exported and are used internally by ma.gev()
 #
-# Reference: Shin, Y., Shin, Y., & Park, J.-S. (2025). Model averaging with
-# mixed criteria for estimating high quantiles of extreme values.
-# arXiv preprint arXiv:2505.21417.
+# Reference: Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with
+# mixed criteria for estimating high quantiles of extreme values: Application
+# to heavy rainfall. Stochastic Environmental Research and Risk Assessment,
+# 40(2), 47. https://doi.org/10.1007/s00477-025-03167-x
 
 
+#' MLE for GEV distribution using constrained optimization
+#'
+#' @description Internal function that computes maximum likelihood estimates
+#' of GEV parameters using the Rsolnp constrained optimizer with multiple
+#' random starting points.
+#'
+#' @param xdat Numeric vector of data.
+#' @param ntry Number of random starting points for optimization. Default is 5.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{nsample}{Sample size}
+#'   \item{conv}{Convergence status (0 = success)}
+#'   \item{nllh}{Negative log-likelihood at the optimum}
+#'   \item{mle}{MLE estimates (mu, sigma, xi) in Hosking style}
+#' }
+#'
 #' @keywords internal
 gev.max <- function(xdat, ntry = 5) {
   z <- list()
@@ -74,7 +92,7 @@ gev.max <- function(xdat, ntry = 5) {
 }
 
 
-#' @keywords internal
+#' @noRd
 init.gevmax <- function(data = NULL, ntry = NULL) {
   if (ntry < 2) ntry <- 2
   n <- ntry
@@ -98,6 +116,23 @@ init.gevmax <- function(data = NULL, ntry = NULL) {
 }
 
 
+#' GEV parameter estimation with fixed shape parameter (MAGEV internal)
+#'
+#' @description Internal function that estimates GEV location and scale
+#' parameters given a fixed shape parameter, using L-moment equations.
+#'
+#' @param lmom L-moments object from \code{lmomco::lmoms()}.
+#' @param xifix Fixed shape parameter value. Default is 0.1.
+#' @param checklmom Logical. Whether to check L-moment validity. Default is TRUE.
+#' @param ... Additional arguments (unused).
+#'
+#' @return A list with components:
+#' \describe{
+#'   \item{type}{Character "gev"}
+#'   \item{para}{Numeric vector of GEV parameters (mu, sigma, xi)}
+#'   \item{source}{Character "pargev"}
+#' }
+#'
 #' @keywords internal
 pargev.xifix <- function(lmom, xifix = 0.1, checklmom = TRUE, ...) {
   para <- rep(NA, 3)
@@ -122,6 +157,26 @@ pargev.xifix <- function(lmom, xifix = 0.1, checklmom = TRUE, ...) {
 }
 
 
+#' MLE with return level and delta method SE
+#'
+#' @description Internal function that computes GEV MLE using both
+#' constrained optimization (solnp) and ismev::gev.fit, selects the
+#' better fit, and returns the covariance matrix for delta method SE.
+#'
+#' @param data Numeric vector of data.
+#' @param ntry Number of optimization attempts. Default is 5.
+#' @param quant Numeric vector of probabilities for quantile estimation.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{nllh}{Negative log-likelihood}
+#'   \item{mle}{MLE estimates (mu, sigma, xi) in Hosking style}
+#'   \item{qua.mle}{Quantile estimates at \code{quant} probabilities}
+#'   \item{data}{Input data}
+#'   \item{cov}{3x3 covariance matrix from MLE}
+#'   \item{quant}{Input quantile probabilities}
+#' }
+#'
 #' @keywords internal
 gev.rl.delta <- function(data, ntry = 5, quant) {
   zg <- list()
@@ -160,6 +215,17 @@ gev.rl.delta <- function(data, ntry = 5, quant) {
 }
 
 
+#' Initialize parameters for GEV with fixed xi
+#'
+#' @description Internal function that generates initial (mu, sigma) values
+#' for optimization with fixed shape parameter, using Gumbel L-moment estimates
+#' and random perturbations.
+#'
+#' @param data Numeric vector of data.
+#' @param ntry Number of initial parameter sets to generate.
+#'
+#' @return A matrix with \code{ntry} rows and 2 columns (mu, sigma).
+#'
 #' @keywords internal
 ginit.xifix <- function(data, ntry) {
   initx <- matrix(0, nrow = ntry, ncol = 2)
@@ -180,6 +246,25 @@ ginit.xifix <- function(data, ntry) {
 }
 
 
+#' MLE for GEV with fixed shape parameter (single candidate)
+#'
+#' @description Internal function that computes MLE of GEV location and scale
+#' parameters with a fixed shape parameter using L-BFGS-B optimization.
+#' Optionally computes Prescott-Walden Hessian for variance estimation.
+#'
+#' @param xdat Numeric vector of data.
+#' @param xifix Fixed shape parameter value. Default is -0.1.
+#' @param ntry Number of optimization attempts. Default is 5.
+#' @param varcom Logical. If TRUE, computes Prescott-Walden covariance matrix.
+#'
+#' @return A list of class "gev.xifix" containing:
+#' \describe{
+#'   \item{conv}{Convergence status (0 = success)}
+#'   \item{nllh}{Negative log-likelihood at the optimum}
+#'   \item{mle}{MLE estimates (mu, sigma, xi)}
+#'   \item{cov}{2x2 covariance matrix (if \code{varcom=TRUE})}
+#' }
+#'
 #' @keywords internal
 gev.xifix.sing <- function(xdat = NULL, xifix = -0.1, ntry = 5, varcom = NULL) {
   zx <- list()
@@ -239,6 +324,17 @@ gev.xifix.sing <- function(xdat = NULL, xifix = -0.1, ntry = 5, varcom = NULL) {
 }
 
 
+#' Prescott-Walden expected information matrix for GEV with fixed xi
+#'
+#' @description Internal function that computes the Prescott-Walden expected
+#' information (Hessian) matrix for GEV parameters (mu, sigma) with fixed xi.
+#'
+#' @param par2 Numeric vector of (mu, sigma) estimates.
+#' @param xifix Fixed shape parameter value.
+#' @param nsam Sample size.
+#'
+#' @return A 2x2 expected information matrix.
+#'
 #' @keywords internal
 PrescottW <- function(par2 = NULL, xifix = NULL, nsam = NULL) {
   sig <- par2[2]
@@ -257,6 +353,27 @@ PrescottW <- function(par2 = NULL, xifix = NULL, nsam = NULL) {
 }
 
 
+#' Construct covariance matrix C for model averaging SE
+#'
+#' @description Internal function that constructs the cross-covariance matrix
+#' between submodel quantile estimators using the delta method and quantile
+#' correlation approximation.
+#'
+#' @param mywt Weight computation result list from \code{weight.com()}.
+#' @param cov22 Array of 2x2 covariance matrices for each submodel (2 x 2 x numk).
+#' @param quant Numeric vector of quantile probabilities.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{MatC}{Array (numk x numk x numq) of cross-covariance values}
+#'   \item{fin.se}{SE under fixed weights for MA}
+#'   \item{fin.se.bma}{SE under fixed weights for BMA}
+#'   \item{numk}{Number of submodels}
+#'   \item{numq}{Number of quantiles}
+#'   \item{wtgd}{MA weights}
+#'   \item{bmaw}{BMA weights}
+#' }
+#'
 #' @keywords internal
 cons.MatC <- function(mywt, cov22, quant) {
   numk <- length(mywt$wtgd)
@@ -309,12 +426,33 @@ cons.MatC <- function(mywt, cov22, quant) {
 }
 
 
+#' GEV negative log-likelihood with fixed xi (wrapper)
+#'
+#' @description Internal wrapper function that calls \code{gev.xilik()}.
+#'
+#' @param a Numeric vector of (mu, sigma).
+#' @param xifix Fixed shape parameter value.
+#' @param xdat Numeric vector of data.
+#'
+#' @return Negative log-likelihood value (scalar).
+#'
 #' @keywords internal
 gev.xilik2 <- function(a, xifix = xifix, xdat = xdat) {
   gev.xilik(a, xifix = xifix, xdat = xdat)
 }
 
 
+#' GEV negative log-likelihood with fixed xi
+#'
+#' @description Internal function that computes the negative log-likelihood
+#' for the GEV distribution with a fixed shape parameter (Hosking parameterization).
+#'
+#' @param a Numeric vector of (mu, sigma).
+#' @param xifix Fixed shape parameter value.
+#' @param xdat Numeric vector of data.
+#'
+#' @return Negative log-likelihood value (scalar). Returns 10^6 if invalid.
+#'
 #' @keywords internal
 gev.xilik <- function(a, xifix = NULL, xdat = NULL) {
   mu <- a[1]
@@ -348,6 +486,28 @@ gev.xilik <- function(a, xifix = NULL, xdat = NULL) {
 }
 
 
+#' L-moment estimation with bootstrap standard errors
+#'
+#' @description Internal function that computes L-moment estimates of GEV
+#' parameters and optionally performs bootstrap resampling to obtain
+#' covariance matrices and standard errors for quantile estimates.
+#'
+#' @param data Numeric vector of data.
+#' @param B Number of bootstrap samples.
+#' @param quant Numeric vector of probabilities for quantile estimation.
+#' @param boot Logical. If TRUE (default), perform bootstrap.
+#' @param trim Left trimming level for L-moments (integer). Default is NULL (0).
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{lme}{L-moment estimates (mu, sigma, xi)}
+#'   \item{qua.lme}{Quantile estimates from LME}
+#'   \item{quant}{Input quantile probabilities}
+#'   \item{cov.par}{3x3 covariance of bootstrap parameter estimates (if boot=TRUE)}
+#'   \item{cov.lambda}{3x3 covariance of bootstrap L-moments (if boot=TRUE)}
+#'   \item{qua.lme.se}{SE of quantile estimates from bootstrap (if boot=TRUE)}
+#' }
+#'
 #' @keywords internal
 lme.boots <- function(data, B = NULL, quant, boot = TRUE, trim = NULL) {
   z <- list()
@@ -409,6 +569,15 @@ lme.boots <- function(data, B = NULL, quant, boot = TRUE, trim = NULL) {
 }
 
 
+#' Revised Coles-Dixon prior function
+#'
+#' @description Internal function that computes a revised Coles-Dixon prior
+#' probability for the shape parameter, used as a penalty in BMA.
+#'
+#' @param xi Numeric vector of shape parameter values.
+#'
+#' @return Numeric vector of prior probability values.
+#'
 #' @keywords internal
 rcd <- function(xi) {
   minxi <- -0.2
@@ -432,6 +601,17 @@ rcd <- function(xi) {
 }
 
 
+#' Empirical prior for BMA based on MLE and LME
+#'
+#' @description Internal function that computes an empirical prior distribution
+#' for the shape parameter based on the range between MLE and LME estimates.
+#'
+#' @param mle3 Matrix of candidate submodel parameters (numk x 3).
+#' @param mle MLE parameter estimates (mu, sigma, xi).
+#' @param lme LME parameter estimates (mu, sigma, xi).
+#'
+#' @return Numeric vector of prior probability values for each candidate.
+#'
 #' @keywords internal
 emp.prior <- function(mle3, mle, lme) {
   z <- list()
@@ -476,6 +656,23 @@ emp.prior <- function(mle3, mle, lme) {
 }
 
 
+#' Moving average smoother for quantiles and weights
+#'
+#' @description Internal function that applies moving average smoothing
+#' to quantile estimates and weights across candidate submodels.
+#'
+#' @param order Order of the moving average.
+#' @param numk Number of candidate submodels.
+#' @param numq Number of quantile probabilities.
+#' @param zp Matrix (numq x numk) of quantile estimates.
+#' @param wt Numeric vector of weights (length numk).
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{ez}{Matrix (numq x numk) of smoothed quantile estimates}
+#'   \item{ew}{Numeric vector of smoothed weights}
+#' }
+#'
 #' @keywords internal
 movave <- function(order, numk, numq, zp, wt = NULL) {
   za <- list()
@@ -509,6 +706,27 @@ movave <- function(order, numk, numq, zp, wt = NULL) {
 }
 
 
+#' Delta method variance and cross-covariance for GEV quantiles
+#'
+#' @description Internal function that computes delta method variances
+#' for GEV quantile estimates. Can compute either the variance from
+#' a full 3-parameter MLE (d3yes=TRUE) or the cross-covariance between
+#' two submodels with fixed xi (d3yes=FALSE).
+#'
+#' @param gevf3 Full MLE result list with \code{cov} and \code{mle} (used when d3yes=TRUE).
+#' @param mle3i Parameter vector for submodel i (used when d3yes=FALSE).
+#' @param cov2i 2x2 covariance matrix for submodel i.
+#' @param mle3j Parameter vector for submodel j.
+#' @param cov2j 2x2 covariance matrix for submodel j.
+#' @param quant Numeric vector of quantile probabilities.
+#' @param d3yes Logical. If TRUE, compute 3-parameter delta method variance.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{v3}{Variance for each quantile (if d3yes=TRUE)}
+#'   \item{covij}{Cross-covariance for each quantile (if d3yes=FALSE)}
+#' }
+#'
 #' @keywords internal
 delta.gev <- function(gevf3 = NULL, mle3i = NULL, cov2i = NULL,
                       mle3j = NULL, cov2j = NULL,
@@ -562,6 +780,23 @@ delta.gev <- function(gevf3 = NULL, mle3i = NULL, cov2i = NULL,
 }
 
 
+#' Find surrogate GEV parameters for model-averaged quantiles
+#'
+#' @description Internal function that fits a single GEV distribution to
+#' the model-averaged quantile curve, producing surrogate GEV parameters
+#' that approximate the model-averaged quantile function.
+#'
+#' @param zpf.surr Numeric vector of model-averaged quantiles at \code{xqa}.
+#' @param xqa Numeric vector of probabilities at which quantiles are evaluated.
+#' @param init.surr Initial GEV parameter estimates for optimization.
+#'
+#' @return A list (from \code{optim()}) with additional components:
+#' \describe{
+#'   \item{par}{Surrogate GEV parameters (mu, sigma, xi)}
+#'   \item{zp.surrmodel}{Quantiles from the surrogate model at \code{xqa}}
+#'   \item{zp.MA}{The input model-averaged quantiles}
+#' }
+#'
 #' @keywords internal
 surrogate <- function(zpf.surr = NULL, xqa, init.surr) {
   press.fun <- function(par) {
@@ -582,6 +817,18 @@ surrogate <- function(zpf.surr = NULL, xqa, init.surr) {
 }
 
 
+#' Interpolate missing covariance matrices across submodels
+#'
+#' @description Internal function that fills in missing 2x2 covariance matrices
+#' for submodels using natural spline interpolation across the shape parameter.
+#'
+#' @param numk Number of candidate submodels.
+#' @param para3 Matrix (numk x 3) of submodel parameters.
+#' @param cov2 List of 2x2 covariance matrices (one per submodel).
+#'
+#' @return Array (2 x 2 x numk) of covariance matrices with missing values
+#'   filled by interpolation.
+#'
 #' @keywords internal
 cov.interp <- function(numk, para3, cov2 = NULL) {
   cov22 <- array(NA, c(2, 2, numk))
@@ -615,6 +862,26 @@ cov.interp <- function(numk, para3, cov2 = NULL) {
 }
 
 
+#' Asymptotic variance of model-averaged quantile estimates
+#'
+#' @description Internal function that computes asymptotic standard errors
+#' for model-averaged quantile estimates under both fixed-weight and
+#' random-weight assumptions.
+#'
+#' @param mywt Weight computation result list from \code{weight.com()}.
+#' @param covint Array (2 x 2 x numk) of interpolated covariance matrices.
+#' @param qqq Numeric vector of quantile probabilities.
+#' @param order Moving average order for smoothing. Default is 2.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{fin.se.MA.qua}{SE under fixed weights for MA}
+#'   \item{fin.se.bma.qua}{SE under fixed weights for BMA}
+#'   \item{adj.se.MA.qua}{SE under random weights for MA}
+#'   \item{adj.se.bma.qua}{SE under random weights for BMA}
+#'   \item{MatC}{Cross-covariance array (numk x numk x numq)}
+#' }
+#'
 #' @keywords internal
 asymp.var <- function(mywt, covint, qqq = NULL, order = 2) {
   zx <- list()
@@ -663,6 +930,15 @@ asymp.var <- function(mywt, covint, qqq = NULL, order = 2) {
 }
 
 
+#' Dirichlet covariance matrix for weights
+#'
+#' @description Internal function that computes the covariance matrix of
+#' weights assuming a Dirichlet-type distribution.
+#'
+#' @param wtgd Numeric vector of model weights.
+#'
+#' @return A (numk x numk) covariance matrix.
+#'
 #' @keywords internal
 cov.dir <- function(wtgd) {
   numk <- length(wtgd)
@@ -1034,6 +1310,20 @@ remle.gev <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
 # Weight computation functions (from weight.com.BMA_15Dec25.R)
 # ============================================================
 
+#' Beta prior for model averaging
+#'
+#' @description Internal function that computes a Beta distribution prior
+#' probability for a candidate shape parameter in model averaging.
+#'
+#' @param x Shape parameter value to evaluate.
+#' @param xi_lme L-moment estimate of xi (unused in this version).
+#' @param p Beta shape parameter p. Default is 2.
+#' @param q Beta shape parameter q. Default is 5.
+#' @param al Lower bound of support.
+#' @param bl Upper bound of support.
+#'
+#' @return Prior probability value (scalar).
+#'
 #' @keywords internal
 prior.beta.stnary.ma <- function(x = NULL, xi_lme = NULL,
                                   p = 2, q = 5, al, bl) {
@@ -1056,6 +1346,26 @@ prior.beta.stnary.ma <- function(x = NULL, xi_lme = NULL,
 }
 
 
+#' Set BMA prior distribution for candidate shape parameters
+#'
+#' @description Internal function that sets up the prior distribution for
+#' Bayesian Model Averaging (BMA) weights. Supports both normal and beta
+#' priors, with hyperparameters adapted based on the weighting method and
+#' L-moment estimate of xi.
+#'
+#' @param pen Prior type: "norm" (normal) or "beta".
+#' @param numk Number of candidate submodels.
+#' @param xi_lme L-moment estimate of the shape parameter.
+#' @param kpar Numeric vector of candidate xi values.
+#' @param weight Weighting method name ("like", "gLd", or "med").
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{prior}{Numeric vector of prior probabilities (length numk)}
+#'   \item{prior_mu_std}{(if pen="norm") Mean and std of the normal prior}
+#'   \item{p_q_beta}{(if pen="beta") p and q parameters of the beta prior}
+#' }
+#'
 #' @keywords internal
 set.prior <- function(pen = NULL, numk = NULL, xi_lme = NULL, kpar = NULL,
                       weight = NULL) {
@@ -1136,6 +1446,41 @@ set.prior <- function(pen = NULL, numk = NULL, xi_lme = NULL, kpar = NULL,
 }
 
 
+#' Compute model averaging weights
+#'
+#' @description Internal function that computes weights for model averaging
+#' across K candidate GEV submodels. Supports multiple weighting schemes
+#' including likelihood-based, generalized L-moment distance, and median-based
+#' methods. Optionally includes BMA prior integration.
+#'
+#' @param data Numeric vector of data.
+#' @param numk Number of candidate submodels.
+#' @param hosking List containing LME results, MLE, and bootstrap information.
+#' @param kpar Numeric vector of candidate xi values.
+#' @param numom Number of L-moments to use (default 3).
+#' @param xqa Probability vector for surrogate model fitting.
+#' @param varcom Logical. Whether to compute variance components (default TRUE).
+#' @param boot.lme Logical. Whether bootstrap LME was performed (default TRUE).
+#' @param cov.lme Pre-computed LME covariance (default NULL).
+#' @param surr Logical. Whether to compute surrogate quantiles (default FALSE).
+#' @param type Type of computation: "full" (default).
+#' @param trim Left trimming level for L-moments.
+#' @param cov.type Covariance type: "ratio" or "lambda" (default "ratio").
+#' @param bma Logical. Whether to compute BMA weights (default TRUE).
+#' @param pen BMA prior type: "norm" or "beta" (default "norm").
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{weight}{Weighting method name}
+#'   \item{numk}{Number of submodels}
+#'   \item{wtgd}{MA weight vector (length numk)}
+#'   \item{bmaw}{BMA weight vector (length numk)}
+#'   \item{zp}{Quantile matrix (numq x numk)}
+#'   \item{kpar}{Candidate xi values}
+#'   \item{prob.call}{Submodel fitting results}
+#'   \item{xzp}{Surrogate quantile matrix (if surr=TRUE)}
+#' }
+#'
 #' @keywords internal
 weight.com <- function(data = NULL, numk = NULL, hosking = NULL,
                            kpar = NULL, numom = 3, xqa = NULL, varcom = TRUE,
@@ -1268,6 +1613,31 @@ weight.com <- function(data = NULL, numk = NULL, hosking = NULL,
 }
 
 
+#' Likelihood-based weights with fixed xi
+#'
+#' @description Internal function that computes AIC-based model averaging
+#' weights using the profile likelihood with L-moment submodel estimates
+#' for each candidate xi.
+#'
+#' @param data Numeric vector of data.
+#' @param numk Number of candidate submodels.
+#' @param kpar Numeric vector of candidate xi values.
+#' @param weight Weighting method name.
+#' @param pertr Perturbation parameter (default 0.85).
+#' @param varcom Logical. Whether to compute variance (default FALSE).
+#' @param type Type of computation.
+#' @param prior Numeric vector of BMA prior values.
+#' @param trim Left trimming level.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{bmaw}{BMA weight vector}
+#'   \item{wt}{MA weight vector}
+#'   \item{aic}{AIC values for each submodel}
+#'   \item{kfix}{Matrix (3 x numk) of submodel parameters}
+#'   \item{cov2}{List of 2x2 covariance matrices (if varcom=TRUE)}
+#' }
+#'
 #' @keywords internal
 wlik.xifix <- function(data = NULL, numk = NULL, kpar = NULL, weight = NULL,
                        pertr = 0.85, varcom = FALSE, type = NULL,
@@ -1337,6 +1707,34 @@ wlik.xifix <- function(data = NULL, numk = NULL, kpar = NULL, weight = NULL,
 }
 
 
+#' Fit submodels and compute distance-based probabilities
+#'
+#' @description Internal function that fits GEV submodels with fixed xi for
+#' each candidate and computes generalized L-moment distance or median-based
+#' probabilities for weight construction.
+#'
+#' @param data Numeric vector of data.
+#' @param numk Number of candidate submodels.
+#' @param hosking List containing LME results and bootstrap information.
+#' @param boot.lme Logical. Whether bootstrap LME was performed (default TRUE).
+#' @param kpar Numeric vector of candidate xi values.
+#' @param numom Number of L-moments to use.
+#' @param ntry Number of optimization attempts. Default is 5.
+#' @param varcom Logical. Whether to compute variance.
+#' @param cov.lme Pre-computed LME covariance (default NULL).
+#' @param trim Left trimming level.
+#' @param cov.type Covariance type: "ratio" or "lambda" (default "lambda").
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{aic}{AIC values for each submodel}
+#'   \item{mle3}{Matrix (numk x 3) of submodel parameter estimates}
+#'   \item{kfix}{List of submodel fitting results}
+#'   \item{cov2}{List of 2x2 covariance matrices (if varcom=TRUE)}
+#'   \item{prob.mtx}{Matrix (numk x 3) of distance-based probabilities}
+#'   \item{gdd}{Matrix (numk x 2) of generalized distances}
+#' }
+#'
 #' @keywords internal
 dist.noboot <- function(data = NULL, numk = NULL, hosking = NULL, boot.lme = TRUE,
                         kpar = NULL, numom = NULL, ntry = 5, varcom = NULL,
@@ -1461,6 +1859,27 @@ dist.noboot <- function(data = NULL, numk = NULL, hosking = NULL, boot.lme = TRU
 }
 
 
+#' Compute generalized L-moment distance probabilities
+#'
+#' @description Internal function that computes generalized L-moment distance
+#' and median-based distance probabilities for each candidate submodel.
+#'
+#' @param data Numeric vector of data.
+#' @param numk Number of candidate submodels.
+#' @param kfix List of submodel fitting results.
+#' @param Vinv Inverse of the L-moment covariance matrix.
+#' @param detV Determinant of the L-moment covariance matrix.
+#' @param numom Number of L-moments.
+#' @param hosking List containing LME results.
+#' @param trim Left trimming level.
+#' @param cov.type Covariance type: "ratio" or "lambda" (default "lambda").
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{prob.mtx}{Matrix (numk x 2) of probabilities (col 1 = gLd, col 2 = med)}
+#'   \item{gdd}{Matrix (numk x 2) of generalized distances}
+#' }
+#'
 #' @keywords internal
 com.prdist <- function(data = NULL, numk = NULL, kfix = NULL,
                        Vinv = NULL, detV = NULL, numom = NULL,
@@ -1540,6 +1959,27 @@ com.prdist <- function(data = NULL, numk = NULL, kfix = NULL,
 }
 
 
+#' Adaptively expand or prune candidate xi set
+#'
+#' @description Internal function that adaptively adjusts the candidate xi
+#' set by removing low-weight candidates and adding new candidates near
+#' boundary or dominant regions to improve weight coverage.
+#'
+#' @param wtgd Numeric vector of current weights.
+#' @param numk Number of candidate submodels.
+#' @param kpar Numeric vector of candidate xi values.
+#' @param remove Threshold below which candidates are removed. Default is 0.004.
+#' @param dist Spacing for new candidates. Default is 0.02.
+#' @param tre1 Lower threshold for boundary detection. Default is 0.01.
+#' @param tre8 Upper threshold for dominant candidate. Default is 0.5.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{kpar2}{Updated candidate xi values}
+#'   \item{aw}{Adjustment indicator (0 = no change needed)}
+#'   \item{numk}{Updated number of candidates}
+#' }
+#'
 #' @keywords internal
 new.kpar2 <- function(wtgd = NULL, numk = NULL, kpar = NULL,
                       remove = 0.004, dist = 0.02, tre1 = 0.01, tre8 = 0.5) {
@@ -1634,6 +2074,32 @@ new.kpar2 <- function(wtgd = NULL, numk = NULL, kpar = NULL,
 # Candidate xi selection functions (from cand.xi.paper_12Dec25.R)
 # ============================================================
 
+#' Select candidate shape parameter values for model averaging
+#'
+#' @description Internal function that selects K candidate shape parameter
+#' (xi) values from the profile likelihood confidence interval. Falls back
+#' to bootstrap LME quantiles if the profile likelihood fails.
+#'
+#' @param data Numeric vector of data.
+#' @param hosking List containing LME results and bootstrap information.
+#' @param mle MLE parameter estimates (mu, sigma, xi) in Hosking style.
+#' @param pick0 Confidence level for the profile CI. Default is 0.95.
+#' @param nint Number of points for profile likelihood evaluation. Default is 256.
+#' @param start Starting method: "mle" (default), "lme", or "mix".
+#' @param numk Number of candidate submodels.
+#' @param figure Logical. Whether to produce a profile likelihood plot (default TRUE).
+#' @param cov.lme Pre-computed LME covariance (default NULL).
+#' @param bma Logical. Whether BMA is being used (default FALSE).
+#' @param pen BMA prior type (default "beta").
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{kpar}{Numeric vector of K candidate xi values}
+#'   \item{start}{Starting method actually used}
+#'   \item{get.ci}{Profile CI result (if start="mle")}
+#'   \item{ymin}{Minimum y value for plotting (if start="mle")}
+#' }
+#'
 #' @keywords internal
 cand.xi <- function(data, hosking = NULL, mle = NULL, pick0 = 0.95,
                               nint = 256, start = 'mle', numk = NULL,
@@ -1754,12 +2220,41 @@ cand.xi <- function(data, hosking = NULL, mle = NULL, pick0 = 0.95,
 }
 
 
+#' Check if a number is odd
+#'
+#' @param x Integer value.
+#'
+#' @return Logical. TRUE if x is odd, FALSE otherwise.
+#'
 #' @keywords internal
 is.odd.me <- function(x) {
   return(ifelse(x %% 2 == 1, TRUE, FALSE))
 }
 
 
+#' Modified profile likelihood for GEV shape parameter
+#'
+#' @description Internal function that computes the profile log-likelihood
+#' for the GEV shape parameter with linear extrapolation beyond the
+#' observed range. Used for constructing confidence intervals on xi.
+#'
+#' @param data Numeric vector of data.
+#' @param mle MLE parameter estimates (mu, sigma, xi) in Coles parameterization.
+#' @param xlow Lower bound for xi search.
+#' @param xup Upper bound for xi search.
+#' @param pick.v Numeric vector of confidence levels for CI computation.
+#' @param nint Number of grid points. Default is 256.
+#' @param figure Logical. Whether to plot the profile likelihood. Default is FALSE.
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{fail}{Logical. TRUE if profile likelihood is degenerate}
+#'   \item{start}{Starting method recommendation}
+#'   \item{w1}{Profile CI results from \code{comp.prof.ci()}}
+#'   \item{ymin}{Minimum y value for plotting}
+#'   \item{ymax}{Maximum y value for plotting}
+#' }
+#'
 #' @keywords internal
 gev.profxi.mdfy <- function(data = NULL, mle = NULL, xlow, xup,
                                   pick.v = NULL, nint = 256,
@@ -1912,6 +2407,25 @@ gev.profxi.mdfy <- function(data = NULL, mle = NULL, xlow, xup,
 }
 
 
+#' Compute profile likelihood confidence intervals
+#'
+#' @description Internal function that extracts confidence intervals from
+#' a profile log-likelihood curve at specified confidence levels.
+#'
+#' @param d Data frame with columns \code{x} (xi values) and \code{v} (log-likelihood).
+#' @param v Numeric vector of log-likelihood values.
+#' @param conf Numeric vector of confidence levels (e.g., 0.95).
+#'
+#' @return A list containing:
+#' \describe{
+#'   \item{vmax}{Maximum log-likelihood value}
+#'   \item{nllh}{Same as vmax}
+#'   \item{xmax}{xi value at maximum likelihood}
+#'   \item{ci1}{Lower CI bounds for each confidence level}
+#'   \item{ci2}{Upper CI bounds for each confidence level}
+#'   \item{ci_length}{CI lengths for each confidence level}
+#' }
+#'
 #' @keywords internal
 comp.prof.ci <- function(d, v, conf = NULL) {
   w <- list()

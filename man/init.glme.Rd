@@ -2,7 +2,7 @@
 % Please edit documentation in R/glme.gev.R
 \name{init.glme}
 \alias{init.glme}
-\title{Initialize parameters for Generalized L-moments estimation of GEV distribution}
+\title{Initialize random starting values for GLME optimization}
 \usage{
 init.glme(xdat, ntry = ntry)
 }
@@ -12,17 +12,22 @@ init.glme(xdat, ntry = ntry)
 \item{ntry}{Number of initial parameter sets to generate.}
 }
 \value{
-A matrix with `ntry` rows and 3 columns, where each row represents
-a set of initial parameters (location, scale, shape) for the GEV distribution.
+A matrix with \code{ntry} rows and 3 columns (location, scale, shape),
+  where each row is a candidate starting point for optimization.
 }
 \description{
-This function initializes parameters for the Generalized L-moments estimation
-of the Generalized Extreme Value (GEV) distribution.
+Generates multiple random starting parameter sets for multi-start
+optimization in GLME estimation. Uses L-moment estimates as a base
+and adds random perturbations.
 }
-\details{
-The function generates `ntry` sets of initial parameters for the GEV distribution.
-It uses L-moment estimates as a starting point and then generates additional
-sets of parameters using random perturbations.
+\examples{
+data(streamflow)
+inits <- init.glme(streamflow$r1, ntry = 5)
+print(inits)
+
+}
+\seealso{
+\code{\link{glme.gev}} which uses this function internally.
 }
 \author{
 Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park

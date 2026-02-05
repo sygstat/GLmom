@@ -42,11 +42,11 @@ For "norm": 1-4 correspond to different (mu, std) combinations.}
 \value{
 The glme.gev function returns a list containing the following elements:
 \itemize{
- \item glme - The estimated parameters of the Generalized Extreme Value distribution.
- \item lme - The L-moment estimates of the parameters.
- \item covinv - The inverse of the covariance matrix of the L-moments.
+ \item para.glme - The estimated parameters of the Generalized Extreme Value distribution.
+ \item para.lme - The L-moment estimates of the parameters.
+ \item covinv.lmom - The inverse of the covariance matrix of the L-moments.
  \item lcovdet - The log determinant of the covariance matrix.
- \item nllh.pref - The negative log-likelihood of the preferred solution.
+ \item nllh.glme - The negative log-likelihood of the GLME solution.
  \item pen - The penalization method used.
  \item p_q - (for beta penalty) The p and q values used.
  \item c1_c2 - (for beta penalty) The c1 and c2 values used.
@@ -71,17 +71,23 @@ x <- streamflow$r1
 
 # Estimate GEV parameters using beta penalty (default)
 result <- glme.gev(x, ntry = 5)
-print(result$glme)
+print(result$para.glme)
 
 # Using Martins-Stedinger penalty
 result_ms <- glme.gev(x, ntry = 5, pen = "ms")
-print(result_ms$glme)
+print(result_ms$para.glme)
 
 }
 \references{
 Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
 L-moment estimation for stationary and nonstationary extreme value models.
 arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+}
+\seealso{
+\code{\link{glme.gev11}} for non-stationary GEV estimation,
+  \code{\link{ma.gev}} for model averaging estimation,
+  \code{\link{glme.like}} for the objective function,
+  \code{\link{quagev.NS}} for quantile computation.
 }
 \author{
 Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park

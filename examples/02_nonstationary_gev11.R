@@ -102,7 +102,7 @@ for (pen in penalties) {
 cat("\n--- 4. Effect of ntry on estimation stability ---\n")
 cat("Running with different ntry values...\n")
 
-ntry_values <- c(1, 5, 10, 20)
+ntry_values <- c(5, 10, 20, 30)
 for (nt in ntry_values) {
   set.seed(42)
   res <- glme.gev11(x, ntry = nt, pen = "beta")

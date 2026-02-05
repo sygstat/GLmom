@@ -10,9 +10,9 @@ glme.gev11(
   ftol = 1e-06,
   init.rob = TRUE,
   glme.pre = "wls",
-  choose = "gof",
+  opt.choose = "gof",
   pen = "beta",
-  pen.choice = 6,
+  pen.choice = NULL,
   mu = -0.55,
   std = 0.3,
   p = 6,
@@ -31,7 +31,7 @@ glme.gev11(
 
 \item{glme.pre}{Pre-estimation method: "wls" (default) or "gado".}
 
-\item{choose}{Selection criterion: "gof" (default, goodness-of-fit) or "nllh" (negative log-likelihood).}
+\item{opt.choose}{Selection criterion: "gof" (default, goodness-of-fit) or "nllh" (negative log-likelihood).}
 
 \item{pen}{Type of penalty function: "norm", "beta" (default), "ms", "park", "cannon", "cd", or "no".}
 
@@ -86,6 +86,11 @@ arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
 Shin, Y., Shin, Y. & Park, J.-S. (2025). Building nonstationary extreme value
 model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
 \doi{10.1007/s42952-025-00325-3}
+}
+\seealso{
+\code{\link{glme.gev}} for stationary GEV estimation,
+  \code{\link{nsgev}} for the pure L-moment wrapper (no penalty),
+  \code{\link{quagev.NS}} for non-stationary quantile computation.
 }
 \author{
 Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park

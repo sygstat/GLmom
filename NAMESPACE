@@ -6,6 +6,7 @@ export(init.glme)
 export(pargev.kfix)
 export(MS_pk)
 export(new_pf_norm)
+export(pk.norm.stnary)
 export(pk.beta.stnary)
 
 # Shin et al. (2025b) compatibility functions
@@ -13,7 +14,7 @@ export(nsgev)
 export(gado.prop_11)
 export(quagev.NS)
 
-# Shin et al. (2025c) Model Averaging function
+# Shin et al. (2026) Model Averaging function
 export(ma.gev)
 
 # MAGEV Plotting functions

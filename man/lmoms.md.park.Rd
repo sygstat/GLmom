@@ -2,11 +2,28 @@
 % Please edit documentation in R/glme.gev11.R
 \name{lmoms.md.park}
 \alias{lmoms.md.park}
-\title{Modified L-moments calculation}
+\title{Modified L-moments calculation with optional trimming}
 \usage{
 lmoms.md.park(x, nmom = 5, mtrim = FALSE, no.stop = FALSE, vecit = FALSE)
 }
+\arguments{
+\item{x}{Numeric vector of data.}
+
+\item{nmom}{Number of L-moments to compute. Default is 5.}
+
+\item{mtrim}{Logical. If TRUE, use left-trimmed L-moments (trim=5). Default is FALSE.}
+
+\item{no.stop}{Logical. If TRUE, return failure indicator instead of stopping. Default is FALSE.}
+
+\item{vecit}{Logical. If TRUE, return as a vector. Default is FALSE.}
+}
+\value{
+A list (from \code{lmomco::TLmoms()}) with an additional \code{ifail}
+  component (0 = success, 1 = failure).
+}
 \description{
-Modified L-moments calculation
+Internal function that computes sample L-moments with an
+option for trimmed L-moments (TLmoms with left trimming). Includes
+a fail-safe mode for use in optimization loops.
 }
 \keyword{internal}

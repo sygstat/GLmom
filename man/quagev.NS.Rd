@@ -13,7 +13,7 @@ quagev.NS(f = NULL, para = NULL, nsample = NULL, model = NULL)
 
 \item{nsample}{Number of time points (sample size).}
 
-\item{model}{Model type: "gev11", "gev10", "gev20", or "gev00"/"gev".}
+\item{model}{Model type: "gev11", "gev10", "gev20", "gev01", or "gev00"/"gev".}
 }
 \value{
 A matrix of quantiles (nsample x length(f)) or a vector if f is scalar.
@@ -33,6 +33,10 @@ print(q99)
 Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
 L-moment estimation for stationary and nonstationary extreme value models.
 arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+}
+\seealso{
+\code{\link{glme.gev11}} for non-stationary GEV estimation,
+  \code{\link{glme.gev}} for stationary GEV estimation.
 }
 \author{
 Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park

@@ -16,10 +16,33 @@ pargev.kfix(lmom, kfix = 0.1, checklmom = TRUE, ...)
 \item{...}{Additional arguments.}
 }
 \value{
-A list with GEV parameters.
+A list with components:
+\describe{
+  \item{type}{Character "gev"}
+  \item{para}{Numeric vector of GEV parameters (xi=location, alpha=scale, kappa=shape)}
+  \item{source}{Character "pargev"}
+}
 }
 \description{
-GEV parameter estimation with fixed shape parameter
+Estimates GEV location and scale parameters from L-moments while keeping
+the shape parameter fixed at a user-specified value. Modified from
+\code{lmomco::pargev()}.
+}
+\examples{
+data(streamflow)
+lmom <- lmomco::lmoms(streamflow$r1, nmom = 3)
+pargev.kfix(lmom, kfix = -0.1)
+
+}
+\references{
+Hosking, J. R. M. (1990). L-moments: Analysis and estimation of
+distributions using linear combinations of order statistics.
+Journal of the Royal Statistical Society, Series B, 52(1), 105-124.
+\doi{10.1111/j.2517-6161.1990.tb01775.x}
+}
+\seealso{
+\code{\link{glme.gev}} for GLME estimation,
+  \code{\link[lmomco]{pargev}} for the original L-moment GEV fitting.
 }
 \author{
 Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park

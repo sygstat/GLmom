@@ -2,11 +2,31 @@
 % Please edit documentation in R/glme.gev11.R
 \name{sel.para_all}
 \alias{sel.para_all}
-\title{Select best parameters based on GOF}
+\title{Select best parameters based on goodness-of-fit}
 \usage{
 sel.para_all(xdat, para.sel = NULL, model = NULL, obj.fun = NULL)
 }
+\arguments{
+\item{xdat}{Numeric vector of data.}
+
+\item{para.sel}{Matrix of candidate parameter sets (ntry x npar).}
+
+\item{model}{Model type: "gev11", "gev10", or "gev20".}
+
+\item{obj.fun}{Numeric vector of objective function values (tie-breaker).}
+}
+\value{
+A list containing:
+\describe{
+  \item{para}{Best parameter vector}
+  \item{min.itry}{Index of the best candidate}
+  \item{gof}{Goodness-of-fit values for all candidates}
+  \item{obj.fun}{Input objective function values}
+}
+}
 \description{
-Select best parameters based on GOF
+Internal function that selects the best parameter estimate
+from multiple candidates using energy distance-based goodness-of-fit
+across multiple return periods.
 }
 \keyword{internal}

@@ -39,7 +39,7 @@ Demonstrates parameter estimation for stationary GEV distribution:
 library(GLmom)
 data(streamflow)
 result <- glme.gev(streamflow$r1, pen = "beta")
-result$glme  # (mu, sigma, xi)
+result$para.glme  # (mu, sigma, xi)
 ```
 
 ## Example 2: Non-stationary GEV11
@@ -58,8 +58,6 @@ result$para.glme  # (mu0, mu1, sigma0, sigma1, xi)
 result$para.lme   # Pure L-moment estimates (no penalty)
 ```
 
-**Note (v1.2.0)**: The output `para.jkss` has been renamed to `para.lme` for consistency. Update existing code accordingly.
-
 ## Example 3: Model Averaging (MAGEV)
 
 Demonstrates model averaging for robust high quantile estimation:
@@ -68,9 +66,9 @@ Demonstrates model averaging for robust high quantile estimation:
 - Bayesian Model Averaging option
 - Comparison of MLE, LME, and MA estimates
 
-**New in v1.2.0:**
+Additional features:
 - `CD = TRUE`: Coles-Dixon penalized MLE for shape parameter regularization
-- `remle = TRUE`: Restricted MLE with mean/median constraints
+- `remle = TRUE`: Restricted MLE with mean constraint (stage 1) and mean+L-scale constraints (stage 2)
 - Returns `quant` in output for convenience
 - BMA outputs include `bma.se.between` and `bma.se.within`
 
@@ -80,14 +78,14 @@ data(streamflow)
 
 # Basic model averaging
 result <- ma.gev(streamflow$r1, quant = c(0.99), weight = "like1", B = 200)
-result$zp.ma  # Model-averaged quantile
+result$qua.ma  # Model-averaged quantile
 
-# With CD and REMLE options (new in v1.2.0)
+# With CD and REMLE options
 result <- ma.gev(streamflow$r1, quant = c(0.98, 0.99, 0.995),
                  weight = "like1", B = 100, CD = TRUE, remle = TRUE)
 result$qua.CD      # CD-penalized MLE quantiles
 result$qua.remle1  # REMLE (mean constraint) quantiles
-result$qua.remle2  # REMLE (median constraint) quantiles
+result$qua.remle2  # REMLE (mean + L-scale constraints) quantiles
 ```
 
 ## Example 4: Compatibility Functions
@@ -103,7 +101,7 @@ result <- nsgev(Trehafod$r1, ntry = 10)
 result$para.prop  # Proposed estimates
 ```
 
-## Example 5: MAGEV Diagnostic Visualization (New in v1.2.0)
+## Example 5: MAGEV Diagnostic Visualization
 
 Demonstrates diagnostic plotting functions for MAGEV analysis:
 
@@ -132,7 +130,7 @@ ff <- c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5,
         0.993, 0.995, 0.998, 0.999)
 zx <- ma.gev(bangkok[,1], quant = ff, weight = 'like1',
              numk = 9, varcom = TRUE)
-magev.rlplot(par = zx$surr$par, se.vec = zx$adj.se.ma, data = bangkok[,1])
+magev.rlplot(par = zx$surr$par, se.vec = zx$ranw.se.ma, data = bangkok[,1])
 ```
 
 ## Datasets
@@ -140,33 +138,10 @@ magev.rlplot(par = zx$surr$par, se.vec = zx$adj.se.ma, data = bangkok[,1])
 | Dataset | Description | n | Source |
 |---------|-------------|---|--------|
 | `streamflow` | Annual maximum streamflow | 50 | Hydrological data |
-| `Trehafod` | River flow, Wales, UK (1968-2020) | 53 | UK National River Flow Archive |
-| `PhliuAgromet` | Thai meteorological data | - | Phliu Agrometeorological Station |
-| `bangkok` | Annual max daily rainfall, Bangkok, Thailand | - | Thai Meteorological Department (TMD) |
-| `haenam` | Annual max daily rainfall, Haenam, South Korea | - | Korea Meteorological Administration (KMA) |
-
-**Note**: `bangkok` and `haenam` datasets are new in v1.2.0.
-
-## New Features in v1.2.0
-
-### Breaking Changes
-- `glme.gev11()` output `para.jkss` renamed to `para.lme` for consistency
-
-### New Features
-- **ma.gev() enhancements:**
-  - `CD = TRUE`: Coles-Dixon penalized MLE
-  - `remle = TRUE`: Restricted MLE with mean/median constraints
-  - Returns `quant` in output
-  - BMA outputs include `bma.se.between` and `bma.se.within`
-
-- **New diagnostic plotting functions:**
-  - `magev.ksensplot()`: K sensitivity analysis
-  - `magev.qqplot()`: Q-Q diagnostic plot (2x2 panel)
-  - `magev.rlplot()`: Return level plot with 95% CI
-
-- **New datasets:**
-  - `bangkok`: Annual maximum daily rainfall from Bangkok, Thailand
-  - `haenam`: Annual maximum daily rainfall from Haenam, South Korea
+| `Trehafod` | River flow, Wales, UK (1968-2021) | 53 | UK National River Flow Archive |
+| `PhliuAgromet` | Thai meteorological data | 40 | Phliu Agrometeorological Station |
+| `bangkok` | Annual max daily rainfall, Bangkok, Thailand | 58 | Thai Meteorological Department (TMD) |
+| `haenam` | Annual max daily rainfall, Haenam, South Korea | 52 | Korea Meteorological Administration (KMA) |
 
 ## References
 
@@ -174,7 +149,7 @@ magev.rlplot(par = zx$surr$par, se.vec = zx$adj.se.ma, data = bangkok[,1])
 
 - Shin, Y., Shin, Y., & Park, J.-S. (2025b). Building nonstationary extreme value model using L-moments. *Journal of the Korean Statistical Society*, 54, 947-970.
 
-- Shin, Y., Shin, Y., & Park, J.-S. (2025c). Model averaging with mixed criteria for estimating high quantiles of extreme values. *arXiv:2505.21417*
+- Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria for estimating high quantiles of extreme values: Application to heavy rainfall. *Stochastic Environmental Research and Risk Assessment*, 40(2), 47. https://doi.org/10.1007/s00477-025-03167-x
 
 ## Requirements
 

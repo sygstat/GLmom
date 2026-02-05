@@ -18,3 +18,8 @@
 ^examples$
 ^temp$
 ^Dockerfile$
+^output$
+^추가고려$
+^test_.*\.R$
+^GLmom\.Rcheck$
+^\.gitattributes$

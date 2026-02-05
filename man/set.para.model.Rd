@@ -2,11 +2,26 @@
 % Please edit documentation in R/glme.gev11.R
 \name{set.para.model}
 \alias{set.para.model}
-\title{Set parameters based on model type}
+\title{Set parameters based on non-stationary model type}
 \usage{
 set.para.model(para, model = NULL)
 }
+\arguments{
+\item{para}{Parameter vector whose length and meaning depend on \code{model}.}
+
+\item{model}{Model type: "gev11", "gev10", "gev20", "gev01", or "gev00"/"gev".}
+}
+\value{
+A list containing:
+\describe{
+  \item{mu}{Numeric vector c(mu0, mu1, mu2) for location}
+  \item{sig}{Numeric vector c(sigma0, sigma1) for log-scale}
+  \item{xi}{Shape parameter (scalar)}
+}
+}
 \description{
-Set parameters based on model type
+Internal function that maps a flat parameter vector to named
+location (mu), scale (sig), and shape (xi) components depending on the
+model specification (GEV00, GEV10, GEV11, GEV20, GEV01).
 }
 \keyword{internal}

@@ -13,11 +13,22 @@ bibentry(
   doi      = "10.48550/arXiv.2512.20385",
   url      = "https://arxiv.org/abs/2512.20385",
   note     = "Submitted to journal",
-  header   = "To cite GLmom in publications use:",
-  textVersion = paste(
-    "Shin, Y., Shin, Y., Park, J., & Park, J.-S. (2025).",
-    "Generalized method of L-moment estimation for stationary and nonstationary extreme value models.",
-    "arXiv preprint arXiv:2512.20385.",
-    "https://doi.org/10.48550/arXiv.2512.20385"
-  )
+  header   = "To cite GLmom in publications use:"
+)
+
+bibentry(
+  bibtype  = "Article",
+  title    = "Model averaging with mixed criteria for estimating high quantiles of extreme values: Application to heavy rainfall",
+  author   = c(
+    person("Yonggwan", "Shin"),
+    person("Yire", "Shin"),
+    person("Jeong-Soo", "Park")
+  ),
+  year     = "2026",
+  journal  = "Stochastic Environmental Research and Risk Assessment",
+  volume   = "40",
+  number   = "2",
+  pages    = "47",
+  doi      = "10.1007/s00477-025-03167-x",
+  url      = "https://doi.org/10.1007/s00477-025-03167-x"
 )

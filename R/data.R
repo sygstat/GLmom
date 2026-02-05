@@ -73,9 +73,10 @@
 #' @source Thai Meteorological Department (TMD; \url{https://www.tmd.go.th})
 #'
 #' @references
-#' Shin, Y., Shin, Y. & Park, J.-S. (2025). Model averaging with mixed criteria
-#' for estimating high quantiles of extreme values.
-#' arXiv preprint arXiv:2505.21417. \doi{10.48550/arXiv.2505.21417}
+#' Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria
+#' for estimating high quantiles of extreme values: Application to heavy rainfall.
+#' \emph{Stochastic Environmental Research and Risk Assessment}, 40(2), 47.
+#' \doi{10.1007/s00477-025-03167-x}
 #'
 #' @examples
 #' data(bangkok)
@@ -84,7 +85,7 @@
 #' # Estimate high quantiles using model averaging
 #' \donttest{
 #' result <- ma.gev(bangkok[,1], quant = c(0.99, 0.995))
-#' print(result$zp.ma)
+#' print(result$qua.ma)
 #' }
 #'
 "bangkok"
@@ -100,9 +101,10 @@
 #' @source Korea Meteorological Administration (KMA; \url{https://www.kma.go.kr})
 #'
 #' @references
-#' Shin, Y., Shin, Y. & Park, J.-S. (2025). Model averaging with mixed criteria
-#' for estimating high quantiles of extreme values.
-#' arXiv preprint arXiv:2505.21417. \doi{10.48550/arXiv.2505.21417}
+#' Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria
+#' for estimating high quantiles of extreme values: Application to heavy rainfall.
+#' \emph{Stochastic Environmental Research and Risk Assessment}, 40(2), 47.
+#' \doi{10.1007/s00477-025-03167-x}
 #'
 #' @examples
 #' data(haenam)
@@ -111,7 +113,7 @@
 #' # Estimate high quantiles using model averaging
 #' \donttest{
 #' result <- ma.gev(haenam[,1], quant = c(0.98, 0.99, 0.995))
-#' print(result$zp.ma)
+#' print(result$qua.ma)
 #' }
 #'
 "haenam"

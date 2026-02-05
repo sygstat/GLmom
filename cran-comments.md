@@ -4,7 +4,7 @@
 
 ## Test environments
 
-* local macOS Sequoia 15.6.1 (aarch64-apple-darwin20), R 4.1.3
+* Docker Debian (aarch64-unknown-linux-gnu), R 4.3.2
 
 ## NOTEs
 
@@ -15,23 +15,17 @@
    ```
    This is the first submission of this package to CRAN.
 
-2. **DOI check**
-   ```
-   Found the following (possibly) invalid DOIs:
-     DOI: 10.1111/j.2517-6161.1990.tb01775.x
-       From: DESCRIPTION
-       Status: Forbidden
-       Message: 403
-   ```
-   The DOI for Hosking (1990) returns a 403 Forbidden status during automated
-   checking, but the DOI is valid and resolves correctly in web browsers.
-   This is a known issue with some publisher DOI servers blocking automated requests.
-
-3. **Time verification**
+2. **Time verification**
    ```
    unable to verify current time
    ```
-   This is a local network/environment issue, not a package problem.
+   This is a Docker environment issue, not a package problem.
+
+3. **Pandoc not installed**
+   ```
+   Files 'README.md' or 'NEWS.md' cannot be checked without 'pandoc' being installed.
+   ```
+   This is a build environment issue. README.md renders correctly.
 
 ## Downstream dependencies
 
@@ -56,4 +50,4 @@ generalized extreme value (GEV) distribution:
 The methodology is described in:
 - Shin et al. (2025a) arXiv:2512.20385 (GLME method)
 - Shin et al. (2025b) J. Korean Stat. Soc. 54:947-970 (Non-stationary L-moment)
-- Shin et al. (2025c) arXiv:2505.21417 (MAGEV method)
+- Shin et al. (2026) SERA, 40(2), 47 (MAGEV method)

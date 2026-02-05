@@ -29,10 +29,28 @@ Befun <- function(w, al=al, bl=bl, p=p, q=q) {
 
 #' Martins-Stedinger prior function
 #'
+#' @description
+#' Computes the Martins-Stedinger Beta(6,9) prior probability for the GEV
+#' shape parameter on the interval \eqn{[-0.5, 0.5]}.
+#'
 #' @param para A vector of GEV parameters (location, scale, shape).
 #' @param p Shape parameter for beta distribution (default 6).
 #' @param q Shape parameter for beta distribution (default 9).
-#' @return Prior probability value.
+#' @return Prior probability value (scalar).
+#'
+#' @references
+#' Martins, E. S. & Stedinger, J. R. (2000). Generalized maximum-likelihood
+#' generalized extreme-value quantile estimators for hydrologic data.
+#' Water Resources Research, 36(3), 737-744.
+#' \doi{10.1029/1999WR900330}
+#'
+#' @seealso \code{\link{pk.beta.stnary}} for the adaptive beta penalty,
+#'   \code{\link{glme.gev}} which uses these penalty functions.
+#'
+#' @examples
+#' # Evaluate MS prior at xi = -0.2
+#' MS_pk(para = c(100, 20, -0.2))
+#'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 MS_pk = function(para=para, p=6, q=9){
@@ -52,10 +70,29 @@ MS_pk = function(para=para, p=6, q=9){
 
 #' Normal preference function for shape parameter (stationary GEV)
 #'
+#' @description
+#' Computes a normal distribution-based preference (penalty) function value
+#' for the GEV shape parameter. The alias \code{new_pf_norm} is provided
+#' for backward compatibility.
+#'
 #' @param para A vector of GEV parameters.
 #' @param mu Mean for normal distribution.
 #' @param std Standard deviation for normal distribution.
-#' @return Preference function value.
+#' @return Preference function value (scalar).
+#'
+#' @references
+#' Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
+#' L-moment estimation for stationary and nonstationary extreme value models.
+#' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+#'
+#' @seealso \code{\link{pk.beta.stnary}} for the beta penalty,
+#'   \code{\link{MS_pk}} for the Martins-Stedinger penalty,
+#'   \code{\link{glme.gev}} which uses these penalty functions.
+#'
+#' @examples
+#' # Normal preference with mean=-0.5, sd=0.2 at xi=-0.2
+#' pk.norm.stnary(para = c(100, 20, -0.2), mu = -0.5, std = 0.2)
+#'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 pk.norm.stnary = function(para=NULL, mu=NULL, std=NULL){
@@ -69,6 +106,11 @@ new_pf_norm = pk.norm.stnary
 
 #' Beta preference function for stationary GEV
 #'
+#' @description
+#' Computes a Beta distribution-based adaptive preference (penalty) function
+#' for the GEV shape parameter. The hyperparameters are adapted based on the
+#' L-moment estimate of the shape parameter.
+#'
 #' @param para A vector of GEV parameters.
 #' @param lme.center L-moment estimates as center.
 #' @param p Shape parameter (default 6).
@@ -76,7 +118,27 @@ new_pf_norm = pk.norm.stnary
 #' @param c0 Limit parameter (default 0.3).
 #' @param c1 Scaling parameter (default 10).
 #' @param c2 Upper limit parameter (default 5).
-#' @return A list containing pk.one (preference value), p, and q.
+#' @return A list containing:
+#' \describe{
+#'   \item{pk.one}{Preference function value (scalar)}
+#'   \item{p}{Shape parameter p used}
+#'   \item{q}{Shape parameter q used}
+#' }
+#'
+#' @references
+#' Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
+#' L-moment estimation for stationary and nonstationary extreme value models.
+#' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+#'
+#' @seealso \code{\link{pk.norm.stnary}} for the normal penalty,
+#'   \code{\link{MS_pk}} for the Martins-Stedinger penalty,
+#'   \code{\link{glme.gev}} which uses these penalty functions.
+#'
+#' @examples
+#' # Beta preference for xi = -0.2 centered at LME xi = -0.15
+#' pk.beta.stnary(para = c(100, 20, -0.2),
+#'                lme.center = c(100, 20, -0.15), p = 6)
+#'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 pk.beta.stnary = function(para=NULL, lme.center=NULL, p=NULL,
@@ -149,6 +211,26 @@ pk.beta.stnary = function(para=NULL, lme.center=NULL, p=NULL,
 #'
 #' @return A numeric value representing the penalized negative log-likelihood.
 #' A lower value indicates a better fit.
+#'
+#' @references
+#' Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
+#' L-moment estimation for stationary and nonstationary extreme value models.
+#' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+#'
+#' @seealso \code{\link{glme.gev}} which calls this function for optimization.
+#'
+#' @examples
+#' \dontrun{
+#' data(streamflow)
+#' x <- streamflow$r1
+#' slm <- lmomco::lmoms(x, nmom = 3)
+#' cov_mat <- lmomco::lmoms.cov(x, nmom = 3)
+#' lme_par <- lmomco::pargev(slm)$para
+#' glme.like(par = lme_par, xdat = x, slmgev = slm,
+#'           covinv = solve(cov_mat), lcovdet = log(det(cov_mat)),
+#'           mu = -0.5, std = 0.2, lme = lme_par, pen = "beta",
+#'           p = 6, c1 = 10, c2 = 5)
+#' }
 #'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
@@ -235,7 +317,7 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 #' a set of initial parameters (location, scale, shape) for the GEV distribution.
 #'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
-#' @export
+#' @keywords internal
 init.gevmax <-function(data=NULL, ntry=NULL){
 
   if(ntry < 3) ntry=3
@@ -256,8 +338,27 @@ init.gevmax <-function(data=NULL, ntry=NULL){
   return(init)
 }
 
-#' @rdname init.gevmax
-#' @param xdat Alias for data parameter (for backward compatibility).
+#' Initialize random starting values for GLME optimization
+#'
+#' @description
+#' Generates multiple random starting parameter sets for multi-start
+#' optimization in GLME estimation. Uses L-moment estimates as a base
+#' and adds random perturbations.
+#'
+#' @param xdat A numeric vector of data to be fitted.
+#' @param ntry Number of initial parameter sets to generate.
+#'
+#' @return A matrix with \code{ntry} rows and 3 columns (location, scale, shape),
+#'   where each row is a candidate starting point for optimization.
+#'
+#' @seealso \code{\link{glme.gev}} which uses this function internally.
+#'
+#' @examples
+#' data(streamflow)
+#' inits <- init.glme(streamflow$r1, ntry = 5)
+#' print(inits)
+#'
+#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 init.glme <-function(xdat, ntry=ntry){
   init.gevmax(data=xdat, ntry=ntry)
@@ -308,6 +409,11 @@ init.glme <-function(xdat, ntry=ntry){
 #' Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
 #' L-moment estimation for stationary and nonstationary extreme value models.
 #' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+#'
+#' @seealso \code{\link{glme.gev11}} for non-stationary GEV estimation,
+#'   \code{\link{ma.gev}} for model averaging estimation,
+#'   \code{\link{glme.like}} for the objective function,
+#'   \code{\link{quagev.NS}} for quantile computation.
 #'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #'
@@ -387,7 +493,7 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
     sam.lmom= matrix(NA,BB,3)
 
     for (ib in 1:BB){
-      sam.lmom[ib,1:3]=lmoms(sample(xdat,size=nsample,replace=T),
+      sam.lmom[ib,1:3]=lmoms(sample(xdat,size=nsample,replace=TRUE),
                              nmom=3)$lambdas
     }
     cov=cov(sam.lmom)
@@ -431,7 +537,7 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
   ) #tryCatch
 
   if(isol==0) {
-    cat("-- No solution was found in nleqslv or optim --","\n")
+    message("-- No solution was found in nleqslv or optim --")
     z$para.glme = z$para.lme
     return(z)
   }
@@ -459,11 +565,36 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
 
 #' GEV parameter estimation with fixed shape parameter
 #'
+#' @description
+#' Estimates GEV location and scale parameters from L-moments while keeping
+#' the shape parameter fixed at a user-specified value. Modified from
+#' \code{lmomco::pargev()}.
+#'
 #' @param lmom L-moments object.
 #' @param kfix Fixed shape parameter value.
 #' @param checklmom Whether to check L-moment validity.
 #' @param ... Additional arguments.
-#' @return A list with GEV parameters.
+#' @return A list with components:
+#' \describe{
+#'   \item{type}{Character "gev"}
+#'   \item{para}{Numeric vector of GEV parameters (xi=location, alpha=scale, kappa=shape)}
+#'   \item{source}{Character "pargev"}
+#' }
+#'
+#' @references
+#' Hosking, J. R. M. (1990). L-moments: Analysis and estimation of
+#' distributions using linear combinations of order statistics.
+#' Journal of the Royal Statistical Society, Series B, 52(1), 105-124.
+#' \doi{10.1111/j.2517-6161.1990.tb01775.x}
+#'
+#' @seealso \code{\link{glme.gev}} for GLME estimation,
+#'   \code{\link[lmomco]{pargev}} for the original L-moment GEV fitting.
+#'
+#' @examples
+#' data(streamflow)
+#' lmom <- lmomco::lmoms(streamflow$r1, nmom = 3)
+#' pargev.kfix(lmom, kfix = -0.1)
+#'
 #' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 #' @export
 pargev.kfix= function (lmom, kfix= 0.1, checklmom = TRUE, ...)

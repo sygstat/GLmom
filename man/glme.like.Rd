@@ -61,6 +61,28 @@ The function performs the following steps:
 5. Applies a penalization term based on the specified method.
 6. Returns the sum of the L-moments distance and the penalization term.
 }
+\examples{
+\dontrun{
+data(streamflow)
+x <- streamflow$r1
+slm <- lmomco::lmoms(x, nmom = 3)
+cov_mat <- lmomco::lmoms.cov(x, nmom = 3)
+lme_par <- lmomco::pargev(slm)$para
+glme.like(par = lme_par, xdat = x, slmgev = slm,
+          covinv = solve(cov_mat), lcovdet = log(det(cov_mat)),
+          mu = -0.5, std = 0.2, lme = lme_par, pen = "beta",
+          p = 6, c1 = 10, c2 = 5)
+}
+
+}
+\references{
+Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
+L-moment estimation for stationary and nonstationary extreme value models.
+arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
+}
+\seealso{
+\code{\link{glme.gev}} which calls this function for optimization.
+}
 \author{
 Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
 }

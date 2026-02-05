@@ -79,7 +79,7 @@
   - Optional Bayesian model averaging (`bma=TRUE`) with normal/beta priors
   - Returns model-averaged quantiles (`qua.ma`) with standard errors
 * New dependencies: `ismev`, `Rsolnp`, `zoo`.
-* Reference: Shin et al. (2025c) arXiv:2505.21417 (MAGEV method)
+* Reference: Shin et al. (2026) SERA, 40(2), 47 (MAGEV method)
 
 # GLmom 1.0.0
 

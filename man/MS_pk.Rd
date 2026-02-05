@@ -14,10 +14,26 @@ MS_pk(para = para, p = 6, q = 9)
 \item{q}{Shape parameter for beta distribution (default 9).}
 }
 \value{
-Prior probability value.
+Prior probability value (scalar).
 }
 \description{
-Martins-Stedinger prior function
+Computes the Martins-Stedinger Beta(6,9) prior probability for the GEV
+shape parameter on the interval \eqn{[-0.5, 0.5]}.
+}
+\examples{
+# Evaluate MS prior at xi = -0.2
+MS_pk(para = c(100, 20, -0.2))
+
+}
+\references{
+Martins, E. S. & Stedinger, J. R. (2000). Generalized maximum-likelihood
+generalized extreme-value quantile estimators for hydrologic data.
+Water Resources Research, 36(3), 737-744.
+\doi{10.1029/1999WR900330}
+}
+\seealso{
+\code{\link{pk.beta.stnary}} for the adaptive beta penalty,
+  \code{\link{glme.gev}} which uses these penalty functions.
 }
 \author{
 Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park

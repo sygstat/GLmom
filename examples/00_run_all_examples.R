@@ -29,7 +29,7 @@ Package: GLmom - Generalized L-Moment Estimation for Extreme Value Distributions
 References:
 - Shin et al. (2025a). arXiv:2512.20385 (GLME)
 - Shin et al. (2025b). JKSS, 54, 947-970 (NSGEV)
-- Shin et al. (2025c). arXiv:2505.21417 (MAGEV)
+- Shin et al. (2026). SERA, 40(2), 47 (MAGEV)
 
 ================================================================================
 ")

@@ -2,11 +2,24 @@
 % Please edit documentation in R/glme.gev11.R
 \name{qns.gev_all}
 \alias{qns.gev_all}
-\title{Quantile function for non-stationary GEV}
+\title{Quantile function for non-stationary GEV (return period input)}
 \usage{
-qns.gev_all(Tp = NULL, para, year, model = NULL)
+qns.gev_all(Tp = NULL, para = NULL, year = NULL, model = NULL)
+}
+\arguments{
+\item{Tp}{Return period (scalar).}
+
+\item{para}{Parameter vector for the non-stationary model.}
+
+\item{year}{Numeric vector of time points.}
+
+\item{model}{Model type: "gev11", "gev10", "gev20", or "gev01".}
+}
+\value{
+Numeric vector of quantile values (one per time point).
 }
 \description{
-Quantile function for non-stationary GEV
+Internal function that computes time-varying quantiles for
+non-stationary GEV models given a return period.
 }
 \keyword{internal}

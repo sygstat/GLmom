@@ -1,8 +1,9 @@
 # Model Averaging for GEV High Quantile Estimation
 #
-# Reference: Shin, Y., Shin, Y., & Park, J.-S. (2025). Model averaging with
-# mixed criteria for estimating high quantiles of extreme values.
-# arXiv preprint arXiv:2505.21417.
+# Reference: Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with
+# mixed criteria for estimating high quantiles of extreme values: Application
+# to heavy rainfall. Stochastic Environmental Research and Risk Assessment,
+# 40(2), 47. https://doi.org/10.1007/s00477-025-03167-x
 
 
 #' Model Averaging for GEV High Quantile Estimation
@@ -83,9 +84,15 @@
 #' }
 #'
 #' @references
-#' Shin, Y., Shin, Y., & Park, J.-S. (2025). Model averaging with mixed criteria
+#' Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria
 #' for estimating high quantiles of extreme values: Application to heavy rainfall.
-#' arXiv preprint arXiv:2505.21417. \doi{10.48550/arXiv.2505.21417}
+#' \emph{Stochastic Environmental Research and Risk Assessment}, 40(2), 47.
+#' \doi{10.1007/s00477-025-03167-x}
+#'
+#' @seealso \code{\link{glme.gev}} for stationary GLME estimation,
+#'   \code{\link{magev.ksensplot}} for K sensitivity analysis,
+#'   \code{\link{magev.qqplot}} for Q-Q diagnostic plots,
+#'   \code{\link{magev.rlplot}} for return level plots.
 #'
 #' @author Yonggwan Shin, Yire Shin, Jeong-Soo Park
 #'

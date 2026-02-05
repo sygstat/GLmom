@@ -10,9 +10,9 @@
 #' - bangkok: Annual maximum daily rainfall from Bangkok, Thailand
 #' - haenam: Annual maximum daily rainfall from Haenam, South Korea
 #'
-#' Reference: Shin et al. (2025c). Model averaging with mixed criteria for
-#'            estimating high quantiles of extreme values.
-#'            arXiv:2505.21417
+#' Reference: Shin et al. (2026). Model averaging with mixed criteria for
+#'            estimating high quantiles of extreme values: Application to
+#'            heavy rainfall. SERA, 40(2), 47. doi:10.1007/s00477-025-03167-x
 #' =============================================================================
 
 # Load package
@@ -74,7 +74,7 @@ set.seed(123)
 zx_qq <- ma.gev(data = data_bkk, quant = qq_probs, weight = 'like1',
                 numk = 9, varcom = FALSE, remle = TRUE, B = 50)
 
-cat("Model-averaged 99% quantile:", round(zx_qq$zp.ma[which.min(abs(qq_probs - 0.99))], 2), "mm\n")
+cat("Model-averaged 99% quantile:", round(zx_qq$qua.ma[which.min(abs(qq_probs - 0.99))], 2), "mm\n")
 cat("REMLE (mean) 99% quantile:", round(zx_qq$qua.remle1[which.min(abs(qq_probs - 0.99))], 2), "mm\n\n")
 
 if (interactive()) {
@@ -111,12 +111,12 @@ cat("  xi =", round(zx_rl$surr$par[3], 4), "\n\n")
 
 if (interactive()) {
   cat("Generating return level plot...\n")
-  magev.rlplot(par = zx_rl$surr$par, se.vec = zx_rl$adj.se.ma, data = data_bkk)
+  magev.rlplot(par = zx_rl$surr$par, se.vec = zx_rl$ranw.se.ma, data = data_bkk)
   cat("Return level plot displayed.\n")
 } else {
   cat("Run interactively to see return level plot.\n")
   cat("Example usage:\n")
-  cat("  magev.rlplot(par = zx_rl$surr$par, se.vec = zx_rl$adj.se.ma, data = data_bkk)\n")
+  cat("  magev.rlplot(par = zx_rl$surr$par, se.vec = zx_rl$ranw.se.ma, data = data_bkk)\n")
 }
 
 # -----------------------------------------------------------------------------
@@ -124,7 +124,7 @@ if (interactive()) {
 # -----------------------------------------------------------------------------
 cat("\n--- 5. Haenam Rainfall Data ---\n")
 data(haenam)
-data_haenam <- haenam[, 1]
+data_haenam <- haenam[, 2]  # X1 column (annual max daily rainfall); column 1 is year
 
 cat("Data: Haenam annual maximum daily rainfall\n")
 cat("  Sample size: n =", length(data_haenam), "\n")
@@ -146,7 +146,7 @@ haenam_table <- data.frame(
   MLE = round(result_haenam$qua.mle, 1),
   CD_MLE = round(result_haenam$qua.CD, 1),
   REMLE_mean = round(result_haenam$qua.remle1, 1),
-  MA = round(result_haenam$zp.ma, 1)
+  MA = round(result_haenam$qua.ma, 1)
 )
 print(haenam_table, row.names = FALSE)
 
@@ -160,8 +160,8 @@ result_bkk <- ma.gev(data = data_bkk, quant = c(0.98, 0.99, 0.995),
                      weight = 'like1', numk = 9, B = 100)
 
 cat("\n100-year return level comparison:\n")
-cat("  Bangkok:", round(result_bkk$zp.ma[2], 1), "mm\n")
-cat("  Haenam:", round(result_haenam$zp.ma[2], 1), "mm\n")
+cat("  Bangkok:", round(result_bkk$qua.ma[2], 1), "mm\n")
+cat("  Haenam:", round(result_haenam$qua.ma[2], 1), "mm\n")
 
 cat("\nShape parameter (xi) comparison:\n")
 cat("  Bangkok MLE xi:", round(result_bkk$mle.hosking[3], 4), "\n")
@@ -185,7 +185,7 @@ cat("dev.off()\n\n")
 
 cat("# Return level plot\n")
 cat("pdf('magev_rlplot.pdf', width=8, height=6)\n")
-cat("magev.rlplot(par=zx_rl$surr$par, se.vec=zx_rl$adj.se.ma, data=data_bkk)\n")
+cat("magev.rlplot(par=zx_rl$surr$par, se.vec=zx_rl$ranw.se.ma, data=data_bkk)\n")
 cat("dev.off()\n")
 
 # -----------------------------------------------------------------------------

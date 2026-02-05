@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "GLmom: Generalized L-Moments Estimation for Extreme Value Distributions"
-version: 1.2.0
-date-released: 2025-01-01
+version: 1.3.0
+date-released: 2026-02-05
 url: "https://github.com/sygstat/GLmom"
 repository-code: "https://github.com/sygstat/GLmom"
 license: GPL-3.0-or-later
@@ -82,8 +82,10 @@ references:
       - family-names: Park
         given-names: Jeong-Soo
     title: "Model averaging with mixed criteria for estimating high quantiles of extreme values: Application to heavy rainfall"
-    journal: "arXiv preprint"
-    year: 2025
-    volume: "arXiv:2505.21417"
-    doi: "10.48550/arXiv.2505.21417"
-    url: "https://arxiv.org/abs/2505.21417"
+    journal: "Stochastic Environmental Research and Risk Assessment"
+    year: 2026
+    volume: 40
+    issue: 2
+    pages: "47"
+    doi: "10.1007/s00477-025-03167-x"
+    url: "https://doi.org/10.1007/s00477-025-03167-x"

@@ -2,11 +2,25 @@
 % Please edit documentation in R/glme.gev11.R
 \name{gof.ene_all}
 \alias{gof.ene_all}
-\title{Goodness-of-fit function}
+\title{Goodness-of-fit based on exceedance counts}
 \usage{
-gof.ene_all(xdat, vecT = c(5, 10, 20, 40, 80), para, model = NULL)
+gof.ene_all(xdat, vecT = c(5, 10, 20, 40, 80), para = NULL, model = NULL)
+}
+\arguments{
+\item{xdat}{Numeric vector of data.}
+
+\item{vecT}{Numeric vector of return periods. Default is c(5, 10, 20, 40, 80).}
+
+\item{para}{Parameter vector for the model.}
+
+\item{model}{Model type: "gev11", "gev10", "gev20", or "gev00".}
+}
+\value{
+Sum of absolute relative exceedance errors (scalar).
 }
 \description{
-Goodness-of-fit function
+Internal function that computes goodness-of-fit by comparing
+observed vs expected exceedances above return level quantiles for multiple
+return periods.
 }
 \keyword{internal}

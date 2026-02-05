@@ -1,8 +1,9 @@
 # MAGEV Plotting Functions
 #
-# Reference: Shin, Y., Shin, Y., & Park, J.-S. (2025). Model averaging with
-# mixed criteria for estimating high quantiles of extreme values.
-# arXiv preprint arXiv:2505.21417.
+# Reference: Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with
+# mixed criteria for estimating high quantiles of extreme values: Application
+# to heavy rainfall. Stochastic Environmental Research and Risk Assessment,
+# 40(2), 47. https://doi.org/10.1007/s00477-025-03167-x
 
 
 #' K Sensitivity Plot for MAGEV
@@ -36,9 +37,12 @@
 #' @return The optimal K value (integer) selected by the algorithm.
 #'
 #' @references
-#' Shin, Y., Shin, Y., & Park, J.-S. (2025). Model averaging with mixed criteria
-#' for estimating high quantiles of extreme values.
-#' arXiv preprint arXiv:2505.21417.
+#' Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria
+#' for estimating high quantiles of extreme values: Application to heavy rainfall.
+#' \emph{Stochastic Environmental Research and Risk Assessment}, 40(2), 47.
+#' \doi{10.1007/s00477-025-03167-x}
+#'
+#' @seealso \code{\link{ma.gev}} for the main model averaging function.
 #'
 #' @author Yonggwan Shin, Yire Shin, Jeong-Soo Park
 #'
@@ -52,6 +56,9 @@
 #' @export
 magev.ksensplot <- function(data = NULL, q.cut = 0.6, mink = 4,
                             maxk = 20, quant = c(0.99, 0.995)) {
+
+  oldpar <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(oldpar))
 
   totk <- maxk - mink + 1
   test <- list()
@@ -172,9 +179,13 @@ magev.ksensplot <- function(data = NULL, q.cut = 0.6, mink = 4,
 #' @return NULL. The function produces a plot as a side effect.
 #'
 #' @references
-#' Shin, Y., Shin, Y., & Park, J.-S. (2025). Model averaging with mixed criteria
-#' for estimating high quantiles of extreme values.
-#' arXiv preprint arXiv:2505.21417.
+#' Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria
+#' for estimating high quantiles of extreme values: Application to heavy rainfall.
+#' \emph{Stochastic Environmental Research and Risk Assessment}, 40(2), 47.
+#' \doi{10.1007/s00477-025-03167-x}
+#'
+#' @seealso \code{\link{ma.gev}} for the main model averaging function,
+#'   \code{\link{magev.rlplot}} for return level plots.
 #'
 #' @author Yonggwan Shin, Yire Shin, Jeong-Soo Park
 #'
@@ -189,6 +200,9 @@ magev.ksensplot <- function(data = NULL, q.cut = 0.6, mink = 4,
 #'
 #' @export
 magev.qqplot <- function(data = NULL, zx = NULL) {
+
+  oldpar <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(oldpar))
 
   dat <- data
   qorg <- ((1:length(dat)) - 0.35) / (length(dat))
@@ -240,7 +254,7 @@ magev.qqplot <- function(data = NULL, zx = NULL) {
 #'   Typically from \code{zx$surr$par} where \code{zx} is the output of
 #'   \code{\link{ma.gev}}.
 #' @param se.vec A numeric vector of standard errors for the quantile estimates
-#'   corresponding to the plotting positions. Typically from \code{zx$adj.se.ma}.
+#'   corresponding to the plotting positions. Typically from \code{zx$ranw.se.ma}.
 #' @param data A numeric vector of observed data (annual maxima).
 #'
 #' @details
@@ -256,9 +270,13 @@ magev.qqplot <- function(data = NULL, zx = NULL) {
 #' @return NULL. The function produces a plot as a side effect.
 #'
 #' @references
-#' Shin, Y., Shin, Y., & Park, J.-S. (2025). Model averaging with mixed criteria
-#' for estimating high quantiles of extreme values.
-#' arXiv preprint arXiv:2505.21417.
+#' Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria
+#' for estimating high quantiles of extreme values: Application to heavy rainfall.
+#' \emph{Stochastic Environmental Research and Risk Assessment}, 40(2), 47.
+#' \doi{10.1007/s00477-025-03167-x}
+#'
+#' @seealso \code{\link{ma.gev}} for the main model averaging function,
+#'   \code{\link{magev.qqplot}} for Q-Q diagnostic plots.
 #'
 #' @author Yonggwan Shin, Yire Shin, Jeong-Soo Park
 #'
@@ -270,11 +288,14 @@ magev.qqplot <- function(data = NULL, zx = NULL) {
 #'         0.993, 0.995, 0.998, 0.999)
 #' zx <- ma.gev(streamflow$r1, quant = ff, weight = 'like1',
 #'              numk = 9, varcom = TRUE)
-#' magev.rlplot(par = zx$surr$par, se.vec = zx$adj.se.ma, data = streamflow$r1)
+#' magev.rlplot(par = zx$surr$par, se.vec = zx$ranw.se.ma, data = streamflow$r1)
 #' }
 #'
 #' @export
 magev.rlplot <- function(par = NULL, se.vec = NULL, data = NULL) {
+
+  oldpar <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(oldpar))
 
   a <- par  # a[3] is Hosking-style xi
   f <- c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5,

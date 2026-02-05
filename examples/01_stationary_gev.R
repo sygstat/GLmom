@@ -28,16 +28,16 @@ cat("--- 1. Default estimation (adaptive beta penalty) ---\n")
 result <- glme.gev(x)
 
 cat("GLME estimates (with penalty):\n")
-cat("  mu =", round(result$glme[1], 4), "\n")
-cat("  sigma =", round(result$glme[2], 4), "\n")
-cat("  xi =", round(result$glme[3], 4), "\n\n")
+cat("  mu =", round(result$para.glme[1], 4), "\n")
+cat("  sigma =", round(result$para.glme[2], 4), "\n")
+cat("  xi =", round(result$para.glme[3], 4), "\n\n")
 
 cat("L-moment estimates (no penalty):\n")
-cat("  mu =", round(result$lme[1], 4), "\n")
-cat("  sigma =", round(result$lme[2], 4), "\n")
-cat("  xi =", round(result$lme[3], 4), "\n\n")
+cat("  mu =", round(result$para.lme[1], 4), "\n")
+cat("  sigma =", round(result$para.lme[2], 4), "\n")
+cat("  xi =", round(result$para.lme[3], 4), "\n\n")
 
-cat("Negative log-likelihood:", round(result$nllh.pref, 4), "\n\n")
+cat("Negative log-likelihood:", round(result$nllh.glme, 4), "\n\n")
 
 # -----------------------------------------------------------------------------
 # 2. Compare different penalty functions
@@ -54,9 +54,9 @@ results_df <- data.frame(
 
 for (i in seq_along(penalties)) {
   res <- glme.gev(x, pen = penalties[i])
-  results_df$mu[i] <- res$glme[1]
-  results_df$sigma[i] <- res$glme[2]
-  results_df$xi[i] <- res$glme[3]
+  results_df$mu[i] <- res$para.glme[1]
+  results_df$sigma[i] <- res$para.glme[2]
+  results_df$xi[i] <- res$para.glme[3]
 }
 
 cat("\nShape parameter (xi) estimates by penalty function:\n")
@@ -82,13 +82,13 @@ cat("\n--- 3. Beta penalty with custom hyperparameters ---\n")
 cat("Preset hyperparameter choices for beta penalty:\n")
 for (choice in 1:6) {
   res <- glme.gev(x, pen = "beta", pen.choice = choice)
-  cat("  pen.choice =", choice, ": xi =", round(res$glme[3], 4), "\n")
+  cat("  pen.choice =", choice, ": xi =", round(res$para.glme[3], 4), "\n")
 }
 
 # Using custom p, c1, c2 values
 cat("\nCustom hyperparameters (p=6, c1=20, c2=7):\n")
 res_custom <- glme.gev(x, pen = "beta", p = 6, c1 = 20, c2 = 7)
-cat("  xi =", round(res_custom$glme[3], 4), "\n")
+cat("  xi =", round(res_custom$para.glme[3], 4), "\n")
 
 # -----------------------------------------------------------------------------
 # 4. Normal penalty with custom mean and std
@@ -99,13 +99,13 @@ cat("\n--- 4. Normal penalty with custom parameters ---\n")
 cat("Preset hyperparameter choices for norm penalty:\n")
 for (choice in 1:4) {
   res <- glme.gev(x, pen = "norm", pen.choice = choice)
-  cat("  pen.choice =", choice, ": xi =", round(res$glme[3], 4), "\n")
+  cat("  pen.choice =", choice, ": xi =", round(res$para.glme[3], 4), "\n")
 }
 
 # Custom normal prior
 cat("\nCustom normal prior (mu=-0.5, std=0.2):\n")
 res_norm <- glme.gev(x, pen = "norm", mu = -0.5, std = 0.2)
-cat("  xi =", round(res_norm$glme[3], 4), "\n")
+cat("  xi =", round(res_norm$para.glme[3], 4), "\n")
 
 # -----------------------------------------------------------------------------
 # 5. Quantile estimation
@@ -114,19 +114,20 @@ cat("\n--- 5. Quantile estimation ---\n")
 result <- glme.gev(x, pen = "beta")
 
 # Extract parameters
-mu <- result$glme[1]
-sigma <- result$glme[2]
-xi <- result$glme[3]
+mu <- result$para.glme[1]
+sigma <- result$para.glme[2]
+xi <- result$para.glme[3]
 
 # Compute return levels using lmomco
-para <- lmomco::vec2par(c(xi, sigma, mu), type = "gev")
+# lmomco GEV parameterization: xi=location, alpha=scale, kappa=shape
+para <- lmomco::vec2par(c(mu, sigma, xi), type = "gev")
 probs <- c(0.9, 0.95, 0.99, 0.995)
 
 cat("Return levels (GLME estimates with beta penalty):\n")
 for (p in probs) {
   q <- lmomco::quagev(p, para)
   T <- 1 / (1 - p)
-  cat(sprintf("  %d-year return level (p=%.3f): %.2f\n", T, p, q))
+  cat(sprintf("  %.0f-year return level (p=%.3f): %.2f\n", T, p, q))
 }
 
 cat("\n=== Example 1 completed ===\n")
