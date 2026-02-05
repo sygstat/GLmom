@@ -135,7 +135,7 @@
 #'   \item{X1}{Annual maximum daily rainfall in mm (numeric)}
 #' }
 #'
-#' @source Korea Meteorological Administration (KMA; \url{https://www.kma.go.kr})
+#' @source Korea Meteorological Administration (KMA; \url{https://www.weather.go.kr})
 #'
 #' @references
 #' Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria
