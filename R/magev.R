@@ -94,10 +94,9 @@
 #'   \code{\link{magev.qqplot}} for Q-Q diagnostic plots,
 #'   \code{\link{magev.rlplot}} for return level plots.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' \donttest{
 #' # Load example data
 #' data(streamflow)
 #' x <- streamflow$r1
@@ -111,7 +110,6 @@
 #' # Using generalized L-moment distance weights
 #' result2 <- ma.gev(x, quant = c(0.95, 0.99), weight = 'gLd', B = 100)
 #' print(result2$w.ma)      # Model weights
-#' }
 #'
 #' @export
 ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),

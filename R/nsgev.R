@@ -31,14 +31,12 @@
 #' @seealso \code{\link{glme.gev11}} for the full GLME method with penalty functions,
 #'   \code{\link{gado.prop_11}} for detailed estimation results.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
 #' data(Trehafod)
-#' \donttest{
 #' result <- nsgev(Trehafod$r1, ntry = 5)
 #' print(result$para.prop)
-#' }
 #'
 #' @export
 nsgev <- function(xdat, ntry = 20, ftol = 1e-6) {
@@ -86,15 +84,13 @@ nsgev <- function(xdat, ntry = 20, ftol = 1e-6) {
 #' @seealso \code{\link{glme.gev11}} for the full GLME method with penalty functions,
 #'   \code{\link{nsgev}} for the simple interface.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
 #' data(Trehafod)
-#' \donttest{
 #' result <- gado.prop_11(Trehafod$r1, ntry = 5)
 #' print(result$para.prop)
 #' print(result$lme.sta)
-#' }
 #'
 #' @export
 gado.prop_11 <- function(xdat, ntry = 20, ftol = 1e-6) {

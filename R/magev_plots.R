@@ -44,7 +44,7 @@
 #'
 #' @seealso \code{\link{ma.gev}} for the main model averaging function.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
 #' \donttest{
@@ -187,16 +187,14 @@ magev.ksensplot <- function(data = NULL, q.cut = 0.6, mink = 4,
 #' @seealso \code{\link{ma.gev}} for the main model averaging function,
 #'   \code{\link{magev.rlplot}} for return level plots.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' \donttest{
 #' data(streamflow)
 #' qq <- c(seq(0.01, 0.99, by = 0.01), 0.995, 0.999)
 #' zx <- ma.gev(streamflow$r1, quant = qq, weight = 'like1',
 #'              numk = 9, varcom = FALSE, remle = TRUE)
 #' magev.qqplot(data = streamflow$r1, zx = zx)
-#' }
 #'
 #' @export
 magev.qqplot <- function(data = NULL, zx = NULL) {
@@ -278,10 +276,9 @@ magev.qqplot <- function(data = NULL, zx = NULL) {
 #' @seealso \code{\link{ma.gev}} for the main model averaging function,
 #'   \code{\link{magev.qqplot}} for Q-Q diagnostic plots.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' \donttest{
 #' data(streamflow)
 #' ff <- c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5,
 #'         0.6, 0.7, 0.8, 0.9, 0.93, 0.95, 0.98, 0.99,
@@ -289,7 +286,6 @@ magev.qqplot <- function(data = NULL, zx = NULL) {
 #' zx <- ma.gev(streamflow$r1, quant = ff, weight = 'like1',
 #'              numk = 9, varcom = TRUE)
 #' magev.rlplot(par = zx$surr$par, se.vec = zx$ranw.se.ma, data = streamflow$r1)
-#' }
 #'
 #' @export
 magev.rlplot <- function(par = NULL, se.vec = NULL, data = NULL) {
