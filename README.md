@@ -329,8 +329,9 @@ head(Trehafod)
 ## Authors
 
 - **Yonggwan Shin**, Senior Researcher, Electronics and Telecommunications Research Institute, Korea ([syg.stat@etri.re.kr](mailto:syg.stat@etri.re.kr))
-- **Yire Shin**, Ph.D, Chonnam National University, Korea([shinyire87@gmail.com](mailto:shinyire87@gmail.com))
+- **Seokkap Ko**, Principal Researcher, Electronics and Telecommunications Research Institute, Korea ([softgear@etri.re.kr](mailto:softgear@etri.re.kr))
 - **Jihong Park**, Chonnam National University, Korea([jihong8090@gmail.com](mailto:jihong8090@gmail.com))
+- **Yire Shin**, Ph.D, Chonnam National University, Korea([shinyire87@gmail.com](mailto:shinyire87@gmail.com))
 - **Jeong-Soo Park**, Professor, Chonnam National University, Korea([jspark@chonnam.ac.kr](mailto:jspark@chonnam.ac.kr))
 
 ## Citation
