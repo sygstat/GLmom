@@ -45,5 +45,5 @@ Journal of the Royal Statistical Society, Series B, 52(1), 105-124.
   \code{\link[lmomco]{pargev}} for the original L-moment GEV fitting.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

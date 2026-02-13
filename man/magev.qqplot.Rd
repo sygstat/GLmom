@@ -30,13 +30,11 @@ The function creates four Q-Q plots:
 Points close to the 45-degree diagonal line indicate good model fit.
 }
 \examples{
-\donttest{
 data(streamflow)
 qq <- c(seq(0.01, 0.99, by = 0.01), 0.995, 0.999)
 zx <- ma.gev(streamflow$r1, quant = qq, weight = 'like1',
              numk = 9, varcom = FALSE, remle = TRUE)
 magev.qqplot(data = streamflow$r1, zx = zx)
-}
 
 }
 \references{
@@ -50,5 +48,5 @@ for estimating high quantiles of extreme values: Application to heavy rainfall.
   \code{\link{magev.rlplot}} for return level plots.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

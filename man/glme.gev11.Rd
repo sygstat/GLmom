@@ -71,11 +71,9 @@ data(streamflow)
 x <- streamflow$r1
 
 # Estimate non-stationary GEV11 parameters
-\donttest{
 result <- glme.gev11(x, ntry = 5)
 print(result$para.glme)  # Proposed GLME estimates
 print(result$para.lme)  # L-moment based estimates
-}
 
 }
 \references{
@@ -93,5 +91,5 @@ model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
   \code{\link{quagev.NS}} for non-stationary quantile computation.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

@@ -64,5 +64,5 @@ for estimating high quantiles of extreme values: Application to heavy rainfall.
 \code{\link{ma.gev}} for the main model averaging function.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

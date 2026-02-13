@@ -81,10 +81,8 @@
 #' head(Trehafod)
 #'
 #' # Fit non-stationary GEV11 model
-#' \donttest{
 #' result <- glme.gev11(Trehafod$r1, ntry = 5)
 #' print(result$para.glme)
-#' }
 #'
 "Trehafod"
 
@@ -116,10 +114,8 @@
 #' head(bangkok)
 #'
 #' # Estimate high quantiles using model averaging
-#' \donttest{
 #' result <- ma.gev(bangkok$X1, quant = c(0.99, 0.995))
 #' print(result$qua.ma)
-#' }
 #'
 "bangkok"
 
@@ -148,9 +144,7 @@
 #' head(haenam)
 #'
 #' # Estimate high quantiles using model averaging
-#' \donttest{
 #' result <- ma.gev(haenam$X1, quant = c(0.98, 0.99, 0.995))
 #' print(result$qua.ma)
-#' }
 #'
 "haenam"

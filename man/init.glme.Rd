@@ -30,5 +30,5 @@ print(inits)
 \code{\link{glme.gev}} which uses this function internally.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

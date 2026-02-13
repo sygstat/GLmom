@@ -27,10 +27,8 @@ data(Trehafod)
 head(Trehafod)
 
 # Fit non-stationary GEV11 model
-\donttest{
 result <- glme.gev11(Trehafod$r1, ntry = 5)
 print(result$para.glme)
-}
 
 }
 \references{

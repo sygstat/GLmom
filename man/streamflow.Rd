@@ -12,7 +12,8 @@ A data frame with 50 rows and 2 columns:
 }
 }
 \source{
-Hydrological data for extreme value analysis.
+UK National River Flow Archive, Peak Flow Dataset
+  (\url{https://nrfa.ceh.ac.uk/peak-flow-dataset}).
 }
 \usage{
 streamflow
@@ -26,7 +27,12 @@ head(streamflow)
 
 }
 \references{
-Grego, J. M., Yates, P. A., & Mai, K. (2015). Standard error estimation for mixed flood distributions with historic maxima. Environmetrics, 26(3), 229-242. \doi{10.1002/env.2333}
-Shin, Y., Shin, Y., & Park, J. S. (2025). Building nonstationary extreme value model using L-moments. Journal of the Korean Statistical Society, 1-24. \doi{10.1007/s42952-025-00325-3}
+Grego, J. M., Yates, P. A., & Mai, K. (2015). Standard error estimation
+for mixed flood distributions with historic maxima. Environmetrics, 26(3), 229-242.
+\doi{10.1002/env.2333}
+
+Shin, Y., Shin, Y., & Park, J. S. (2025). Building nonstationary extreme value
+model using L-moments. Journal of the Korean Statistical Society, 1-24.
+\doi{10.1007/s42952-025-00325-3}
 }
 \keyword{datasets}

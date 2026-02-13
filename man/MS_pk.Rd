@@ -36,5 +36,5 @@ Water Resources Research, 36(3), 737-744.
   \code{\link{glme.gev}} which uses these penalty functions.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

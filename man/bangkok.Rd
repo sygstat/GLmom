@@ -30,10 +30,8 @@ data(bangkok)
 head(bangkok)
 
 # Estimate high quantiles using model averaging
-\donttest{
 result <- ma.gev(bangkok$X1, quant = c(0.99, 0.995))
 print(result$qua.ma)
-}
 
 }
 \references{

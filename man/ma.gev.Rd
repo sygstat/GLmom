@@ -108,7 +108,6 @@ The weighting schemes include:
 When bma=TRUE, Bayesian model averaging is applied with prior specified by pen.
 }
 \examples{
-\donttest{
 # Load example data
 data(streamflow)
 x <- streamflow$r1
@@ -122,7 +121,6 @@ print(result$qua.lme)    # LME quantiles for comparison
 # Using generalized L-moment distance weights
 result2 <- ma.gev(x, quant = c(0.95, 0.99), weight = 'gLd', B = 100)
 print(result2$w.ma)      # Model weights
-}
 
 }
 \references{
@@ -138,5 +136,5 @@ for estimating high quantiles of extreme values: Application to heavy rainfall.
   \code{\link{magev.rlplot}} for return level plots.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

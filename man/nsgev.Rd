@@ -32,10 +32,8 @@ providing compatibility with the original nsgev package interface.
 }
 \examples{
 data(Trehafod)
-\donttest{
 result <- nsgev(Trehafod$r1, ntry = 5)
 print(result$para.prop)
-}
 
 }
 \references{
@@ -48,5 +46,5 @@ model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
   \code{\link{gado.prop_11}} for detailed estimation results.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

@@ -48,6 +48,6 @@ Negative log-likelihood value.
 GLME objective function for GEV11 model (mu0, sigma0, xi optimization)
 }
 \author{
-Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }
 \keyword{internal}

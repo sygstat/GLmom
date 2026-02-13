@@ -62,7 +62,6 @@ The function performs the following steps:
 6. Returns the sum of the L-moments distance and the penalization term.
 }
 \examples{
-\dontrun{
 data(streamflow)
 x <- streamflow$r1
 slm <- lmomco::lmoms(x, nmom = 3)
@@ -72,7 +71,6 @@ glme.like(par = lme_par, xdat = x, slmgev = slm,
           covinv = solve(cov_mat), lcovdet = log(det(cov_mat)),
           mu = -0.5, std = 0.2, lme = lme_par, pen = "beta",
           p = 6, c1 = 10, c2 = 5)
-}
 
 }
 \references{
@@ -84,5 +82,5 @@ arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
 \code{\link{glme.gev}} which calls this function for optimization.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

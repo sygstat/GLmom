@@ -11,7 +11,7 @@
 #' @param c1 Scaling parameter (default 10).
 #' @param c2 Upper limit parameter (default 5).
 #' @return A list containing pk.one, p, and q.
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @keywords internal
 pk.beta.ns = function(para=NULL, lme.center=NULL, p=NULL,
                       c0=0.3, c1=10, c2=5){
@@ -59,7 +59,7 @@ pk.beta.ns = function(para=NULL, lme.center=NULL, p=NULL,
 #' @param c1 Beta penalty scaling.
 #' @param c2 Beta penalty limit.
 #' @return Negative log-likelihood value.
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @keywords internal
 nllh.glme.gev11 <- function(a, xdat=xdat, newtheta=newtheta,
                             covinv=covinv, lcovdet=lcovdet,
@@ -212,7 +212,7 @@ nllh.glme.gev11 <- function(a, xdat=xdat, newtheta=newtheta,
 #'   \code{\link{nsgev}} for the pure L-moment wrapper (no penalty),
 #'   \code{\link{quagev.NS}} for non-stationary quantile computation.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
 #' # Load example streamflow data
@@ -220,11 +220,9 @@ nllh.glme.gev11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' x <- streamflow$r1
 #'
 #' # Estimate non-stationary GEV11 parameters
-#' \donttest{
 #' result <- glme.gev11(x, ntry = 5)
 #' print(result$para.glme)  # Proposed GLME estimates
 #' print(result$para.lme)  # L-moment based estimates
-#' }
 #'
 #' @export
 glme.gev11 = function(xdat, ntry=10, ftol=1e-6,
@@ -978,7 +976,7 @@ qns.gev11= function(Tp=NULL, para=NULL, year=NULL){
 #' @seealso \code{\link{glme.gev11}} for non-stationary GEV estimation,
 #'   \code{\link{glme.gev}} for stationary GEV estimation.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
 #' # GEV11 model: time-varying quantiles

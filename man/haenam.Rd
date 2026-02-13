@@ -12,7 +12,7 @@ A data frame with 52 rows and 2 columns:
 }
 }
 \source{
-Korea Meteorological Administration (KMA; \url{https://www.kma.go.kr})
+Korea Meteorological Administration (KMA; \url{https://www.weather.go.kr})
 }
 \usage{
 haenam
@@ -27,10 +27,8 @@ data(haenam)
 head(haenam)
 
 # Estimate high quantiles using model averaging
-\donttest{
 result <- ma.gev(haenam$X1, quant = c(0.98, 0.99, 0.995))
 print(result$qua.ma)
-}
 
 }
 \references{

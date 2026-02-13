@@ -51,7 +51,7 @@ Befun <- function(w, al=al, bl=bl, p=p, q=q) {
 #' # Evaluate MS prior at xi = -0.2
 #' MS_pk(para = c(100, 20, -0.2))
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @export
 MS_pk = function(para=para, p=6, q=9){
 
@@ -93,7 +93,7 @@ MS_pk = function(para=para, p=6, q=9){
 #' # Normal preference with mean=-0.5, sd=0.2 at xi=-0.2
 #' pk.norm.stnary(para = c(100, 20, -0.2), mu = -0.5, std = 0.2)
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @export
 pk.norm.stnary = function(para=NULL, mu=NULL, std=NULL){
   1 + dnorm(para[3], mean= mu, sd=std)
@@ -139,7 +139,7 @@ new_pf_norm = pk.norm.stnary
 #' pk.beta.stnary(para = c(100, 20, -0.2),
 #'                lme.center = c(100, 20, -0.15), p = 6)
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @export
 pk.beta.stnary = function(para=NULL, lme.center=NULL, p=NULL,
                           q=NULL, c0=0.3, c1=10, c2=5){
@@ -220,7 +220,6 @@ pk.beta.stnary = function(para=NULL, lme.center=NULL, p=NULL,
 #' @seealso \code{\link{glme.gev}} which calls this function for optimization.
 #'
 #' @examples
-#' \dontrun{
 #' data(streamflow)
 #' x <- streamflow$r1
 #' slm <- lmomco::lmoms(x, nmom = 3)
@@ -230,9 +229,8 @@ pk.beta.stnary = function(para=NULL, lme.center=NULL, p=NULL,
 #'           covinv = solve(cov_mat), lcovdet = log(det(cov_mat)),
 #'           mu = -0.5, std = 0.2, lme = lme_par, pen = "beta",
 #'           p = 6, c1 = 10, c2 = 5)
-#' }
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @export
 glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
                      lcovdet=lcovdet, mu=mu, std=std, lme=lme, pen=pen,
@@ -316,7 +314,7 @@ glme.like = function(par=par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 #' @return A matrix with `ntry` rows and 3 columns, where each row represents
 #' a set of initial parameters (location, scale, shape) for the GEV distribution.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @keywords internal
 init.gevmax <-function(data=NULL, ntry=NULL){
 
@@ -358,7 +356,7 @@ init.gevmax <-function(data=NULL, ntry=NULL){
 #' inits <- init.glme(streamflow$r1, ntry = 5)
 #' print(inits)
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @export
 init.glme <-function(xdat, ntry=ntry){
   init.gevmax(data=xdat, ntry=ntry)
@@ -415,7 +413,7 @@ init.glme <-function(xdat, ntry=ntry){
 #'   \code{\link{glme.like}} for the objective function,
 #'   \code{\link{quagev.NS}} for quantile computation.
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
 #' # Load example streamflow data
@@ -595,7 +593,7 @@ glme.gev= function(xdat, ntry=10, pen='beta', pen.choice=NULL,
 #' lmom <- lmomco::lmoms(streamflow$r1, nmom = 3)
 #' pargev.kfix(lmom, kfix = -0.1)
 #'
-#' @author Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+#' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #' @export
 pargev.kfix= function (lmom, kfix= 0.1, checklmom = TRUE, ...)
 {

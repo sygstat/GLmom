@@ -1,23 +1,28 @@
 Package: GLmom
 Type: Package
 Title: Generalized L-Moments Estimation for Extreme Value Distributions
-Version: 1.3.0
+Version: 1.3.1
 Authors@R: c(
       person(given = "Yonggwan",
              family = "Shin",
              role = c("aut", "cre"),
              email = "syg.stat@etri.re.kr",
              comment = c(ORCID = "0000-0001-6966-6511")),
-        person(given = "Yire",
-             family = "Shin",
-             role = c("aut", "dtc"),
-             email = "shinyire87@gmail.com",
-             comment = c(ORCID = "0000-0003-1297-5430")),
+      person(given = "Seokkap",
+             family = "Ko",
+             role = c("aut", "ctb"),
+             email = "softgear@etri.re.kr",
+             comment = c(ORCID = "")),
        person(given = "Jihong",
              family = "Park",
              role = "ctb",
              email="jihong8090@gmail.com",
              comment = c(ORCID = "0009-0003-3191-9968")),
+      person(given = "Yire",
+             family = "Shin",
+             role = c("aut", "dtc"),
+             email = "shinyire87@gmail.com",
+             comment = c(ORCID = "0000-0003-1297-5430")),
       person(given = "Jeong-Soo",
              family = "Park",
              role = c("aut", "ths"),

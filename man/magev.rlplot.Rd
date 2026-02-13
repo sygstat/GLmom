@@ -34,7 +34,6 @@ The plot shows:
 The x-axis (return period) is on a log scale, ranging from 0.1 to 900 years.
 }
 \examples{
-\donttest{
 data(streamflow)
 ff <- c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5,
         0.6, 0.7, 0.8, 0.9, 0.93, 0.95, 0.98, 0.99,
@@ -42,7 +41,6 @@ ff <- c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5,
 zx <- ma.gev(streamflow$r1, quant = ff, weight = 'like1',
              numk = 9, varcom = TRUE)
 magev.rlplot(par = zx$surr$par, se.vec = zx$ranw.se.ma, data = streamflow$r1)
-}
 
 }
 \references{
@@ -56,5 +54,5 @@ for estimating high quantiles of extreme values: Application to heavy rainfall.
   \code{\link{magev.qqplot}} for Q-Q diagnostic plots.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }

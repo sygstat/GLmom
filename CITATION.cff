@@ -13,14 +13,20 @@ authors:
     email: syg.stat@etri.re.kr
     orcid: "https://orcid.org/0000-0001-6966-6511"
     affiliation: "Electronics and Telecommunications Research Institute, Korea"
+  - family-names: Ko
+    given-names: Seokkap
+    email: softgear@etri.re.kr
+    orcid: ""
+    affiliation: "Electronics and Telecommunications Research Institute, Korea"
+  - family-names: Park
+    given-names: Jihong
+    email: jihong8090@gmail.com
+    orcid: "https://orcid.org/0009-0003-3191-9968"
+    affiliation: "Chonnam National University, Korea"
   - family-names: Shin
     given-names: Yire
     email: shinyire87@gmail.com
     orcid: "https://orcid.org/0000-0003-1297-5430"
-    affiliation: "Chonnam National University, Korea"
-  - family-names: Park
-    given-names: Jihong
-    orcid: "https://orcid.org/0009-0003-3191-9968"
     affiliation: "Chonnam National University, Korea"
   - family-names: Park
     given-names: Jeong-Soo

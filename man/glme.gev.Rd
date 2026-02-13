@@ -90,5 +90,5 @@ arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
   \code{\link{quagev.NS}} for quantile computation.
 }
 \author{
-Yonggwan Shin, Yire Shin, Jihong Park, Jeong-Soo Park
+Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 }
