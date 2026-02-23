@@ -23,3 +23,5 @@
 ^test_.*\.R$
 ^GLmom\.Rcheck$
 ^\.gitattributes$
+^GLmom-manual\.pdf$
+^build_cmds\.txt$

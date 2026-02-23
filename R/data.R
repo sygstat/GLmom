@@ -9,7 +9,7 @@
 #' }
 #'
 #' @source UK National River Flow Archive, Peak Flow Dataset
-#'   (\url{https://nrfa.ceh.ac.uk/peak-flow-dataset}).
+#'   (\url{https://nrfa.ceh.ac.uk/data/peak-flow-dataset}).
 #'
 #' @references 
 #' Grego, J. M., Yates, P. A., & Mai, K. (2015). Standard error estimation
@@ -80,9 +80,11 @@
 #' data(Trehafod)
 #' head(Trehafod)
 #'
+#' \donttest{
 #' # Fit non-stationary GEV11 model
 #' result <- glme.gev11(Trehafod$r1, ntry = 5)
 #' print(result$para.glme)
+#' }
 #'
 "Trehafod"
 

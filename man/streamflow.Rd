@@ -13,7 +13,7 @@ A data frame with 50 rows and 2 columns:
 }
 \source{
 UK National River Flow Archive, Peak Flow Dataset
-  (\url{https://nrfa.ceh.ac.uk/peak-flow-dataset}).
+  (\url{https://nrfa.ceh.ac.uk/data/peak-flow-dataset}).
 }
 \usage{
 streamflow

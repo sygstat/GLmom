@@ -1,3 +1,12 @@
+# GLmom 1.3.1
+
+## Bug Fixes
+
+* Replaced all `\dontrun{}` with unwrapped examples or `\donttest{}` per CRAN policy.
+* Wrapped `Trehafod` and `glme.gev11()` examples in `\donttest{}` (> 5 sec on Debian).
+* Fixed invalid URL for UK National River Flow Archive Peak Flow Dataset.
+* Single-quoted acronyms and proper names in DESCRIPTION to avoid spell-check notes.
+
 # GLmom 1.3.0
 
 ## Breaking Changes

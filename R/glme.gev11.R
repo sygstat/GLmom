@@ -219,10 +219,12 @@ nllh.glme.gev11 <- function(a, xdat=xdat, newtheta=newtheta,
 #' data(streamflow)
 #' x <- streamflow$r1
 #'
+#' \donttest{
 #' # Estimate non-stationary GEV11 parameters
 #' result <- glme.gev11(x, ntry = 5)
 #' print(result$para.glme)  # Proposed GLME estimates
 #' print(result$para.lme)  # L-moment based estimates
+#' }
 #'
 #' @export
 glme.gev11 = function(xdat, ntry=10, ftol=1e-6,
