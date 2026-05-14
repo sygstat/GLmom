@@ -44,9 +44,15 @@ For time-varying extremes, the GEV11 model allows:
 ## Installation
 
 ```r
+# Install pacakge
+install.packages("GLmom")
+```
+
+```r
 # Install from GitHub
 remotes::install_github("sygstat/GLmom")
 ```
+
 
 ## Quick Start
 
