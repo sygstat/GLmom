@@ -12,13 +12,17 @@ This package provides three main estimation approaches for extreme value analysi
 
 ### The GEV Distribution
 
-The Generalized Extreme Value (GEV) distribution has CDF:
+The Generalized Extreme Value (GEV) distribution has CDF (Hosking's parameterization):
 
 ```
-F(x) = exp{-[1 + xi*(x-mu)/sigma]^(-1/xi)}
+F(x) = exp{-[1 - xi*(x-mu)/sigma]^(1/xi)}
 ```
 
-where `mu` is location, `sigma > 0` is scale, and `xi` is shape parameter.
+where `mu` is location, `sigma > 0` is scale, and `xi` is the shape parameter.
+Note the sign convention: `xi < 0` corresponds to a heavy (Fréchet-type) upper
+tail and `xi > 0` to a bounded (Weibull-type) upper tail. This is Hosking's
+L-moment convention, used by `lmom`/`lmomco`; the shape parameter reported by
+`evd`, `ismev`, and `extRemes` has the opposite sign.
 
 ### Non-stationary GEV11 Model
 
@@ -132,7 +136,7 @@ result_lme$lme.gev11
 # - mu0 = 176.2: baseline location at t=0
 # - mu1 = 0.60: location increases ~0.6 m^3/s per year
 # - sigma0, sigma1: log-scale parameters
-# - xi = -0.32: bounded upper tail (Weibull-type)
+# - xi = -0.32: heavy upper tail (Hosking convention: xi < 0 is Frechet-type)
 
 # Companion methods (new in v2.0.0)
 strup.gev11(x)$strup.mdfy      # WLS (Strupczewski & Kaczmarek 2001)
