@@ -6,28 +6,39 @@
 \usage{
 glme.gev(
   xdat,
-  ntry = 10,
+  ntry = 5,
   pen = "beta",
-  pen.choice = NULL,
+  pen.choice = 1,
   mu = -0.5,
   std = 0.2,
   p = 6,
-  c1 = 10,
-  c2 = 5
+  c1 = 3,
+  c2 = 1,
+  c0 = 0.35,
+  q = NULL,
+  show = FALSE,
+  method = "BFGS",
+  maxit = 70,
+  abstol = 1e-05
 )
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted.}
 
-\item{ntry}{Number of attempts for parameter estimation. Higher values increase
-the chance of finding a more accurate estimate by trying different initial conditions.}
+\item{ntry}{Number of attempts for parameter estimation (default 5). Higher
+values increase the chance of finding the global optimum by trying
+different initial conditions.}
 
 \item{pen}{Type of penalty function: Choose among "norm", "beta" (default),
 "ms", "park", "cannon", "cd", and "no" (without penalty function).}
 
-\item{pen.choice}{Choice number of penalty function specifying hyperparameters.
-For "beta": 1-6 correspond to different (p, c1, c2) combinations.
-For "norm": 1-4 correspond to different (mu, std) combinations.}
+\item{pen.choice}{Choice number of penalty function specifying hyperparameters
+(default 1). For "beta": 1-6 correspond to (p, c1, c2) =
+(6,3,1), (6,5,2), (6,7,3), (2,3,0.5), (2,5,1), (2,7,1.5).
+For "norm": 1-4 correspond to (mu, std) =
+(-0.5,0.25), (-0.5,0.15), (-0.6,0.25), (-0.6,0.15).
+Set \code{pen.choice=NULL} to use the hyperparameters given by
+\code{p, c1, c2} (beta) or \code{mu, std} (norm) directly.}
 
 \item{mu}{Mean hyperparameter for "norm" penalty function (default -0.5).}
 
@@ -35,26 +46,45 @@ For "norm": 1-4 correspond to different (mu, std) combinations.}
 
 \item{p}{Shape hyperparameter for "beta" penalty function (default 6).}
 
-\item{c1}{Scaling hyperparameter for "beta" penalty function (default 10).}
+\item{c1}{Scaling hyperparameter for "beta" penalty function (default 3).}
 
-\item{c2}{Upper limit hyperparameter for "beta" penalty function (default 5).}
+\item{c2}{Upper limit hyperparameter for "beta" penalty function (default 1).}
+
+\item{c0}{Half-width of the adaptive beta penalty support (default 0.35).}
+
+\item{q}{Optional fixed second shape parameter for the beta penalty. If
+given, the beta penalty support is fixed instead of data-adaptive.}
+
+\item{show}{If TRUE, prints the objective value and parameters of each try.}
+
+\item{method}{Optimization method passed to \code{\link[stats]{optim}}
+(default "BFGS").}
+
+\item{maxit}{Maximum number of iterations for \code{optim} (default 70).}
+
+\item{abstol}{Absolute and relative convergence tolerance for \code{optim}
+(default 1e-5).}
 }
 \value{
 The glme.gev function returns a list containing the following elements:
 \itemize{
  \item para.glme - The estimated parameters of the Generalized Extreme Value distribution.
  \item para.lme - The L-moment estimates of the parameters.
+ \item nllh.glme - The penalized negative log-likelihood of the GLME solution.
+ \item convergence - 0 if the optimization converged, 5 otherwise.
+ \item pen, pen_pen.choice - The penalization method (and choice) used.
+ \item p_q - (for beta penalty) The p and q values used.
+ \item c1_c2, c0_c1_c2 - (for beta penalty) The hyperparameters used.
+ \item mu_std - (for norm penalty) The mu and std values used.
  \item covinv.lmom - The inverse of the covariance matrix of the L-moments.
  \item lcovdet - The log determinant of the covariance matrix.
- \item nllh.glme - The negative log-likelihood of the GLME solution.
- \item pen - The penalization method used.
- \item p_q - (for beta penalty) The p and q values used.
- \item c1_c2 - (for beta penalty) The c1 and c2 values used.
- \item mu_std - (for norm penalty) The mu and std values used.
 }
 }
 \description{
-This function estimates the Generalized L-moments of Generalized Extreme Value distribution.
+This function estimates the parameters of the Generalized Extreme Value
+distribution by the generalized method of L-moment estimation (GLME),
+which minimizes the generalized L-moment distance plus a penalty
+(preference) function on the shape parameter.
 }
 \details{
 The equations for the L-moments for LME of the GEVD are

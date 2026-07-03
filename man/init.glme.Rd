@@ -2,23 +2,41 @@
 % Please edit documentation in R/glme.gev.R
 \name{init.glme}
 \alias{init.glme}
-\title{Initialize random starting values for GLME optimization}
+\title{Initialize starting values for GLME optimization}
 \usage{
-init.glme(xdat, ntry = ntry)
+init.glme(
+  data = NULL,
+  ntry = NULL,
+  model = "gev00",
+  pretheta = NULL,
+  xdat = NULL
+)
 }
 \arguments{
-\item{xdat}{A numeric vector of data to be fitted.}
+\item{data}{A numeric vector of data to be fitted.}
 
-\item{ntry}{Number of initial parameter sets to generate.}
+\item{ntry}{Number of initial parameter sets to generate (minimum 2).}
+
+\item{model}{Either "gev00" (stationary, default) or "gev11".}
+
+\item{pretheta}{Optional pre-estimate (mu0, mu1, sigma0, sigma1, xi)
+used for the first candidate when \code{model="gev11"}.}
+
+\item{xdat}{Deprecated alias of \code{data} (v1.x compatibility).}
 }
 \value{
-A matrix with \code{ntry} rows and 3 columns (location, scale, shape),
+A matrix with \code{ntry} rows and 3 columns,
   where each row is a candidate starting point for optimization.
 }
 \description{
-Generates multiple random starting parameter sets for multi-start
-optimization in GLME estimation. Uses L-moment estimates as a base
-and adds random perturbations.
+Generates multiple starting parameter sets for multi-start optimization
+in GLME estimation, for both the stationary GEV (\code{model="gev00"})
+and the non-stationary GEV11 (\code{model="gev11"}). Uses L-moment
+estimates as a base and adds random perturbations.
+
+For \code{model="gev11"} the second column is returned on the log scale
+(matching sigma0 of the GEV11 parameterization), and when \code{pretheta}
+is supplied the first candidate is a perturbation of the pre-estimate.
 }
 \examples{
 data(streamflow)
@@ -27,7 +45,8 @@ print(inits)
 
 }
 \seealso{
-\code{\link{glme.gev}} which uses this function internally.
+\code{\link{glme.gev}}, \code{\link{glme.gev11}} which use this
+  function internally.
 }
 \author{
 Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park

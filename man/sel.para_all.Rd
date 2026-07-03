@@ -2,31 +2,31 @@
 % Please edit documentation in R/glme.gev11.R
 \name{sel.para_all}
 \alias{sel.para_all}
-\title{Select best parameters based on goodness-of-fit}
+\title{Select parameters using goodness-of-fit criterion}
 \usage{
 sel.para_all(xdat, para.sel = NULL, model = NULL, obj.fun = NULL)
 }
 \arguments{
 \item{xdat}{Numeric vector of data.}
 
-\item{para.sel}{Matrix of candidate parameter sets (ntry x npar).}
+\item{para.sel}{Matrix of candidate parameter vectors (one per row).}
 
-\item{model}{Model type: "gev11", "gev10", or "gev20".}
+\item{model}{Model name string (e.g., "gev11").}
 
-\item{obj.fun}{Numeric vector of objective function values (tie-breaker).}
+\item{obj.fun}{Numeric vector of objective values used for tie-breaking.}
 }
 \value{
 A list containing:
 \describe{
-  \item{para}{Best parameter vector}
-  \item{min.itry}{Index of the best candidate}
-  \item{gof}{Goodness-of-fit values for all candidates}
-  \item{obj.fun}{Input objective function values}
+  \item{para}{Selected parameter vector}
+  \item{min.itry}{Index of selected try}
+  \item{gof}{Goodness-of-fit values}
+  \item{obj.fun}{Objective function values}
 }
 }
 \description{
-Internal function that selects the best parameter estimate
-from multiple candidates using energy distance-based goodness-of-fit
-across multiple return periods.
+Internal function that selects the best parameter set among
+candidate solutions using a goodness-of-fit measure based on the expected
+vs. observed number of exceedances (see Shin et al., 2025b, JKSS).
 }
 \keyword{internal}

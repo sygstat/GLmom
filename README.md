@@ -32,6 +32,9 @@ For time-varying extremes, the GEV11 model allows:
 
 - **Stationary GEV estimation** (`glme.gev`): GLME with various penalty functions
 - **Non-stationary GEV11 estimation** (`glme.gev11`): Time-varying parameters with GLME
+- **Pure L-moment NS estimation** (`lme.gev11`, new in v2.0.0): Shin et al. (2025b) method (renames `gado.prop_11`)
+- **Component NS methods** (new in v2.0.0): `strup.gev11` (Strupczewski WLS), `GN16.gev11` (quantile-based GN16)
+- **NS random number generation** (`ran.gev_all`, new in v2.0.0) and quantiles (`quagev.NS`)
 - **Model averaging estimation** (`ma.gev`): High quantile estimation with multiple weighting schemes
 - **Coles-Dixon penalized MLE** (`mle.gev.CD`): MLE with exponential penalty on shape parameter (Coles & Dixon, 1999), available via `ma.gev(..., CD=TRUE)`
 - **Restricted MLE** (`remle.gev`): Constrained MLE matching sample mean (or median) and L-scale, available via `ma.gev(..., remle=TRUE)`
@@ -39,7 +42,12 @@ For time-varying extremes, the GEV11 model allows:
 - **Multiple penalty functions**: `beta`, `norm`, `ms`, `park`, `cannon`, `cd`, `no`
 - **Multiple weighting schemes** (MAGEV): `like`, `gLd`, `med`, `cvt`
 - **MAGEV diagnostic plots**: `magev.ksensplot`, `magev.qqplot`, `magev.rlplot`
-- **Example datasets**: `streamflow`, `PhliuAgromet`, `Trehafod`, `bangkok`, `haenam`
+- **Example datasets**: `streamflow`, `PhliuAgromet`, `Trehafod`, `glanteifi`, `bangkok`, `haenam`
+
+> **Note (v2.0.0):** the GLME penalty presets and several defaults were
+> re-tuned following the revised paper (Shin et al., 2025a), so numerical
+> results differ from v1.3.1. All v1.3.1 functions and datasets remain
+> available; see `NEWS.md` for details.
 
 ## Installation
 
@@ -65,9 +73,13 @@ result <- glme.gev(streamflow$r1)
 result$para.glme  # GLME estimates: (mu, sigma, xi)
 
 # Non-stationary GEV11
-data(Trehafod)
-result <- glme.gev11(Trehafod$r1)
+data(glanteifi)
+result <- glme.gev11(glanteifi$flow)
 result$para.glme  # (mu0, mu1, sigma0, sigma1, xi)
+
+# Pure L-moment method (Shin et al. 2025b)
+result_lme <- lme.gev11(glanteifi$flow)
+result_lme$lme.gev11
 ```
 
 ## Examples
@@ -79,18 +91,19 @@ library(GLmom)
 data(streamflow)
 x <- streamflow$r1
 
-# Default: beta penalty (adaptive)
+# Default: beta penalty (adaptive), preset pen.choice = 1
 result <- glme.gev(x)
 result$para.glme  # GLME estimates
-#> [1]  55.5346   8.7206  -0.4508
+#>      mu     sig      xi
+#> 55.4441  9.3304 -0.4191
 result$para.lme   # Traditional L-moment estimates
-#>       xi    alpha    kappa
-#>  55.4021   9.5229  -0.4075
+#>      mu     sig      xi
+#> 55.4021  9.5229 -0.4075
 
 # Compare different penalty functions
-glme.gev(x, pen = "beta")$para.glme[3]    # xi = -0.4508
-glme.gev(x, pen = "ms")$para.glme[3]      # xi = -0.2855 (Martins-Stedinger)
-glme.gev(x, pen = "park")$para.glme[3]    # xi = -0.3474
+glme.gev(x, pen = "beta")$para.glme[3]    # xi = -0.4191
+glme.gev(x, pen = "ms")$para.glme[3]      # xi = -0.4097 (Martins-Stedinger)
+glme.gev(x, pen = "park")$para.glme[3]    # xi = -0.4020
 glme.gev(x, pen = "no")$para.glme[3]      # xi = -0.4075 (no penalty = L-moment)
 ```
 
@@ -98,27 +111,32 @@ glme.gev(x, pen = "no")$para.glme[3]      # xi = -0.4075 (no penalty = L-moment)
 
 ```r
 library(GLmom)
-data(Trehafod)
-x <- Trehafod$r1  # 53 years of river flow data
+data(glanteifi)
+x <- glanteifi$flow  # 65 years of peak streamflow (River Teifi, Wales, UK)
 
-# Estimate with GLME (default: beta penalty)
+# Estimate with GLME (default: beta penalty, pen.choice = 1)
 result <- glme.gev11(x, ntry = 10)
 
 # GLME estimates (with penalty)
 result$para.glme
 #>        mu0        mu1     sigma0     sigma1         xi
-#>  79.312877   1.243031   2.788088   0.013611  -0.087837
+#> 176.157681   0.598268   3.787915   0.004891  -0.318323
 
 # L-moment estimates (no penalty) - Shin et al. (2025b)
-result$para.lme
+result_lme <- lme.gev11(x, ntry = 10)
+result_lme$lme.gev11
 #>        mu0        mu1     sigma0     sigma1         xi
-#>  79.330671   1.243031   2.792161   0.013611  -0.076654
+#> 175.480306   0.598268   3.780033   0.004891  -0.316263
 
 # Interpretation:
-# - mu0 = 79.31: baseline location at t=0
-# - mu1 = 1.24: location increases ~1.2 units per year
+# - mu0 = 176.2: baseline location at t=0
+# - mu1 = 0.60: location increases ~0.6 m^3/s per year
 # - sigma0, sigma1: log-scale parameters
-# - xi = -0.09: bounded upper tail (Weibull-type)
+# - xi = -0.32: bounded upper tail (Weibull-type)
+
+# Companion methods (new in v2.0.0)
+strup.gev11(x)$strup.mdfy      # WLS (Strupczewski & Kaczmarek 2001)
+GN16.gev11(x)$para.gado.org    # GN16 method
 ```
 
 ### 3. Shin et al. (2025b) Compatibility Functions
@@ -129,19 +147,23 @@ For users following the methodology in Shin et al. (2025b):
 library(GLmom)
 data(Trehafod)
 
-# Simple interface - returns proposed L-moment estimates
+# Recommended interface (v2.0.0): lme.gev11()
+result0 <- lme.gev11(Trehafod$r1, ntry = 10)
+result0$lme.gev11
+
+# Simple wrapper - returns proposed L-moment estimates
 result1 <- nsgev(Trehafod$r1, ntry = 10)
 result1$para.prop
-#>        mu0        mu1     sigma0     sigma1         xi
-#>  79.330671   1.243031   2.792161   0.013611  -0.076654
+#>       mu0       mu1    sigma0    sigma1        xi
+#> 86.075844  0.958614  2.788838  0.014667 -0.060689
 
-# Comprehensive output - multiple estimation methods
+# Comprehensive output - multiple estimation methods (deprecated wrapper)
 result2 <- gado.prop_11(Trehafod$r1, ntry = 10)
 
 # Compare methods:
-result2$para.prop    # Proposed L-moment method
-result2$para.gado    # GN16 method
-result2$para.wls     # Weighted Least Squares
+result2$para.prop    # Proposed L-moment method (= lme.gev11)
+result2$para.gado    # GN16 method (= GN16.gev11()$para.gado.org)
+result2$para.wls     # Weighted Least Squares (= strup.gev11()$strup.mdfy)
 result2$lme.sta      # Stationary L-moments (mu, sigma, xi)
 ```
 
@@ -149,19 +171,19 @@ result2$lme.sta      # Stationary L-moments (mu, sigma, xi)
 
 ```r
 library(GLmom)
-data(Trehafod)
+data(glanteifi)
 
 # All penalty options for non-stationary model
 penalties <- c("beta", "norm", "ms", "park", "cannon", "cd", "no")
 
 results <- sapply(penalties, function(p) {
-  r <- glme.gev11(Trehafod$r1, ntry = 10, pen = p)
+  r <- glme.gev11(glanteifi$flow, ntry = 10, pen = p)
   r$para.glme[5]  # shape parameter xi
 })
 
 print(round(results, 4))
-#>  beta.xi norm.xi   ms.xi park.xi cannon.xi  cd.xi   no.xi
-#>  -0.0878 -0.0904 -0.0895 -0.0692   -0.0901 -0.0667 -0.0767
+#>  beta.xi norm.xi   ms.xi park.xi cannon.xi   cd.xi   no.xi
+#>  -0.3183 -0.3144 -0.3271 -0.2985   -0.3123 -0.2843 -0.3163
 ```
 
 ### 5. Custom Hyperparameters
@@ -170,15 +192,15 @@ print(round(results, 4))
 library(GLmom)
 data(streamflow)
 
-# Beta penalty with custom hyperparameters
-glme.gev(streamflow$r1, pen = "beta", p = 6, c1 = 20, c2 = 7)
-
-# Or use preset choices (1-6 for beta, 1-4 for norm)
+# Preset choices (1-6 for beta, 1-4 for norm; Table 1 / Eq. 15 of the paper)
 glme.gev(streamflow$r1, pen = "beta", pen.choice = 2)
 glme.gev(streamflow$r1, pen = "norm", pen.choice = 1)
 
+# Beta penalty with custom hyperparameters (set pen.choice = NULL)
+glme.gev(streamflow$r1, pen = "beta", pen.choice = NULL, p = 6, c1 = 5, c2 = 2)
+
 # Normal penalty with custom mean and std
-glme.gev(streamflow$r1, pen = "norm", mu = -0.5, std = 0.2)
+glme.gev(streamflow$r1, pen = "norm", pen.choice = NULL, mu = -0.5, std = 0.2)
 ```
 
 ### 6. Model Averaging for High Quantiles (MAGEV)
@@ -255,13 +277,14 @@ result_all$qua.ma      # Model-averaged quantiles
 
 ## Datasets
 
-| Dataset          | Description                        | n  | Variables |
-| ---------------- | ---------------------------------- | -- | --------- |
-| `streamflow`   | Annual maximum streamflow          | 50 | Year, r1  |
-| `PhliuAgromet` | Meteorological data from Thailand  | -  | prec, ... |
-| `Trehafod`     | River flow from Wales, UK          | 53 | Year, r1  |
-| `bangkok`      | Annual max daily rainfall, Bangkok | 52 | rainfall  |
-| `haenam`       | Annual max daily rainfall, Haenam  | 49 | rainfall  |
+| Dataset          | Description                                       | n  | Variables                      |
+| ---------------- | ------------------------------------------------- | -- | ------------------------------ |
+| `streamflow`   | Annual maximum streamflow                         | 50 | Year, r1                       |
+| `PhliuAgromet` | Meteorological data from Thailand                 | 40 | prec, ...                      |
+| `Trehafod`     | River flow from Wales, UK                         | 53 | Year, r1                       |
+| `glanteifi`    | Peak streamflow, River Teifi at Glanteifi, UK (NRFA 62001, 1959-2023) | 65 | id, river, location, year, flow |
+| `bangkok`      | Annual max daily rainfall, Bangkok                | 58 | X1-X5                          |
+| `haenam`       | Annual max daily rainfall, Haenam                 | 52 | year, X1                       |
 
 ```r
 # Load and explore datasets
@@ -279,11 +302,15 @@ head(Trehafod)
 
 | Function              | Description                        | Output                                                                          |
 | --------------------- | ---------------------------------- | ------------------------------------------------------------------------------- |
-| `glme.gev()`        | Stationary GEV estimation          | `para.glme`, `para.lme`, `nllh.glme`                                      |
-| `glme.gev11()`      | Non-stationary GEV11               | `para.glme`, `para.lme`, `para.gado`, `para.wls`, ...                   |
+| `glme.gev()`        | Stationary GEV estimation          | `para.glme`, `para.lme`, `nllh.glme`, `convergence`                     |
+| `glme.gev11()`      | Non-stationary GEV11 (GLME)        | `para.glme`, `nllh.glme`, `convergence`, `para.wls`, `para.gado`, ...  |
+| `lme.gev11()`       | Pure L-moment NS estimation (v2.0.0) | `lme.gev11`, `precis`                                                     |
+| `strup.gev11()`     | WLS estimation (Strupczewski)      | `strup.para`, `strup.mdfy`                                                  |
+| `GN16.gev11()`      | GN16 estimation                    | `para.gado.org`, `para.gado.mdfy`                                           |
+| `ran.gev_all()`     | NS GEV random number generation    | numeric vector                                                                  |
 | `ma.gev()`          | Model averaging for high quantiles | `qua.ma`, `qua.mle`, `qua.lme`, `w.ma`, `qua.CD`, `qua.remle1`, ... |
 | `nsgev()`           | Simple L-moment interface          | `para.prop`, `precis`                                                       |
-| `gado.prop_11()`    | Comprehensive L-moment             | `para.prop`, `para.gado`, `para.wls`, `lme.sta`                         |
+| `gado.prop_11()`    | Comprehensive L-moment (deprecated) | `para.prop`, `para.gado`, `para.wls`, `lme.sta`                        |
 | `quagev.NS()`       | NS GEV quantile function           | quantiles (vector/matrix)                                                       |
 | `magev.ksensplot()` | K sensitivity plot                 | optimal K value                                                                 |
 | `magev.qqplot()`    | Q-Q diagnostic plot                | (graphical)                                                                     |
@@ -303,7 +330,7 @@ head(Trehafod)
 
 | Penalty    | Description             | Parameters            | Reference                  |
 | ---------- | ----------------------- | --------------------- | -------------------------- |
-| `beta`   | Adaptive beta (default) | `p`, `c1`, `c2` | Shin et al. (2025a)        |
+| `beta`   | Adaptive beta (default) | `p`, `c0`, `c1`, `c2` | Shin et al. (2025a)  |
 | `norm`   | Normal distribution     | `mu`, `std`       | -                          |
 | `ms`     | Martins-Stedinger       | Beta(6,9) fixed       | Martins & Stedinger (2000) |
 | `park`   | Park                    | Beta(2.5,2.5) fixed   | -                          |
@@ -325,10 +352,11 @@ head(Trehafod)
 | Function             | Description                              |
 | -------------------- | ---------------------------------------- |
 | `glme.like()`      | GLME likelihood function                 |
-| `init.gevmax()`    | Parameter initialization                 |
+| `init.glme()`      | Multi-start initialization (gev00/gev11) |
+| `init.gevmax()`    | Parameter initialization (v1.x)          |
 | `pargev.kfix()`    | GEV with fixed shape                     |
 | `MS_pk()`          | Martins-Stedinger penalty                |
-| `pk.beta.stnary()` | Beta penalty function                    |
+| `pk.beta()`        | Unified adaptive beta penalty (v2.0.0; alias `pk.beta.stnary()`) |
 | `pk.norm.stnary()` | Normal penalty function                  |
 | `cd.hos()`         | Coles-Dixon penalty for `mle.gev.CD()` |
 

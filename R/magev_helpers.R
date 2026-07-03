@@ -1310,6 +1310,61 @@ remle.gev <- function(xdat, ntry = 5, rest = 'mean', quant = c(0.99, 0.995),
 # Weight computation functions (from weight.com.BMA_15Dec25.R)
 # ============================================================
 
+#' v1.x beta preference function (frozen copy for MAGEV)
+#'
+#' @description Frozen copy of the GLmom v1.x `pk.beta.stnary()`
+#' implementation, kept so that the MAGEV BMA prior (`set.prior()`) is
+#' unaffected by the v2.0.0 redesign of `pk.beta()` (different support,
+#' out-of-support value, and q-adaptation trigger).
+#'
+#' @param para A vector of GEV parameters.
+#' @param lme.center L-moment estimates as center.
+#' @param p Shape parameter.
+#' @param q Shape parameter q (optional, if provided uses fixed limits).
+#' @param c0 Limit parameter (default 0.3).
+#' @param c1 Scaling parameter (default 10).
+#' @param c2 Upper limit parameter (default 5).
+#' @return A list containing pk.one, p, and q.
+#' @noRd
+pk.beta.stnary.v1 = function(para=NULL, lme.center=NULL, p=NULL,
+                             q=NULL, c0=0.3, c1=10, c2=5){
+
+  pk=list()
+
+  if(is.null(q)){
+
+    ulim= c0
+    aa= max(-1, lme.center[3]-ulim)
+    bb= min(0.5, lme.center[3]+ulim)
+    al=min(aa,bb)
+    bl=max(aa,bb)
+
+    if(lme.center[3] <= 0) {
+      qlim= min(abs(lme.center[3])*c1, c2)
+    }else{ qlim =0.0 }
+
+    q=p+qlim
+
+  }else if(!is.null(q)){
+    lme.center[3]=0
+    al= -0.5; bl=0.5
+  }
+
+  Be  <- integrate(Befun, lower=al, upper=bl,
+                   al=al, bl=bl, p=p, q=q)[1]$value
+
+  pk$pk.one=1
+  if(lme.center[3] < 0.5){
+    if( (para[3] > al) & (para[3] < bl) ) {
+      pk$pk.one <- ((-al+para[3])^(p-1))*((bl-para[3])^(q-1))/ Be
+    }}
+  if(is.na(pk$pk.one)) pk$pk.one=1
+  pk$p=p
+  pk$q=q
+  return(pk)
+}
+
+
 #' Beta prior for model averaging
 #'
 #' @description Internal function that computes a Beta distribution prior
@@ -1432,9 +1487,9 @@ set.prior <- function(pen = NULL, numk = NULL, xi_lme = NULL, kpar = NULL,
     }
   } else if (pen == "beta") {
     for (i in 1:numk) {
-      pklist <- pk.beta.stnary(para = c(1, 0, kpar[i]),
-                               lme.center = c(1, 0, xi_lme),
-                               p = p, c0 = c0, c1 = c1, c2 = c2)
+      pklist <- pk.beta.stnary.v1(para = c(1, 0, kpar[i]),
+                                  lme.center = c(1, 0, xi_lme),
+                                  p = p, c0 = c0, c1 = c1, c2 = c2)
       prior[i] <- pklist$pk.one
     }
   }

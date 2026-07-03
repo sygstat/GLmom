@@ -4,9 +4,14 @@
 #' This script demonstrates the compatibility functions nsgev() and
 #' gado.prop_11() that follow the methodology in Shin et al. (2025b).
 #'
+#' Since v2.0.0, gado.prop_11() is deprecated: the proposed method is
+#' available as lme.gev11(), and the auxiliary methods as strup.gev11()
+#' and GN16.gev11(). The wrappers below remain for v1.x compatibility.
+#'
 #' These functions provide:
-#' - nsgev(): Simple interface returning only the proposed L-moment estimates
-#' - gado.prop_11(): Comprehensive output comparing multiple estimation methods
+#' - lme.gev11(): Recommended interface for the proposed L-moment method
+#' - nsgev(): Simple wrapper returning only the proposed estimates
+#' - gado.prop_11(): Comprehensive output comparing multiple methods (deprecated)
 #'
 #' Reference: Shin et al. (2025b). Building nonstationary extreme value model
 #'            using L-moments. Journal of the Korean Statistical Society, 54.
@@ -25,9 +30,15 @@ cat("Data: Trehafod river flow (n =", length(x), "years)\n\n")
 # -----------------------------------------------------------------------------
 # 1. nsgev() - Simple interface
 # -----------------------------------------------------------------------------
-cat("--- 1. nsgev() - Simple L-moment estimation ---\n")
-cat("This function returns only the proposed L-moment estimates (no penalty).\n\n")
+cat("--- 1. lme.gev11() / nsgev() - L-moment estimation ---\n")
+cat("These return the proposed L-moment estimates (no penalty).\n\n")
 
+# Recommended v2.0.0 interface:
+set.seed(123)
+result0 <- lme.gev11(x, ntry = 10)
+cat("lme.gev11() estimates:\n  ", round(result0$lme.gev11, 4), "\n\n")
+
+# v1.x-compatible wrapper (same method):
 set.seed(123)
 result1 <- nsgev(x, ntry = 10)
 
@@ -43,11 +54,12 @@ cat("\nPrecision measure:", round(result1$precis, 6), "\n")
 # -----------------------------------------------------------------------------
 # 2. gado.prop_11() - Comprehensive output
 # -----------------------------------------------------------------------------
-cat("\n--- 2. gado.prop_11() - Comprehensive comparison ---\n")
-cat("This function returns estimates from three different methods.\n\n")
+cat("\n--- 2. gado.prop_11() - Comprehensive comparison (deprecated) ---\n")
+cat("This function returns estimates from three different methods.\n")
+cat("(A deprecation warning is expected; use lme.gev11() going forward.)\n\n")
 
 set.seed(123)
-result2 <- gado.prop_11(x, ntry = 10)
+result2 <- suppressWarnings(gado.prop_11(x, ntry = 10))
 
 cat("Method comparison:\n\n")
 
@@ -111,21 +123,18 @@ if (all(abs(result1$para.prop - result_glme$para.lme) < 1e-6)) {
 cat("\n--- 5. Function selection guide ---\n")
 
 cat("
-Use nsgev() when:
-  - You want the simplest interface
+Use lme.gev11() when:
+  - You want the proposed L-moment method of Shin et al. (2025b)
+  - (nsgev() is an equivalent v1.x-compatible wrapper)
 
-  - You only need the proposed L-moment estimates
-  - You're following Shin et al. (2025b) methodology exactly
-
-Use gado.prop_11() when:
-  - You want to compare multiple estimation methods
-  - You need WLS and GN16 estimates for diagnostics
+Use strup.gev11() / GN16.gev11() when:
+  - You need the WLS or GN16 estimates for diagnostics
   - You're conducting a methodological comparison study
+  - (gado.prop_11() bundles all three but is deprecated)
 
 Use glme.gev11() when:
   - You want penalized estimates (GLME)
   - You need full control over penalty functions
-  - You want both penalized and unpenalized estimates
 ")
 
 # -----------------------------------------------------------------------------

@@ -6,75 +6,102 @@
 \usage{
 glme.gev11(
   xdat,
-  ntry = 10,
+  ntry = 5,
   ftol = 1e-06,
-  init.rob = TRUE,
-  glme.pre = "wls",
-  opt.choose = "gof",
+  opt.choose = "nllh",
   pen = "beta",
-  pen.choice = NULL,
+  pen.choice = 1,
   mu = -0.55,
-  std = 0.3,
+  std = 0.2,
   p = 6,
-  c1 = 10,
-  c2 = 5
+  c1 = 5,
+  c2 = 2,
+  c0 = 0.35,
+  q = NULL,
+  show = FALSE,
+  init.rob = TRUE,
+  glme.pre = NULL
 )
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted.}
 
-\item{ntry}{Number of attempts for parameter estimation (default 10).}
+\item{ntry}{Number of attempts for parameter estimation (default 5).}
 
 \item{ftol}{Tolerance for convergence (default 1e-6).}
 
-\item{init.rob}{Use robust regression for initialization (default TRUE).}
+\item{opt.choose}{Selection criterion among the multi-start solutions:
+"nllh" (default, penalized negative log-likelihood) or "gof"
+(goodness-of-fit by the number-of-exceedances measure).}
 
-\item{glme.pre}{Pre-estimation method: "wls" (default) or "gado".}
+\item{pen}{Type of penalty function: "norm", "beta" (default), "ms",
+"park", "cannon", "cd", or "no".}
 
-\item{opt.choose}{Selection criterion: "gof" (default, goodness-of-fit) or "nllh" (negative log-likelihood).}
-
-\item{pen}{Type of penalty function: "norm", "beta" (default), "ms", "park", "cannon", "cd", or "no".}
-
-\item{pen.choice}{Choice number for penalty hyperparameters (default 6 for beta).}
+\item{pen.choice}{Choice number for penalty hyperparameters (default 1).
+See \code{\link{glme.gev}} for the preset values. Set to NULL to use
+\code{p, c1, c2} (beta) or \code{mu, std} (norm) directly.}
 
 \item{mu}{Mean for normal penalty (default -0.55).}
 
-\item{std}{Std for normal penalty (default 0.3).}
+\item{std}{Std for normal penalty (default 0.2).}
 
 \item{p}{Shape for beta penalty (default 6).}
 
-\item{c1}{Scaling for beta penalty (default 10).}
+\item{c1}{Scaling for beta penalty (default 5).}
 
-\item{c2}{Limit for beta penalty (default 5).}
+\item{c2}{Limit for beta penalty (default 2).}
+
+\item{c0}{Half-width of the adaptive beta penalty support (default 0.35).}
+
+\item{q}{Optional fixed second shape parameter for the beta penalty.}
+
+\item{show}{If TRUE, prints the objective value of each try.}
+
+\item{init.rob}{Use robust regression for the WLS initialization
+(default TRUE).}
+
+\item{glme.pre}{Deprecated (ignored). The WLS pre-estimate is always used.}
 }
 \value{
 A list containing:
 \itemize{
-  \item para.glme - Proposed GLME estimates (5 parameters: mu0, mu1, sigma0, sigma1, xi).
-  \item para.lme - L-moment based estimates for non-stationary model.
-  \item para.gado - GN16 original estimates.
-  \item para.wls - Weighted least squares estimates (WLS).
-  \item strup.org - WLSE by strup method.
+  \item para.glme - Proposed GLME estimates (mu0, mu1, sigma0, sigma1, xi).
+  \item nllh.glme - Penalized negative log-likelihood of the solution.
+  \item convergence - 0 if converged, 5 otherwise.
+  \item pen, pen_pen.choice - Penalty method (and choice) used.
+  \item p_q, c1_c2, c0_c1_c2 - (for beta) hyperparameters used.
+  \item mu_std - (for norm) hyperparameters used.
+  \item strup.org - WLSE by the Strupczewski method (\code{strup.para}).
+  \item para.wls - Modified WLS estimates (\code{strup.mdfy}).
+  \item para.gado - GN16 method estimates.
   \item lme.sta - Stationary L-moment estimates.
-  \item pen - Penalty method used.
-  \item p_q - (for beta) p and q values.
-  \item c1_c2 - (for beta) c1 and c2 values.
+  \item para.lme - Pure L-moment estimates; returned only when
+    \code{pen="no"} (then identical to para.glme). For other penalties
+    use \code{\link{lme.gev11}} directly.
+  \item precis - (only when \code{pen="no"}) precision of the L-moment
+    equation solution.
 }
 }
 \description{
 This function estimates parameters of the non-stationary GEV11 model
-where mu(t) = mu0 + mu1*t and sigma(t) = exp(sigma0 + sigma1*t).
+where mu(t) = mu0 + mu1*t and sigma(t) = exp(sigma0 + sigma1*t),
+by the generalized method of L-moment estimation (GLME).
+
+Starting from the WLS pre-estimate of \code{\link{strup.gev11}},
+the penalized objective (generalized L-moment distance based on the
+asymptotic covariance of the sample L-moments, plus penalty) is
+minimized over (mu0, sigma0, xi) with mu1 and sigma1 held at their
+pre-estimated values. With \code{pen="no"} the result equals the pure
+L-moment method \code{\link{lme.gev11}} of Shin et al. (2025b).
 }
 \examples{
-# Load example streamflow data
-data(streamflow)
-x <- streamflow$r1
+data(glanteifi)
+x <- glanteifi$flow
 
 \donttest{
 # Estimate non-stationary GEV11 parameters
 result <- glme.gev11(x, ntry = 5)
 print(result$para.glme)  # Proposed GLME estimates
-print(result$para.lme)  # L-moment based estimates
 }
 
 }
@@ -89,7 +116,9 @@ model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
 }
 \seealso{
 \code{\link{glme.gev}} for stationary GEV estimation,
-  \code{\link{nsgev}} for the pure L-moment wrapper (no penalty),
+  \code{\link{lme.gev11}} for the pure L-moment method (no penalty),
+  \code{\link{strup.gev11}} for the WLS pre-estimation,
+  \code{\link{GN16.gev11}} for the GN16 method,
   \code{\link{quagev.NS}} for non-stationary quantile computation.
 }
 \author{

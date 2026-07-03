@@ -25,10 +25,10 @@ A list containing:
 Estimates parameters of a non-stationary Generalized Extreme Value (GEV)
 distribution using the L-moment-based algorithm from Shin et al. (2025,
 J. Korean Stat. Soc.).
-This function combines L-moments, goodness-of-fit measures, and robust regression.
 
-This is a convenience wrapper around \code{\link{glme.gev11}} with \code{pen="no"},
-providing compatibility with the original nsgev package interface.
+This is a convenience wrapper around \code{\link{lme.gev11}}, providing
+compatibility with the original nsgev package interface (and with
+GLmom v1.x).
 }
 \examples{
 data(Trehafod)
@@ -42,7 +42,8 @@ model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
 \doi{10.1007/s42952-025-00325-3}
 }
 \seealso{
-\code{\link{glme.gev11}} for the full GLME method with penalty functions,
+\code{\link{lme.gev11}} for the recommended interface,
+  \code{\link{glme.gev11}} for the full GLME method with penalty functions,
   \code{\link{gado.prop_11}} for detailed estimation results.
 }
 \author{

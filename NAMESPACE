@@ -7,7 +7,14 @@ export(pargev.kfix)
 export(MS_pk)
 export(new_pf_norm)
 export(pk.norm.stnary)
+export(pk.beta)
 export(pk.beta.stnary)
+
+# Non-stationary GEV11 methods (new in v2.0.0)
+export(lme.gev11)
+export(strup.gev11)
+export(GN16.gev11)
+export(ran.gev_all)
 
 # Shin et al. (2025b) compatibility functions
 export(nsgev)
@@ -23,10 +30,10 @@ export(magev.qqplot)
 export(magev.rlplot)
 
 # Imports from lmomco
-importFrom("lmomco", "lmoms", "pargev", "lmoms.cov", "vec2par", "lmomgev", "lmorph", "are.lmom.valid", "TLmoms", "lmomgum", "quagev", "pargum")
+importFrom("lmomco", "lmoms", "pargev", "lmoms.cov", "vec2par", "lmomgev", "lmorph", "are.lmom.valid", "TLmoms", "lmomgum", "quagev", "pargum", "rlmomco")
 
 # Imports from stats
-importFrom("stats", "optim", "rnorm", "runif", "integrate", "dnorm", "lm", "var", "cov", "median", "quantile", "cor", "spline", "qchisq", "na.omit")
+importFrom("stats", "optim", "rnorm", "runif", "integrate", "dnorm", "lm", "var", "sd", "cov", "median", "quantile", "cor", "spline", "qchisq", "na.omit")
 
 # Imports from methods
 importFrom("methods", "is")

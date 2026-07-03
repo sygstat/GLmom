@@ -2,7 +2,7 @@
 % Please edit documentation in R/nsgev.R
 \name{gado.prop_11}
 \alias{gado.prop_11}
-\title{Comprehensive Non-stationary GEV Estimation}
+\title{Comprehensive Non-stationary GEV Estimation (deprecated)}
 \usage{
 gado.prop_11(xdat, ntry = 20, ftol = 1e-06)
 }
@@ -24,18 +24,24 @@ A list containing:
 }
 }
 \description{
-Estimates parameters of a non-stationary GEV distribution using multiple methods:
-Weighted Least Squares (WLS), GN16 method, and the proposed L-moment method
-from Shin et al. (2025, J. Korean Stat. Soc.).
+Estimates parameters of a non-stationary GEV distribution using multiple
+methods: Weighted Least Squares (WLS), GN16 method, and the proposed
+L-moment method from Shin et al. (2025, J. Korean Stat. Soc.).
 
-This is a convenience wrapper around \code{\link{glme.gev11}} with \code{pen="no"},
-providing compatibility with the original nsgev package interface.
+As of GLmom v2.0.0 this function is deprecated: it was renamed to
+\code{\link{lme.gev11}} (for the proposed method), and the auxiliary
+methods are available as \code{\link{strup.gev11}} and
+\code{\link{GN16.gev11}}. This wrapper reassembles the v1.x output
+format from those functions and will be removed in a future release.
 }
 \examples{
+\donttest{
 data(Trehafod)
-result <- gado.prop_11(Trehafod$r1, ntry = 5)
+# deprecated wrapper; suppressWarnings() silences the deprecation notice
+result <- suppressWarnings(gado.prop_11(Trehafod$r1, ntry = 5))
 print(result$para.prop)
 print(result$lme.sta)
+}
 
 }
 \references{
@@ -44,7 +50,9 @@ model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
 \doi{10.1007/s42952-025-00325-3}
 }
 \seealso{
-\code{\link{glme.gev11}} for the full GLME method with penalty functions,
+\code{\link{lme.gev11}} for the recommended interface,
+  \code{\link{strup.gev11}}, \code{\link{GN16.gev11}},
+  \code{\link{glme.gev11}} for the full GLME method,
   \code{\link{nsgev}} for the simple interface.
 }
 \author{

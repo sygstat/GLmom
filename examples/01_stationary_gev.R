@@ -86,8 +86,8 @@ for (choice in 1:6) {
 }
 
 # Using custom p, c1, c2 values
-cat("\nCustom hyperparameters (p=6, c1=20, c2=7):\n")
-res_custom <- glme.gev(x, pen = "beta", p = 6, c1 = 20, c2 = 7)
+cat("\nCustom hyperparameters (p=6, c1=5, c2=2):\n")
+res_custom <- glme.gev(x, pen = "beta", pen.choice = NULL, p = 6, c1 = 5, c2 = 2)
 cat("  xi =", round(res_custom$para.glme[3], 4), "\n")
 
 # -----------------------------------------------------------------------------
@@ -104,7 +104,7 @@ for (choice in 1:4) {
 
 # Custom normal prior
 cat("\nCustom normal prior (mu=-0.5, std=0.2):\n")
-res_norm <- glme.gev(x, pen = "norm", mu = -0.5, std = 0.2)
+res_norm <- glme.gev(x, pen = "norm", pen.choice = NULL, mu = -0.5, std = 0.2)
 cat("  xi =", round(res_norm$para.glme[3], 4), "\n")
 
 # -----------------------------------------------------------------------------

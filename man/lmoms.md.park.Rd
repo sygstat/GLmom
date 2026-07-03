@@ -2,28 +2,25 @@
 % Please edit documentation in R/glme.gev11.R
 \name{lmoms.md.park}
 \alias{lmoms.md.park}
-\title{Modified L-moments calculation with optional trimming}
+\title{Modified L-moments computation with failure handling}
 \usage{
-lmoms.md.park(x, nmom = 5, mtrim = FALSE, no.stop = FALSE, vecit = FALSE)
+lmoms.md.park(x, nmom = 5, mtrim = FALSE, no.stop = FALSE)
 }
 \arguments{
-\item{x}{Numeric vector of data.}
+\item{x}{Numeric vector.}
 
-\item{nmom}{Number of L-moments to compute. Default is 5.}
+\item{nmom}{Number of L-moments.}
 
-\item{mtrim}{Logical. If TRUE, use left-trimmed L-moments (trim=5). Default is FALSE.}
+\item{mtrim}{If TRUE, uses left-trimmed TL-moments (leftrim=5).}
 
-\item{no.stop}{Logical. If TRUE, return failure indicator instead of stopping. Default is FALSE.}
-
-\item{vecit}{Logical. If TRUE, return as a vector. Default is FALSE.}
+\item{no.stop}{If TRUE, returns \code{ifail=1} instead of stopping on error.}
 }
 \value{
-A list (from \code{lmomco::TLmoms()}) with an additional \code{ifail}
-  component (0 = success, 1 = failure).
+A list of L-moments with an additional \code{ifail} element.
 }
 \description{
-Internal function that computes sample L-moments with an
-option for trimmed L-moments (TLmoms with left trimming). Includes
-a fail-safe mode for use in optimization loops.
+A slightly modified version of \code{lmomco::lmoms} (by
+J. Park) which returns an \code{ifail} flag instead of stopping when
+the L-moments cannot be computed.
 }
 \keyword{internal}

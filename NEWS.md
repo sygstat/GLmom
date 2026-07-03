@@ -1,3 +1,98 @@
+# GLmom 2.0.0
+
+This release integrates the revised GLME methodology of Shin et al.
+(2026 revised version of arXiv:2512.20385) for both
+the stationary GEV and the non-stationary GEV11 models. All functions and
+datasets of v1.3.1 remain available and callable, but several defaults,
+hyperparameter presets, and output fields changed, so numerical results
+differ from v1.3.1.
+
+## New Features
+
+* New exported functions for the non-stationary GEV11 model:
+  - `lme.gev11()` - pure L-moment estimation (renames `gado.prop_11()`;
+    Shin et al. 2025b, JKSS).
+  - `strup.gev11()` - weighted least squares estimation
+    (Strupczewski & Kaczmarek 2001) with the modified final specification.
+  - `GN16.gev11()` - quantile-based GN16 estimation.
+  - `ran.gev_all()` - random number generation from stationary and
+    non-stationary GEV models (gev, gev01, gev10, gev11, gev20).
+* New exported penalty function `pk.beta()`, the unified data-adaptive beta
+  penalty now shared by the stationary and non-stationary methods.
+  `pk.beta.stnary()` is kept as an alias of the new implementation.
+* New dataset `glanteifi`: annual peak streamflow of the River Teifi at
+  Glanteifi (NRFA station 62001), Wales, UK, 1959-2023 (n = 65). Used in
+  the non-stationary application of Shin et al. (2025).
+* `glme.gev()` and `glme.gev11()` gained arguments `c0` (beta penalty
+  support half-width), `q` (fixed beta shape), and `show` (verbose);
+  `glme.gev()` also gained `method`, `maxit`, `abstol` for `optim()`.
+
+## Breaking Changes
+
+* **Penalty hyperparameter presets were re-tuned** to match Table 1 and
+  Eq. (15) of the revised paper:
+  - beta `pen.choice` 1-6: (p, c1, c2) = (6,3,1), (6,5,2), (6,7,3),
+    (2,3,0.5), (2,5,1), (2,7,1.5)  [was (6,10,5), (6,20,7), (6,30,9),
+    (2,10,5), (2,20,7), (2,30,9)].
+  - norm `pen.choice` 1-4: (mu, std) = (-0.5,0.25), (-0.5,0.15),
+    (-0.6,0.25), (-0.6,0.15)  [std was 0.2/0.1].
+* **Default arguments changed**: `glme.gev(ntry=5, pen.choice=1, c1=3, c2=1)`
+  (was `ntry=10, pen.choice=NULL, c1=10, c2=5`);
+  `glme.gev11(ntry=5, opt.choose="nllh", pen.choice=1, std=0.2, c1=5, c2=2)`
+  (was `ntry=10, opt.choose="gof", pen.choice=NULL, std=0.3, c1=10, c2=5`).
+* **`glme.gev11()` was restructured** following the revised methodology:
+  the penalized estimation now starts from the WLS pre-estimate of
+  `strup.gev11()` and uses the fixed asymptotic covariance matrix of the
+  sample L-moments (Eq. 26 of the paper, rescaled by 300/n) instead of the
+  bootstrap covariance. This is substantially faster.
+  - Output field `para.lme` is now returned only when `pen="no"`
+    (use `lme.gev11()` to obtain the pure L-moment estimates otherwise).
+  - Output fields `strup.org`, `para.wls`, `para.gado`, `lme.sta` are
+    still returned for compatibility.
+  - New output fields: `convergence`, `pen_pen.choice`, `c0_c1_c2`
+    (in addition to `pen`, `p_q`, `c1_c2`, `mu_std`).
+  - Argument `glme.pre` is deprecated and ignored (warning);
+    `init.rob` is still honored (passed to `strup.gev11()`).
+* **`pk.beta.stnary()` behavior changed** (now an alias of `pk.beta()`):
+  the adaptive support is (max(-1, xi-c0), min(0.5, xi+c0)) with default
+  `c0=0.35` (was 0.3), the q-adaptation triggers at xi <= -0.05 (was 0),
+  values outside the support return 1e-100 (was 1), and for fixed `q` the
+  default support is (-1, 0.5) (was (-0.5, 0.5)). Consequently the fixed
+  literature penalties ("ms", "park", "cannon") inside `glme.gev()` /
+  `glme.gev11()` are now evaluated on (-1, 0.5), following the revised
+  reference code.
+* `init.glme()` is now the multi-model initializer (first argument `data`,
+  new arguments `model`, `pretheta`); calls using the old named argument
+  `xdat=` still work. The old behavior is available as `init.gevmax()`.
+* `glme.gev()` output: parameter vectors are now named (mu, sig, xi) and
+  `convergence`, `pen_pen.choice`, `c0_c1_c2` were added. The v1.x fields
+  `pen`, `p_q`, `c1_c2`, `covinv.lmom`, `lcovdet` are still returned.
+
+## Deprecated
+
+* `gado.prop_11()` is deprecated in favor of `lme.gev11()`; it still
+  returns the v1.x output fields (para.prop, para.gado, para.wls,
+  strup.org, lme.sta), now reassembled from `lme.gev11()`,
+  `GN16.gev11()`, and `strup.gev11()`.
+* `nsgev()` is kept as a convenience wrapper around `lme.gev11()`.
+
+## Internal Changes
+
+* New internal functions: `check.penalty()`, `penalty.fun()` (unified
+  penalty dispatcher), `boot.cov()`, `fun.lme.gev11()`, `find_max_beta.pk()`,
+  `trans.gum01()` (vectorized).
+* Removed internal functions (affects `:::` users only): `pk.beta.ns()`,
+  `obj.lme.gev11()`, `gev11.GLD()`, `init.glme.gev11()`,
+  `strup.glme.gev11()`, and the old `optim.glme.gev11()` (replaced by
+  `opt.glme.gev11()`).
+* MAGEV is untouched in this release: `set.prior()` (BMA prior) now uses a
+  frozen internal copy of the v1.x beta preference function, so `ma.gev()`
+  results are identical to v1.3.1.
+* Robustness fixes in the multi-start loops: a failed `optim()`/`nleqslv()`
+  try no longer aborts the remaining tries.
+* `time.m.gev11()`: fixed the `checkmom=` typo (now `checklmom=FALSE`).
+* Console output now uses `message()` or is gated behind `show=TRUE`.
+
 # GLmom 1.3.1
 
 ## Bug Fixes

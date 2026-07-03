@@ -5,7 +5,7 @@
 \title{Calculate the likelihood for Generalized L-moments estimation of GEV distribution}
 \usage{
 glme.like(
-  par = par,
+  par,
   xdat = xdat,
   slmgev = slmgev,
   covinv = covinv,
@@ -16,7 +16,9 @@ glme.like(
   pen = pen,
   p = p,
   c1 = c1,
-  c2 = c2
+  c2 = c2,
+  c0 = 0.35,
+  q = NULL
 )
 }
 \arguments{
@@ -43,6 +45,10 @@ glme.like(
 \item{c1}{Scaling parameter for beta penalty.}
 
 \item{c2}{Upper limit parameter for beta penalty.}
+
+\item{c0}{Half-width of the adaptive beta penalty support (default 0.35).}
+
+\item{q}{Optional fixed second shape parameter for the beta penalty.}
 }
 \value{
 A numeric value representing the penalized negative log-likelihood.
@@ -70,7 +76,7 @@ lme_par <- lmomco::pargev(slm)$para
 glme.like(par = lme_par, xdat = x, slmgev = slm,
           covinv = solve(cov_mat), lcovdet = log(det(cov_mat)),
           mu = -0.5, std = 0.2, lme = lme_par, pen = "beta",
-          p = 6, c1 = 10, c2 = 5)
+          p = 6, c1 = 3, c2 = 1)
 
 }
 \references{

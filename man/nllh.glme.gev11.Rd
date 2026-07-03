@@ -14,8 +14,10 @@ nllh.glme.gev11(
   mu = mu,
   std = std,
   p = p,
+  c0 = c0,
   c1 = c1,
-  c2 = c2
+  c2 = c2,
+  q = q
 )
 }
 \arguments{
@@ -25,9 +27,9 @@ nllh.glme.gev11(
 
 \item{newtheta}{Full parameter vector (mu0, mu1, sigma0, sigma1, xi).}
 
-\item{covinv}{Inverse covariance matrix.}
+\item{covinv}{Inverse covariance matrix of the sample L-moments.}
 
-\item{lcovdet}{Log determinant of covariance.}
+\item{lcovdet}{Log determinant of the covariance matrix.}
 
 \item{pen}{Penalty type.}
 
@@ -37,12 +39,16 @@ nllh.glme.gev11(
 
 \item{p}{Beta penalty shape.}
 
+\item{c0}{Beta penalty support half-width.}
+
 \item{c1}{Beta penalty scaling.}
 
 \item{c2}{Beta penalty limit.}
+
+\item{q}{Optional fixed second beta shape parameter.}
 }
 \value{
-Negative log-likelihood value.
+Penalized negative log-likelihood value.
 }
 \description{
 GLME objective function for GEV11 model (mu0, sigma0, xi optimization)
