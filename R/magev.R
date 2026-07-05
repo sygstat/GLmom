@@ -428,6 +428,7 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
     message("All return levels are NA, returning LME quantiles")
     zx$qua.ma <- zx$qua.lme
     zx$qua.bma <- zx$qua.lme
+    class(zx) <- "magev"
     return(zx)
   }
 
@@ -519,5 +520,6 @@ ma.gev <- function(data = NULL, quant = c(0.98, 0.99, 0.995),
   zx$run_kpar <- run
   zx$original.numk <- org.numk
 
+  class(zx) <- "magev"
   return(zx)
 }

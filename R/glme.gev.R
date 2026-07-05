@@ -260,7 +260,9 @@ glme.like = function(par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 #'  \item mu_std - (for norm penalty) The mu and std values used.
 #'  \item covinv.lmom - The inverse of the covariance matrix of the L-moments.
 #'  \item lcovdet - The log determinant of the covariance matrix.
+#'  \item data - The input data (used by the plot method).
 #' }
+#' The object has class \code{"glme"}; see \code{\link{GLmom-methods}}.
 #'
 #' @references
 #' Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
@@ -363,6 +365,8 @@ glme.gev= function(xdat, ntry=5, pen='beta', pen.choice=1,
     z$para.glme = z$para.lme
     z$convergence = 5
     z$pen = pen
+    z$data = xdat
+    class(z) = "glme"
     return(z)
   }
   istar= which.min(nllh)
@@ -384,6 +388,8 @@ glme.gev= function(xdat, ntry=5, pen='beta', pen.choice=1,
   }else if(pen=="norm"){
     z$mu_std = c(mu, std)
   }
+  z$data = xdat
+  class(z) = "glme"
   return(z)
 }
 

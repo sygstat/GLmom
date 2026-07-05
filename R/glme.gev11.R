@@ -57,7 +57,9 @@
 #'     use \code{\link{lme.gev11}} directly.
 #'   \item precis - (only when \code{pen="no"}) precision of the L-moment
 #'     equation solution.
+#'   \item data - The input data (used by the plot method).
 #' }
+#' The object has class \code{"glme11"}; see \code{\link{GLmom-methods}}.
 #'
 #' @references
 #' Shin, Y., Shin, Y., Park, J. & Park, J.-S. (2025). Generalized method of
@@ -159,6 +161,8 @@ glme.gev11= function(xdat, ntry=5, ftol=1e-6,
 
   if(pen=="no") z$para.lme = z$para.glme
 
+  z$data = xdat
+  class(z) = "glme11"
   return(z)
 }
 

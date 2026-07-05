@@ -32,7 +32,9 @@
 #'     If no solution is found, the WLS pre-estimate is returned.
 #'   \item precis - Precision (mean absolute residual of the L-moment
 #'     equations) of the selected solution.
+#'   \item data - The input data (used by the plot method).
 #' }
+#' The object has class \code{"lme11"}; see \code{\link{GLmom-methods}}.
 #'
 #' @references
 #' Shin, Y., Shin, Y. & Park, J.-S. (2025). Building nonstationary extreme value
@@ -114,5 +116,7 @@ lme.gev11 = function(xdat, ntry=5, ftol=1e-5, show=FALSE){
             "WLS pre-estimate returned") }
 
   names(z$lme.gev11) <- c("mu0","mu1","sigma0","sigma1","xi")
+  z$data = xdat
+  class(z) = "lme11"
   return(z)
 }

@@ -23,7 +23,9 @@ A list containing:
     If no solution is found, the WLS pre-estimate is returned.
   \item precis - Precision (mean absolute residual of the L-moment
     equations) of the selected solution.
+  \item data - The input data (used by the plot method).
 }
+The object has class \code{"lme11"}; see \code{\link{GLmom-methods}}.
 }
 \description{
 Estimates the parameters of the non-stationary GEV11 model

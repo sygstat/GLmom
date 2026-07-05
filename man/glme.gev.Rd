@@ -78,7 +78,9 @@ The glme.gev function returns a list containing the following elements:
  \item mu_std - (for norm penalty) The mu and std values used.
  \item covinv.lmom - The inverse of the covariance matrix of the L-moments.
  \item lcovdet - The log determinant of the covariance matrix.
+ \item data - The input data (used by the plot method).
 }
+The object has class \code{"glme"}; see \code{\link{GLmom-methods}}.
 }
 \description{
 This function estimates the parameters of the Generalized Extreme Value

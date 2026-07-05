@@ -80,7 +80,9 @@ A list containing:
     use \code{\link{lme.gev11}} directly.
   \item precis - (only when \code{pen="no"}) precision of the L-moment
     equation solution.
+  \item data - The input data (used by the plot method).
 }
+The object has class \code{"glme11"}; see \code{\link{GLmom-methods}}.
 }
 \description{
 This function estimates parameters of the non-stationary GEV11 model

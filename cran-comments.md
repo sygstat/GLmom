@@ -24,8 +24,11 @@ and tests.
 ## Test environments
 
 * local: macOS (Apple silicon, arm64), R 4.1.3
-* [TODO before submission: win-builder (R-devel) - paste result]
-* [TODO before submission: macOS builder (r-release) - paste result]
+* win-builder, R-devel (2026-07-04 r90207 ucrt): Status: 1 NOTE
+  (spell-check on DESCRIPTION only; see below)
+  [TODO: re-run after the final S3-methods commit and refresh this line]
+* macOS builder: service unavailable at submission time; the package is
+  pure R and was fully checked locally on macOS (arm64)
 
 ## R CMD check results
 
@@ -40,6 +43,11 @@ and tests.
 2. **unable to verify current time**
    Local environment artifact (no network time check available on the
    build machine); not related to the package.
+
+3. **Possibly misspelled words in DESCRIPTION** (win-builder):
+   'Coles', 'Hosking', 'Stedinger' are author surnames cited in the
+   Description field. (They were single-quoted in an earlier submission
+   and unquoted at CRAN's request.)
 
 ## Downstream dependencies
 

@@ -140,6 +140,20 @@ stopifnot(is.list(pk), "para" %in% names(pk))
 q <- quagev.NS(f = 0.99, para = res2$para.glme, nsample = 40, model = "gev11")
 stopifnot(is.numeric(q), length(q) == 40, all(q > 0))
 
+# --- 9. S3 classes and methods (new in v2.0.0) ---
+stopifnot(inherits(res1, "glme"), inherits(res2, "glme11"),
+          inherits(lg, "lme11"), inherits(res4, "magev"))
+stopifnot(is.list(res1), !is.null(res1$data))   # still a plain list underneath
+
+out <- utils::capture.output(print(res1));    stopifnot(length(out) > 3)
+out <- utils::capture.output(summary(res2));  stopifnot(length(out) > 5)
+out <- utils::capture.output(print(lg));      stopifnot(length(out) > 3)
+out <- utils::capture.output(summary(res4));  stopifnot(length(out) > 5)
+
+grDevices::pdf(NULL)
+plot(res1); plot(res2); plot(lg); plot(res4)
+grDevices::dev.off()
+
 # init.glme: new interface and v1.x-style named xdat=
 i1 <- init.glme(haenam$X1, ntry = 4)
 i2 <- init.glme(xdat = haenam$X1, ntry = 4)

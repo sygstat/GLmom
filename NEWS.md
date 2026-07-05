@@ -23,6 +23,12 @@ differ from v1.3.1.
 * The `PhliuAgromet` documentation now notes the significant increasing
   trend in the annual maxima (Mann-Kendall tau = 0.235, p = 0.033), which
   makes it the recommended example data for the non-stationary methods.
+* Fitted objects are now classed (`"glme"`, `"glme11"`, `"lme11"`,
+  `"magev"`) with `print()`, `summary()`, and `plot()` methods; `plot()`
+  draws quantile-quantile diagnostics (on the standard Gumbel scale for
+  the GEV11 fits). The objects remain plain lists, so all documented
+  fields stay accessible; a `data` field storing the input series was
+  added to support the diagnostics.
 * `glme.gev()` and `glme.gev11()` gained arguments `c0` (beta penalty
   support half-width), `q` (fixed beta shape), and `show` (verbose);
   `glme.gev()` also gained `method`, `maxit`, `abstol` for `optim()`.

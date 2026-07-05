@@ -45,6 +45,7 @@ For time-varying extremes, the GEV11 model allows:
 - **Shin et al. (2025b) compatibility** (`nsgev`, `gado.prop_11`): Pure L-moment based estimation
 - **Multiple penalty functions**: `beta`, `norm`, `ms`, `park`, `cannon`, `cd`, `no`
 - **Multiple weighting schemes** (MAGEV): `like`, `gLd`, `med`, `cvt`
+- **Classed fits with methods** (new in v2.0.0): `print()`, `summary()`, and `plot()` (Q-Q diagnostics) for the objects returned by `glme.gev`, `glme.gev11`, `lme.gev11`, and `ma.gev`
 - **MAGEV diagnostic plots**: `magev.ksensplot`, `magev.qqplot`, `magev.rlplot`
 - **Example datasets**: `PhliuAgromet`, `bangkok`, `haenam`
 
