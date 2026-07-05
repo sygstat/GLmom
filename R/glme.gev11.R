@@ -381,7 +381,7 @@ find_max_beta.pk=function(lme.center,p=p,
                           c0=c0,c1=c1,c2=c2){
 
   lower= max(-1, lme.center[3]-c0)
-  upper= min(0.5, lme.center[3]+c0)
+  upper= min(0.3, lme.center[3]+c0)
   xpk= seq(lower,upper,by=(upper-lower)/70)
   pk=rep(NA,length(xpk))
 

@@ -63,7 +63,7 @@ differ from v1.3.1.
   - Argument `glme.pre` is deprecated and ignored (warning);
     `init.rob` is still honored (passed to `strup.gev11()`).
 * **`pk.beta.stnary()` behavior changed** (now an alias of `pk.beta()`):
-  the adaptive support is (max(-1, xi-c0), min(0.5, xi+c0)) with default
+  the adaptive support is (max(-1, xi-c0), min(0.3, xi+c0)) with default
   `c0=0.35` (was 0.3), the q-adaptation triggers at xi <= -0.05 (was 0),
   values outside the support return 1e-100 (was 1), and for fixed `q` the
   default support is (-1, 0.5) (was (-0.5, 0.5)). Consequently the fixed

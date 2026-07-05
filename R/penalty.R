@@ -101,7 +101,7 @@ new_pf_norm = pk.norm.stnary
 #' implementation).
 #'
 #' When \code{q} is \code{NULL} (adaptive mode), the support is
-#' \eqn{(\max(-1, \hat\xi - c_0),\; \min(0.5, \hat\xi + c_0))} where
+#' \eqn{(\max(-1, \hat\xi - c_0),\; \min(0.3, \hat\xi + c_0))} where
 #' \eqn{\hat\xi} is \code{lme.center[3]}, and
 #' \eqn{q = p + \min(|\hat\xi| c_1, c_2)} for \eqn{\hat\xi \le -0.05}
 #' (otherwise \eqn{q = p}). When \code{q} is given (fixed mode), the support
@@ -154,7 +154,7 @@ pk.beta = function(para=NULL, lme.center=NULL, p=NULL,
   if(is.null(q)){
 
     aa= max(-1, lme.center[3]-c0)
-    bb= min(0.5, lme.center[3]+c0)
+    bb= min(0.3, lme.center[3]+c0)
     al=min(aa,bb)
     bl=max(aa,bb)
 

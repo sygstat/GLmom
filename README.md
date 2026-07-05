@@ -127,7 +127,7 @@ result <- glme.gev11(x, ntry = 10)
 # GLME estimates (with penalty)
 result$para.glme
 #>      mu0      mu1   sigma0   sigma1       xi
-#> 126.9019   0.5700   2.7549   0.0408  -0.0318
+#> 126.9019   0.5700   2.7549   0.0408  -0.0356
 
 # L-moment estimates (no penalty) - Shin et al. (2025b)
 set.seed(123)
@@ -140,7 +140,7 @@ result_lme$lme.gev11
 # - mu0 = 126.9: baseline location at t=0
 # - mu1 = 0.57: location increases ~0.6 mm per year
 # - sigma0, sigma1: log-scale parameters (scale also increases over time)
-# - xi = -0.03: near-Gumbel upper tail (Hosking convention: xi < 0 is Frechet-type)
+# - xi = -0.04: near-Gumbel upper tail (Hosking convention: xi < 0 is Frechet-type)
 
 # Companion methods (new in v2.0.0)
 strup.gev11(x)$strup.mdfy      # WLS (Strupczewski & Kaczmarek 2001)
@@ -194,7 +194,7 @@ results <- sapply(penalties, function(p) {
 
 print(round(results, 4))
 #>  beta.xi norm.xi   ms.xi park.xi cannon.xi   cd.xi   no.xi
-#>  -0.0318 -0.0451 -0.1289 -0.0416   -0.0577 -0.0232 -0.0303
+#>  -0.0356 -0.0451 -0.1289 -0.0416   -0.0577 -0.0232 -0.0303
 ```
 
 ### 5. Custom Hyperparameters
