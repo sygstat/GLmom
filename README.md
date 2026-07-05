@@ -325,6 +325,7 @@ head(PhliuAgromet[, c("year", "prec")])
 | `magev.ksensplot()` | K sensitivity plot                 | optimal K value                                                                 |
 | `magev.qqplot()`    | Q-Q diagnostic plot                | (graphical)                                                                     |
 | `magev.rlplot()`    | Return level plot                  | (graphical)                                                                     |
+| `print()` / `summary()` / `plot()` | Methods for fitted objects (`glme`, `glme11`, `lme11`, `magev` classes) | console summary / Q-Q diagnostics |
 
 ### Auxiliary Estimation Functions (via `ma.gev()`)
 
