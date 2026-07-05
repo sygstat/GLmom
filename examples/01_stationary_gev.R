@@ -27,6 +27,11 @@ cat("Summary:", "min =", round(min(x), 2), ", max =", round(max(x), 2),
 cat("--- 1. Default estimation (adaptive beta penalty) ---\n")
 result <- glme.gev(x)
 
+# v2.0.0: fitted objects are classed ("glme") with print/summary/plot methods
+print(result)          # concise summary of the fit
+# summary(result)      # adds hyperparameters and sample size
+# plot(result)         # Q-Q plot against the fitted GEV (interactive use)
+
 cat("GLME estimates (with penalty):\n")
 cat("  mu =", round(result$para.glme[1], 4), "\n")
 cat("  sigma =", round(result$para.glme[2], 4), "\n")

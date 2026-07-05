@@ -150,6 +150,12 @@ magev.rlplot(par = zx$surr$par, se.vec = zx$ranw.se.ma, data = bangkok[,1])
 
 - Shin, Y., Shin, Y., & Park, J. S. (2026). Model averaging with mixed criteria for estimating high quantiles of extreme values: Application to heavy rainfall. *Stochastic Environmental Research and Risk Assessment*, 40(2), 47. https://doi.org/10.1007/s00477-025-03167-x
 
+## Fitted-object methods (v2.0.0)
+
+The estimation functions return classed objects (`glme`, `glme11`, `lme11`,
+`magev`) with `print()`, `summary()`, and `plot()` (Q-Q diagnostics) methods;
+examples 01 and 02 demonstrate them.
+
 ## Requirements
 
 - R >= 3.5

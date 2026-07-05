@@ -40,6 +40,10 @@ cat("--- 1. GEV11 estimation with beta penalty (default) ---\n")
 set.seed(123)  # For reproducibility
 result <- glme.gev11(x, ntry = 10)
 
+# v2.0.0: classed object ("glme11") -- print() gives a concise summary,
+# plot() draws a Gumbel-scale Q-Q diagnostic (see section 7)
+print(result)
+
 cat("\nGLME estimates (with penalty):\n")
 cat("  mu0 =", round(result$para.glme[1], 4), "(baseline location)\n")
 cat("  mu1 =", round(result$para.glme[2], 4), "(location trend per year)\n")
@@ -170,11 +174,8 @@ if (interactive()) {
   legend("topleft", legend = c("Data", "mu(t)"),
          pch = c(16, NA), lty = c(NA, 1), col = c("black", "blue"))
 
-  # Plot 2: Time-varying scale
-  sigma_fit <- exp(sigma0 + sigma1 * t_seq)
-  plot(years, sigma_fit, type = "l", col = "red", lwd = 2,
-       xlab = "Year", ylab = "Scale parameter",
-       main = "Time-varying Scale Parameter")
+  # Plot 2: Gumbel-scale Q-Q diagnostic via the plot method (v2.0.0)
+  plot(result)
 
   par(mfrow = c(1, 1))
   cat("Plots displayed.\n")
