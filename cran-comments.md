@@ -24,9 +24,8 @@ and tests.
 ## Test environments
 
 * local: macOS (Apple silicon, arm64), R 4.1.3
-* win-builder, R-devel (2026-07-04 r90207 ucrt): Status: 1 NOTE
-  (spell-check on DESCRIPTION only; see below)
-  [TODO: re-run after the final S3-methods commit and refresh this line]
+* win-builder, R-devel (2026-07-04 r90207 ucrt): 0 errors, 0 warnings,
+  1 NOTE (DESCRIPTION spell-check only; see note 3 below)
 * macOS builder: service unavailable at submission time; the package is
   pure R and was fully checked locally on macOS (arm64)
 
