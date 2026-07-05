@@ -58,14 +58,18 @@ For time-varying extremes, the GEV11 model allows:
 
 ## Installation
 
+This README describes **version 2.0.0**. Until CRAN is updated (the CRAN
+release is currently 1.3.1, which still ships the old datasets, presets,
+and defaults), install 2.0.0 from GitHub:
+
 ```r
-# Install pacakge
-install.packages("GLmom")
+# Version 2.0.0 (this README)
+remotes::install_github("sygstat/GLmom")
 ```
 
 ```r
-# Install from GitHub
-remotes::install_github("sygstat/GLmom")
+# CRAN release (currently 1.3.1)
+install.packages("GLmom")
 ```
 
 
@@ -77,7 +81,8 @@ library(GLmom)
 # Stationary GEV
 data(haenam)
 result <- glme.gev(haenam$X1)
-result$para.glme  # GLME estimates: (mu, sigma, xi)
+result            # classed object: print/summary/plot methods (v2.0.0)
+result$para.glme  # fields remain directly accessible: (mu, sigma, xi)
 
 # Non-stationary GEV11
 data(PhliuAgromet)
@@ -108,10 +113,10 @@ result$para.lme   # Traditional L-moment estimates
 #> 113.4524  37.3533  -0.3104
 
 # Compare different penalty functions
-glme.gev(x, pen = "beta")$para.glme[3]    # xi = -0.3225
-glme.gev(x, pen = "ms")$para.glme[3]      # xi = -0.3280 (Martins-Stedinger)
-glme.gev(x, pen = "park")$para.glme[3]    # xi = -0.3077
-glme.gev(x, pen = "no")$para.glme[3]      # xi = -0.3104 (no penalty = L-moment)
+glme.gev(x, pen = "beta")$para.glme[3]    # xi ~= -0.323
+glme.gev(x, pen = "ms")$para.glme[3]      # xi ~= -0.328 (Martins-Stedinger)
+glme.gev(x, pen = "park")$para.glme[3]    # xi ~= -0.308
+glme.gev(x, pen = "no")$para.glme[3]      # xi ~= -0.310 (no penalty = L-moment)
 ```
 
 ### 2. Non-stationary GEV11 Estimation
@@ -299,11 +304,8 @@ result_all$qua.ma      # Model-averaged quantiles
 ```r
 # Load and explore datasets
 data(PhliuAgromet)
-head(PhliuAgromet[, c("year", "prec")])
-#>   year  prec
-#> 1 1984  86.0
-#> 2 1985 131.6
-#> 3 1986 122.9
+head(PhliuAgromet$prec)
+#> [1] 108.1 103.1 140.5 137.6 188.9 123.8
 ```
 
 ## Function Reference
@@ -375,9 +377,9 @@ head(PhliuAgromet[, c("year", "prec")])
 
 - **Yonggwan Shin**, Senior Researcher, Electronics and Telecommunications Research Institute, Korea ([syg.stat@etri.re.kr](mailto:syg.stat@etri.re.kr))
 - **Seokkap Ko**, Principal Researcher, Electronics and Telecommunications Research Institute, Korea ([softgear@etri.re.kr](mailto:softgear@etri.re.kr))
-- **Jihong Park**, Chonnam National University, Korea([jihong8090@gmail.com](mailto:jihong8090@gmail.com))
-- **Yire Shin**, Ph.D, Chonnam National University, Korea([shinyire87@gmail.com](mailto:shinyire87@gmail.com))
-- **Jeong-Soo Park**, Professor, Chonnam National University, Korea([jspark@chonnam.ac.kr](mailto:jspark@chonnam.ac.kr))
+- **Jihong Park**, Chonnam National University, Korea ([jihong8090@gmail.com](mailto:jihong8090@gmail.com))
+- **Yire Shin**, Ph.D, Chonnam National University, Korea ([shinyire87@gmail.com](mailto:shinyire87@gmail.com))
+- **Jeong-Soo Park**, Professor, Chonnam National University, Korea ([jspark@chonnam.ac.kr](mailto:jspark@chonnam.ac.kr))
 
 ## Citation
 
