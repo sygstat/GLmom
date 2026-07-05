@@ -37,8 +37,8 @@ Demonstrates parameter estimation for stationary GEV distribution:
 
 ```r
 library(GLmom)
-data(streamflow)
-result <- glme.gev(streamflow$r1, pen = "beta")
+data(haenam)
+result <- glme.gev(haenam$X1, pen = "beta")
 result$para.glme  # (mu, sigma, xi)
 ```
 
@@ -52,8 +52,8 @@ Demonstrates time-varying GEV estimation:
 
 ```r
 library(GLmom)
-data(Trehafod)
-result <- glme.gev11(Trehafod$r1, ntry = 10)
+data(PhliuAgromet)
+result <- glme.gev11(PhliuAgromet$prec, ntry = 10)
 result$para.glme  # (mu0, mu1, sigma0, sigma1, xi)
 result$para.lme   # Pure L-moment estimates (no penalty)
 ```
@@ -74,14 +74,14 @@ Additional features:
 
 ```r
 library(GLmom)
-data(streamflow)
+data(haenam)
 
 # Basic model averaging
-result <- ma.gev(streamflow$r1, quant = c(0.99), weight = "like1", B = 200)
+result <- ma.gev(haenam$X1, quant = c(0.99), weight = "like1", B = 200)
 result$qua.ma  # Model-averaged quantile
 
 # With CD and REMLE options
-result <- ma.gev(streamflow$r1, quant = c(0.98, 0.99, 0.995),
+result <- ma.gev(haenam$X1, quant = c(0.98, 0.99, 0.995),
                  weight = "like1", B = 100, CD = TRUE, remle = TRUE)
 result$qua.CD      # CD-penalized MLE quantiles
 result$qua.remle1  # REMLE (mean constraint) quantiles
@@ -96,8 +96,8 @@ Demonstrates simplified interfaces for Shin et al. (2025b) methodology:
 
 ```r
 library(GLmom)
-data(Trehafod)
-result <- nsgev(Trehafod$r1, ntry = 10)
+data(PhliuAgromet)
+result <- nsgev(PhliuAgromet$prec, ntry = 10)
 result$para.prop  # Proposed estimates
 ```
 
@@ -137,8 +137,7 @@ magev.rlplot(par = zx$surr$par, se.vec = zx$ranw.se.ma, data = bangkok[,1])
 
 | Dataset | Description | n | Source |
 |---------|-------------|---|--------|
-| `streamflow` | Annual maximum streamflow | 50 | Hydrological data |
-| `Trehafod` | River flow, Wales, UK (1968-2021) | 53 | UK National River Flow Archive |
+
 | `PhliuAgromet` | Thai meteorological data | 40 | Phliu Agrometeorological Station |
 | `bangkok` | Annual max daily rainfall, Bangkok, Thailand | 58 | Thai Meteorological Department (TMD) |
 | `haenam` | Annual max daily rainfall, Haenam, South Korea | 52 | Korea Meteorological Administration (KMA) |

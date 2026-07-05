@@ -48,8 +48,8 @@ vertical line.
 }
 \examples{
 \donttest{
-data(streamflow)
-optimal_k <- magev.ksensplot(streamflow$r1)
+data(haenam)
+optimal_k <- magev.ksensplot(haenam$X1)
 print(optimal_k)
 }
 

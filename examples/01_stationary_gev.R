@@ -12,12 +12,12 @@
 # Load package
 library(GLmom)
 
-# Load example data: 50 annual maximum streamflow values
-data(streamflow)
-x <- streamflow$r1
+# Load example data: 52 annual maximum daily rainfall values (Haenam, Korea)
+data(haenam)
+x <- haenam$X1
 
 cat("=== GLmom Example 1: Stationary GEV Estimation ===\n\n")
-cat("Data: streamflow$r1 (n =", length(x), "annual maxima)\n")
+cat("Data: haenam$X1 (n =", length(x), "annual maxima)\n")
 cat("Summary:", "min =", round(min(x), 2), ", max =", round(max(x), 2),
     ", mean =", round(mean(x), 2), "\n\n")
 

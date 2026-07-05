@@ -48,8 +48,8 @@
 #'
 #' @examples
 #' \donttest{
-#' data(streamflow)
-#' optimal_k <- magev.ksensplot(streamflow$r1)
+#' data(haenam)
+#' optimal_k <- magev.ksensplot(haenam$X1)
 #' print(optimal_k)
 #' }
 #'
@@ -190,11 +190,11 @@ magev.ksensplot <- function(data = NULL, q.cut = 0.6, mink = 4,
 #' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' data(streamflow)
+#' data(haenam)
 #' qq <- c(seq(0.01, 0.99, by = 0.01), 0.995, 0.999)
-#' zx <- ma.gev(streamflow$r1, quant = qq, weight = 'like1',
+#' zx <- ma.gev(haenam$X1, quant = qq, weight = 'like1',
 #'              numk = 9, varcom = FALSE, remle = TRUE)
-#' magev.qqplot(data = streamflow$r1, zx = zx)
+#' magev.qqplot(data = haenam$X1, zx = zx)
 #'
 #' @export
 magev.qqplot <- function(data = NULL, zx = NULL) {
@@ -279,13 +279,13 @@ magev.qqplot <- function(data = NULL, zx = NULL) {
 #' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' data(streamflow)
+#' data(haenam)
 #' ff <- c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5,
 #'         0.6, 0.7, 0.8, 0.9, 0.93, 0.95, 0.98, 0.99,
 #'         0.993, 0.995, 0.998, 0.999)
-#' zx <- ma.gev(streamflow$r1, quant = ff, weight = 'like1',
+#' zx <- ma.gev(haenam$X1, quant = ff, weight = 'like1',
 #'              numk = 9, varcom = TRUE)
-#' magev.rlplot(par = zx$surr$par, se.vec = zx$ranw.se.ma, data = streamflow$r1)
+#' magev.rlplot(par = zx$surr$par, se.vec = zx$ranw.se.ma, data = haenam$X1)
 #'
 #' @export
 magev.rlplot <- function(par = NULL, se.vec = NULL, data = NULL) {

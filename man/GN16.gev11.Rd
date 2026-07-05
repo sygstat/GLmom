@@ -27,8 +27,8 @@ Shin et al., 2025b), with both the original and the modified
 specification returned.
 }
 \examples{
-data(glanteifi)
-result <- GN16.gev11(glanteifi$flow)
+data(PhliuAgromet)
+result <- GN16.gev11(PhliuAgromet$prec)
 print(result$para.gado.org)
 
 }

@@ -77,8 +77,8 @@
 #' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' data(glanteifi)
-#' x <- glanteifi$flow
+#' data(PhliuAgromet)
+#' x <- PhliuAgromet$prec
 #'
 #' \donttest{
 #' # Estimate non-stationary GEV11 parameters

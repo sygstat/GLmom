@@ -46,12 +46,14 @@ For time-varying extremes, the GEV11 model allows:
 - **Multiple penalty functions**: `beta`, `norm`, `ms`, `park`, `cannon`, `cd`, `no`
 - **Multiple weighting schemes** (MAGEV): `like`, `gLd`, `med`, `cvt`
 - **MAGEV diagnostic plots**: `magev.ksensplot`, `magev.qqplot`, `magev.rlplot`
-- **Example datasets**: `streamflow`, `PhliuAgromet`, `Trehafod`, `glanteifi`, `bangkok`, `haenam`
+- **Example datasets**: `PhliuAgromet`, `bangkok`, `haenam`
 
 > **Note (v2.0.0):** the GLME penalty presets and several defaults were
 > re-tuned following the revised paper (Shin et al., 2025a), so numerical
-> results differ from v1.3.1. All v1.3.1 functions and datasets remain
-> available; see `NEWS.md` for details.
+> results differ from v1.3.1. All v1.3.1 functions remain available.
+> The `streamflow`, `Trehafod`, and `glanteifi` datasets were removed
+> because their source (UK National River Flow Archive) does not permit
+> redistribution; see `NEWS.md` for details.
 
 ## Installation
 
@@ -72,17 +74,17 @@ remotes::install_github("sygstat/GLmom")
 library(GLmom)
 
 # Stationary GEV
-data(streamflow)
-result <- glme.gev(streamflow$r1)
+data(haenam)
+result <- glme.gev(haenam$X1)
 result$para.glme  # GLME estimates: (mu, sigma, xi)
 
 # Non-stationary GEV11
-data(glanteifi)
-result <- glme.gev11(glanteifi$flow)
+data(PhliuAgromet)
+result <- glme.gev11(PhliuAgromet$prec)
 result$para.glme  # (mu0, mu1, sigma0, sigma1, xi)
 
 # Pure L-moment method (Shin et al. 2025b)
-result_lme <- lme.gev11(glanteifi$flow)
+result_lme <- lme.gev11(PhliuAgromet$prec)
 result_lme$lme.gev11
 ```
 
@@ -92,51 +94,53 @@ result_lme$lme.gev11
 
 ```r
 library(GLmom)
-data(streamflow)
-x <- streamflow$r1
+data(haenam)
+x <- haenam$X1  # 52 annual maxima of daily rainfall, Haenam, Korea
 
 # Default: beta penalty (adaptive), preset pen.choice = 1
 result <- glme.gev(x)
 result$para.glme  # GLME estimates
-#>      mu     sig      xi
-#> 55.4441  9.3304 -0.4191
+#>       mu      sig       xi
+#> 113.3014  37.3662  -0.3225
 result$para.lme   # Traditional L-moment estimates
-#>      mu     sig      xi
-#> 55.4021  9.5229 -0.4075
+#>       mu      sig       xi
+#> 113.4524  37.3533  -0.3104
 
 # Compare different penalty functions
-glme.gev(x, pen = "beta")$para.glme[3]    # xi = -0.4191
-glme.gev(x, pen = "ms")$para.glme[3]      # xi = -0.4097 (Martins-Stedinger)
-glme.gev(x, pen = "park")$para.glme[3]    # xi = -0.4020
-glme.gev(x, pen = "no")$para.glme[3]      # xi = -0.4075 (no penalty = L-moment)
+glme.gev(x, pen = "beta")$para.glme[3]    # xi = -0.3225
+glme.gev(x, pen = "ms")$para.glme[3]      # xi = -0.3280 (Martins-Stedinger)
+glme.gev(x, pen = "park")$para.glme[3]    # xi = -0.3077
+glme.gev(x, pen = "no")$para.glme[3]      # xi = -0.3104 (no penalty = L-moment)
 ```
 
 ### 2. Non-stationary GEV11 Estimation
 
 ```r
 library(GLmom)
-data(glanteifi)
-x <- glanteifi$flow  # 65 years of peak streamflow (River Teifi, Wales, UK)
+data(PhliuAgromet)
+x <- PhliuAgromet$prec  # 40 years of annual max daily precipitation, Thailand
 
 # Estimate with GLME (default: beta penalty, pen.choice = 1)
+set.seed(123)
 result <- glme.gev11(x, ntry = 10)
 
 # GLME estimates (with penalty)
 result$para.glme
-#>        mu0        mu1     sigma0     sigma1         xi
-#> 176.157681   0.598268   3.787915   0.004891  -0.318323
+#>      mu0      mu1   sigma0   sigma1       xi
+#> 126.9019   0.5700   2.7549   0.0408  -0.0318
 
 # L-moment estimates (no penalty) - Shin et al. (2025b)
+set.seed(123)
 result_lme <- lme.gev11(x, ntry = 10)
 result_lme$lme.gev11
-#>        mu0        mu1     sigma0     sigma1         xi
-#> 175.480306   0.598268   3.780033   0.004891  -0.316263
+#>      mu0      mu1   sigma0   sigma1       xi
+#> 126.7720   0.5700   2.7591   0.0408  -0.0303
 
 # Interpretation:
-# - mu0 = 176.2: baseline location at t=0
-# - mu1 = 0.60: location increases ~0.6 m^3/s per year
-# - sigma0, sigma1: log-scale parameters
-# - xi = -0.32: heavy upper tail (Hosking convention: xi < 0 is Frechet-type)
+# - mu0 = 126.9: baseline location at t=0
+# - mu1 = 0.57: location increases ~0.6 mm per year
+# - sigma0, sigma1: log-scale parameters (scale also increases over time)
+# - xi = -0.03: near-Gumbel upper tail (Hosking convention: xi < 0 is Frechet-type)
 
 # Companion methods (new in v2.0.0)
 strup.gev11(x)$strup.mdfy      # WLS (Strupczewski & Kaczmarek 2001)
@@ -149,20 +153,22 @@ For users following the methodology in Shin et al. (2025b):
 
 ```r
 library(GLmom)
-data(Trehafod)
+data(PhliuAgromet)
 
 # Recommended interface (v2.0.0): lme.gev11()
-result0 <- lme.gev11(Trehafod$r1, ntry = 10)
+set.seed(123)
+result0 <- lme.gev11(PhliuAgromet$prec, ntry = 10)
 result0$lme.gev11
 
 # Simple wrapper - returns proposed L-moment estimates
-result1 <- nsgev(Trehafod$r1, ntry = 10)
+set.seed(123)
+result1 <- nsgev(PhliuAgromet$prec, ntry = 10)
 result1$para.prop
-#>       mu0       mu1    sigma0    sigma1        xi
-#> 86.075844  0.958614  2.788838  0.014667 -0.060689
+#>      mu0      mu1   sigma0   sigma1       xi
+#> 126.7720   0.5700   2.7591   0.0408  -0.0303
 
 # Comprehensive output - multiple estimation methods (deprecated wrapper)
-result2 <- gado.prop_11(Trehafod$r1, ntry = 10)
+result2 <- gado.prop_11(PhliuAgromet$prec, ntry = 10)
 
 # Compare methods:
 result2$para.prop    # Proposed L-moment method (= lme.gev11)
@@ -175,55 +181,57 @@ result2$lme.sta      # Stationary L-moments (mu, sigma, xi)
 
 ```r
 library(GLmom)
-data(glanteifi)
+data(PhliuAgromet)
 
 # All penalty options for non-stationary model
 penalties <- c("beta", "norm", "ms", "park", "cannon", "cd", "no")
 
 results <- sapply(penalties, function(p) {
-  r <- glme.gev11(glanteifi$flow, ntry = 10, pen = p)
+  set.seed(123)
+  r <- glme.gev11(PhliuAgromet$prec, ntry = 10, pen = p)
   r$para.glme[5]  # shape parameter xi
 })
 
 print(round(results, 4))
 #>  beta.xi norm.xi   ms.xi park.xi cannon.xi   cd.xi   no.xi
-#>  -0.3183 -0.3144 -0.3271 -0.2985   -0.3123 -0.2843 -0.3163
+#>  -0.0318 -0.0451 -0.1289 -0.0416   -0.0577 -0.0232 -0.0303
 ```
 
 ### 5. Custom Hyperparameters
 
 ```r
 library(GLmom)
-data(streamflow)
+data(haenam)
 
 # Preset choices (1-6 for beta, 1-4 for norm; Table 1 / Eq. 15 of the paper)
-glme.gev(streamflow$r1, pen = "beta", pen.choice = 2)
-glme.gev(streamflow$r1, pen = "norm", pen.choice = 1)
+glme.gev(haenam$X1, pen = "beta", pen.choice = 2)
+glme.gev(haenam$X1, pen = "norm", pen.choice = 1)
 
 # Beta penalty with custom hyperparameters (set pen.choice = NULL)
-glme.gev(streamflow$r1, pen = "beta", pen.choice = NULL, p = 6, c1 = 5, c2 = 2)
+glme.gev(haenam$X1, pen = "beta", pen.choice = NULL, p = 6, c1 = 5, c2 = 2)
 
 # Normal penalty with custom mean and std
-glme.gev(streamflow$r1, pen = "norm", pen.choice = NULL, mu = -0.5, std = 0.2)
+glme.gev(haenam$X1, pen = "norm", pen.choice = NULL, mu = -0.5, std = 0.2)
 ```
 
 ### 6. Model Averaging for High Quantiles (MAGEV)
 
 ```r
 library(GLmom)
-data(streamflow)
-x <- streamflow$r1
+data(haenam)
+x <- haenam$X1
 
 # Model averaging with likelihood weights (default)
+set.seed(42)
 result <- ma.gev(x, quant = c(0.95, 0.99, 0.995), weight = 'like1', B = 200)
 
 # Compare estimates
 result$qua.mle    # MLE quantiles
-#> [1]  107.28  147.02  167.35
+#> [1] 310.72 569.44 741.63
 result$qua.lme    # L-moment quantiles
-#> [1]  110.43  184.35  234.27
+#> [1] 295.67 494.90 615.84
 result$qua.ma     # Model-averaged quantiles (recommended)
-#> [1]  109.55  187.10  241.77
+#> [1] 296.38 517.61 659.83
 
 # Standard errors
 result$fixw.se.ma # SE under fixed weights
@@ -252,8 +260,8 @@ methods via `CD` and `remle` arguments.
 
 ```r
 library(GLmom)
-data(streamflow)
-x <- streamflow$r1
+data(haenam)
+x <- haenam$X1
 
 # CD-MLE: Coles-Dixon penalized MLE
 result_cd <- ma.gev(x, quant = c(0.99, 0.995), weight = "like1",
@@ -281,23 +289,20 @@ result_all$qua.ma      # Model-averaged quantiles
 
 ## Datasets
 
-| Dataset          | Description                                       | n  | Variables                      |
-| ---------------- | ------------------------------------------------- | -- | ------------------------------ |
-| `streamflow`   | Annual maximum streamflow                         | 50 | Year, r1                       |
-| `PhliuAgromet` | Meteorological data from Thailand                 | 40 | prec, ...                      |
-| `Trehafod`     | River flow from Wales, UK                         | 53 | Year, r1                       |
-| `glanteifi`    | Peak streamflow, River Teifi at Glanteifi, UK (NRFA 62001, 1959-2023) | 65 | id, river, location, year, flow |
-| `bangkok`      | Annual max daily rainfall, Bangkok                | 58 | X1-X5                          |
-| `haenam`       | Annual max daily rainfall, Haenam                 | 52 | year, X1                       |
+| Dataset          | Description                                        | n  | Variables |
+| ---------------- | -------------------------------------------------- | -- | --------- |
+| `PhliuAgromet` | Annual max daily precipitation, Phliu, Thailand (1984-2023, has trend) | 40 | year, prec, ... |
+| `bangkok`      | Annual max daily rainfall, Bangkok                 | 58 | X1-X5     |
+| `haenam`       | Annual max daily rainfall, Haenam, Korea           | 52 | year, X1  |
 
 ```r
 # Load and explore datasets
-data(Trehafod)
-head(Trehafod)
-#>   Year    r1
-#> 1 1968 72.61
-#> 2 1969 52.82
-#> 3 1970 94.80
+data(PhliuAgromet)
+head(PhliuAgromet[, c("year", "prec")])
+#>   year  prec
+#> 1 1984  86.0
+#> 2 1985 131.6
+#> 3 1986 122.9
 ```
 
 ## Function Reference

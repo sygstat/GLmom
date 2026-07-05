@@ -68,8 +68,8 @@ The function performs the following steps:
 6. Returns the sum of the L-moments distance and the penalization term.
 }
 \examples{
-data(streamflow)
-x <- streamflow$r1
+data(haenam)
+x <- haenam$X1
 slm <- lmomco::lmoms(x, nmom = 3)
 cov_mat <- lmomco::lmoms.cov(x, nmom = 3)
 lme_par <- lmomco::pargev(slm)$para

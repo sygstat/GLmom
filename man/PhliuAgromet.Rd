@@ -25,12 +25,22 @@ Phliu Agrometeorological Station, Thailand.
 PhliuAgromet
 }
 \description{
-Climate or meteorological data from the Phliu Agrometeorological Station
-for extreme value analysis.
+Annual maximum daily precipitation and station metadata from the Phliu
+Agrometeorological Station, Chanthaburi province, Thailand (1984-2023).
+A Mann-Kendall test indicates a significant increasing trend in the
+annual maxima (tau = 0.235, p = 0.033), so this dataset is used for
+demonstrating non-stationary (GEV11) estimation; it is the heavy
+rainfall application of Shin et al. (2025).
 }
 \examples{
 data(PhliuAgromet)
 head(PhliuAgromet)
+
+\donttest{
+# Fit non-stationary GEV11 model by GLME
+result <- glme.gev11(PhliuAgromet$prec, ntry = 5)
+print(result$para.glme)
+}
 
 }
 \references{

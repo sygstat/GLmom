@@ -20,15 +20,24 @@ differ from v1.3.1.
 * New exported penalty function `pk.beta()`, the unified data-adaptive beta
   penalty now shared by the stationary and non-stationary methods.
   `pk.beta.stnary()` is kept as an alias of the new implementation.
-* New dataset `glanteifi`: annual peak streamflow of the River Teifi at
-  Glanteifi (NRFA station 62001), Wales, UK, 1959-2023 (n = 65). Used in
-  the non-stationary application of Shin et al. (2025).
+* The `PhliuAgromet` documentation now notes the significant increasing
+  trend in the annual maxima (Mann-Kendall tau = 0.235, p = 0.033), which
+  makes it the recommended example data for the non-stationary methods.
 * `glme.gev()` and `glme.gev11()` gained arguments `c0` (beta penalty
   support half-width), `q` (fixed beta shape), and `show` (verbose);
   `glme.gev()` also gained `method`, `maxit`, `abstol` for `optim()`.
 
 ## Breaking Changes
 
+* **The `streamflow`, `Trehafod`, and `glanteifi` datasets were removed.**
+  All three originate from the UK National River Flow Archive (NRFA), whose
+  data terms and conditions do not permit making the data available for
+  download or redistributing them to third parties, so they cannot be
+  shipped in a CRAN package. Users can obtain the underlying series
+  directly from the NRFA Peak Flow Dataset
+  (\<https://nrfa.ceh.ac.uk/peak-flow-dataset\>). The remaining example
+  datasets are `PhliuAgromet`, `bangkok`, and `haenam`; all examples,
+  tests, and documentation now use these.
 * **Penalty hyperparameter presets were re-tuned** to match Table 1 and
   Eq. (15) of the revised paper:
   - beta `pen.choice` 1-6: (p, c1, c2) = (6,3,1), (6,5,2), (6,7,3),

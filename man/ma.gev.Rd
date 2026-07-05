@@ -109,8 +109,8 @@ When bma=TRUE, Bayesian model averaging is applied with prior specified by pen.
 }
 \examples{
 # Load example data
-data(streamflow)
-x <- streamflow$r1
+data(haenam)
+x <- haenam$X1
 
 # Basic usage with likelihood weights
 result <- ma.gev(x, quant = c(0.95, 0.99), weight = 'like1', B = 100)

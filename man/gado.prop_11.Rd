@@ -36,9 +36,9 @@ format from those functions and will be removed in a future release.
 }
 \examples{
 \donttest{
-data(Trehafod)
+data(PhliuAgromet)
 # deprecated wrapper; suppressWarnings() silences the deprecation notice
-result <- suppressWarnings(gado.prop_11(Trehafod$r1, ntry = 5))
+result <- suppressWarnings(gado.prop_11(PhliuAgromet$prec, ntry = 5))
 print(result$para.prop)
 print(result$lme.sta)
 }

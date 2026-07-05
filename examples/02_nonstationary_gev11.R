@@ -21,14 +21,14 @@
 # Load package
 library(GLmom)
 
-# Load example data: 65 years of peak streamflow of the River Teifi at
-# Glanteifi (NRFA station 62001), Wales, UK (used in Shin et al. 2025a)
-data(glanteifi)
-x <- glanteifi$flow
-years <- glanteifi$year
+# Load example data: 40 years of annual maximum daily precipitation at the
+# Phliu Agrometeorological Station, Thailand (used in Shin et al. 2025a)
+data(PhliuAgromet)
+x <- PhliuAgromet$prec
+years <- PhliuAgromet$year
 
 cat("=== GLmom Example 2: Non-stationary GEV11 Estimation ===\n\n")
-cat("Data: Glanteifi peak streamflow (n =", length(x), "years)\n")
+cat("Data: Phliu annual maximum precipitation (n =", length(x), "years)\n")
 cat("Period:", min(years), "-", max(years), "\n")
 cat("Summary:", "min =", round(min(x), 2), ", max =", round(max(x), 2),
     ", mean =", round(mean(x), 2), "\n\n")
@@ -162,8 +162,8 @@ if (interactive()) {
   par(mfrow = c(1, 2))
 
   # Plot 1: Data with location trend
-  plot(years, x, pch = 16, xlab = "Year", ylab = "Flow (m^3/s)",
-       main = "Glanteifi Peak Streamflow with GEV11 Fit")
+  plot(years, x, pch = 16, xlab = "Year", ylab = "Precipitation (mm)",
+       main = "Phliu Annual Maximum Precipitation with GEV11 Fit")
   t_seq <- 1:length(x)
   mu_fit <- mu0 + mu1 * t_seq
   lines(years, mu_fit, col = "blue", lwd = 2)

@@ -35,8 +35,8 @@
 #' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' data(Trehafod)
-#' result <- nsgev(Trehafod$r1, ntry = 5)
+#' data(PhliuAgromet)
+#' result <- nsgev(PhliuAgromet$prec, ntry = 5)
 #' print(result$para.prop)
 #'
 #' @export
@@ -92,9 +92,9 @@ nsgev <- function(xdat, ntry = 20, ftol = 1e-6) {
 #'
 #' @examples
 #' \donttest{
-#' data(Trehafod)
+#' data(PhliuAgromet)
 #' # deprecated wrapper; suppressWarnings() silences the deprecation notice
-#' result <- suppressWarnings(gado.prop_11(Trehafod$r1, ntry = 5))
+#' result <- suppressWarnings(gado.prop_11(PhliuAgromet$prec, ntry = 5))
 #' print(result$para.prop)
 #' print(result$lme.sta)
 #' }

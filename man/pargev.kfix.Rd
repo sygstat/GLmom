@@ -29,8 +29,8 @@ the shape parameter fixed at a user-specified value. Modified from
 \code{lmomco::pargev()}.
 }
 \examples{
-data(streamflow)
-lmom <- lmomco::lmoms(streamflow$r1, nmom = 3)
+data(haenam)
+lmom <- lmomco::lmoms(haenam$X1, nmom = 3)
 pargev.kfix(lmom, kfix = -0.1)
 
 }

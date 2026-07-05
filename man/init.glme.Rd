@@ -39,8 +39,8 @@ For \code{model="gev11"} the second column is returned on the log scale
 is supplied the first candidate is a perturbation of the pre-estimate.
 }
 \examples{
-data(streamflow)
-inits <- init.glme(streamflow$r1, ntry = 5)
+data(haenam)
+inits <- init.glme(haenam$X1, ntry = 5)
 print(inits)
 
 }

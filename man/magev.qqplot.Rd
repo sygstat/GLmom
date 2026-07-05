@@ -30,11 +30,11 @@ The function creates four Q-Q plots:
 Points close to the 45-degree diagonal line indicate good model fit.
 }
 \examples{
-data(streamflow)
+data(haenam)
 qq <- c(seq(0.01, 0.99, by = 0.01), 0.995, 0.999)
-zx <- ma.gev(streamflow$r1, quant = qq, weight = 'like1',
+zx <- ma.gev(haenam$X1, quant = qq, weight = 'like1',
              numk = 9, varcom = FALSE, remle = TRUE)
-magev.qqplot(data = streamflow$r1, zx = zx)
+magev.qqplot(data = haenam$X1, zx = zx)
 
 }
 \references{

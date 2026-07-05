@@ -42,8 +42,8 @@ It is also equivalent to \code{glme.gev11(xdat, pen="no")}.
 }
 \examples{
 \donttest{
-data(glanteifi)
-result <- lme.gev11(glanteifi$flow, ntry = 5)
+data(PhliuAgromet)
+result <- lme.gev11(PhliuAgromet$prec, ntry = 5)
 print(result$lme.gev11)
 }
 

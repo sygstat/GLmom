@@ -1,35 +1,11 @@
-#' Streamflow Data
-#'
-#' Annual maximum streamflow measurements for extreme value analysis.
-#'
-#' @format A data frame with 50 rows and 2 columns:
-#' \describe{
-#'   \item{Year}{Year of observation (character)}
-#'   \item{r1}{Annual maximum streamflow value (numeric)}
-#' }
-#'
-#' @source UK National River Flow Archive, Peak Flow Dataset
-#'   (\url{https://nrfa.ceh.ac.uk/data/peak-flow-dataset}).
-#'
-#' @references 
-#' Grego, J. M., Yates, P. A., & Mai, K. (2015). Standard error estimation
-#' for mixed flood distributions with historic maxima. Environmetrics, 26(3), 229-242.
-#' \doi{10.1002/env.2333}
-#' 
-#' Shin, Y., Shin, Y., & Park, J. S. (2025). Building nonstationary extreme value
-#' model using L-moments. Journal of the Korean Statistical Society, 1-24.
-#' \doi{10.1007/s42952-025-00325-3}
-#' 
-#' @examples
-#' data(streamflow)
-#' head(streamflow)
-#'
-"streamflow"
-
 #' Phliu Agrometeorological Station Data
 #'
-#' Climate or meteorological data from the Phliu Agrometeorological Station
-#' for extreme value analysis.
+#' Annual maximum daily precipitation and station metadata from the Phliu
+#' Agrometeorological Station, Chanthaburi province, Thailand (1984-2023).
+#' A Mann-Kendall test indicates a significant increasing trend in the
+#' annual maxima (tau = 0.235, p = 0.033), so this dataset is used for
+#' demonstrating non-stationary (GEV11) estimation; it is the heavy
+#' rainfall application of Shin et al. (2025).
 #'
 #' @format A data frame with 40 rows and 9 columns:
 #' \describe{
@@ -55,77 +31,13 @@
 #' data(PhliuAgromet)
 #' head(PhliuAgromet)
 #'
-"PhliuAgromet"
-
-#' Trehafod River Flow Data
-#'
-#' Annual maximum river flow data from the Trehafod gauging station in Wales, UK.
-#' This dataset is commonly used for demonstrating non-stationary extreme value
-#' analysis methods.
-#'
-#' @format A data frame with 53 rows and 2 columns:
-#' \describe{
-#'   \item{Year}{Year of observation (integer, 1968-2021)}
-#'   \item{r1}{Annual maximum river flow in cubic meters per second (m^3/s)}
-#' }
-#'
-#' @source UK National River Flow Archive.
-#'
-#' @references
-#' Shin, Y., Shin, Y. & Park, J.-S. (2025). Building nonstationary extreme value
-#' model using L-moments. Journal of the Korean Statistical Society, 54, 947-970.
-#' \doi{10.1007/s42952-025-00325-3}
-#'
-#' @examples
-#' data(Trehafod)
-#' head(Trehafod)
-#'
-#' \donttest{
-#' # Fit non-stationary GEV11 model
-#' result <- glme.gev11(Trehafod$r1, ntry = 5)
-#' print(result$para.glme)
-#' }
-#'
-"Trehafod"
-
-#' Glanteifi Peak Streamflow Data
-#'
-#' Annual maximum (peak) streamflow data observed at the Glanteifi gauging
-#' station (station ID 62001) on the River Teifi in Wales, UK, spanning
-#' 65 years from 1959 to 2023. A Mann-Kendall trend test indicates a
-#' significant increasing trend (tau = 0.193, p = 0.023), so this dataset
-#' is used for demonstrating non-stationary (GEV11) extreme value analysis
-#' in Shin et al. (2025).
-#'
-#' @format A data frame with 65 rows and 5 columns:
-#' \describe{
-#'   \item{id}{NRFA station identifier (integer, 62001)}
-#'   \item{river}{River name (character, "Teifi")}
-#'   \item{location}{Gauging station location (character, "Glanteifi")}
-#'   \item{year}{Year of observation (integer, 1959-2023)}
-#'   \item{flow}{Annual peak streamflow in cubic meters per second (m^3/s)}
-#' }
-#'
-#' @source UK National River Flow Archive, Peak Flow Dataset
-#'   (\url{https://nrfa.ceh.ac.uk/peak-flow-dataset}).
-#'   Data from the UK National River Flow Archive.
-#'
-#' @references
-#' Shin, Y., Shin, Y., Park, J., & Park, J. S. (2025). Generalized method of
-#' L-moment estimation for stationary and nonstationary extreme value models.
-#' arXiv preprint arXiv:2512.20385. \doi{10.48550/arXiv.2512.20385}
-#'
-#' @examples
-#' data(glanteifi)
-#' head(glanteifi)
-#'
 #' \donttest{
 #' # Fit non-stationary GEV11 model by GLME
-#' result <- glme.gev11(glanteifi$flow, ntry = 5)
+#' result <- glme.gev11(PhliuAgromet$prec, ntry = 5)
 #' print(result$para.glme)
 #' }
 #'
-"glanteifi"
+"PhliuAgromet"
 
 #' Bangkok Maximum Rainfall Data
 #'

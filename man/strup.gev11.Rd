@@ -34,8 +34,8 @@ with the final-specification modification described in Shin et al.
 by \code{\link{glme.gev11}} and \code{\link{lme.gev11}}.
 }
 \examples{
-data(glanteifi)
-result <- strup.gev11(glanteifi$flow)
+data(PhliuAgromet)
+result <- strup.gev11(PhliuAgromet$prec)
 print(result$strup.mdfy)
 
 }

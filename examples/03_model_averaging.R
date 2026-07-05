@@ -13,11 +13,11 @@
 library(GLmom)
 
 # Load example data
-data(streamflow)
-x <- streamflow$r1
+data(haenam)
+x <- haenam$X1
 
 cat("=== GLmom Example 3: Model Averaging (MAGEV) ===\n\n")
-cat("Data: streamflow$r1 (n =", length(x), "annual maxima)\n\n")
+cat("Data: haenam$X1 (n =", length(x), "annual maxima)\n\n")
 
 # -----------------------------------------------------------------------------
 # 1. Basic model averaging with default settings

@@ -1,34 +1,52 @@
-## Resubmission
+## GLmom 2.0.0
 
-This is a resubmission. In this version I have:
+This is a major update (1.3.1 -> 2.0.0). It integrates the revised GLME
+methodology of Shin et al. (2026 revised version of arXiv:2512.20385):
+new exported functions for the non-stationary GEV11 model (`lme.gev11()`,
+`strup.gev11()`, `GN16.gev11()`, `ran.gev_all()`), a unified penalty layer
+(`pk.beta()`), re-tuned penalty presets, and a substantially faster
+penalized non-stationary fit. All changes are documented in NEWS.md.
 
-* Replaced all `\dontrun{}` with unwrapped examples or `\donttest{}`.
-* Wrapped `Trehafod` and `glme.gev11()` examples in `\donttest{}`
-  as they exceed 5 sec on Debian.
-* Fixed the invalid URL for the UK National River Flow Archive
-  (`https://nrfa.ceh.ac.uk/peak-flow-dataset` changed to
-  `https://nrfa.ceh.ac.uk/data/peak-flow-dataset`).
-* Single-quoted acronyms and proper names in DESCRIPTION
-  (e.g., 'GEV', 'GLME', 'Hosking', 'Stedinger') to address
-  the misspelled words NOTE.
+### Removed datasets
 
-## R CMD check results
-
-0 errors | 0 warnings | 1 note
+The datasets `streamflow`, `Trehafod`, and `glanteifi` (the latter only
+ever present in the development version) have been **removed** in this
+release. All three originate from the UK National River Flow Archive,
+whose data terms and conditions
+(<https://eidc.ceh.ac.uk/licences/NRFA-Data-Terms-and-Conditions>)
+do not permit making the data available for download or redistributing
+them to third parties, so we cannot ship them in the package. The
+documentation points users to the NRFA Peak Flow Dataset for direct
+access. The removal is prominently documented in NEWS.md; the remaining
+example datasets (`PhliuAgromet`, `bangkok`, `haenam`) cover all examples
+and tests.
 
 ## Test environments
 
-* macOS Tahoe 26.2 (aarch64-apple-darwin20), R 4.5.2
+* local: macOS (Apple silicon, arm64), R 4.1.3
+* [TODO before submission: win-builder (R-devel) - paste result]
+* [TODO before submission: macOS builder (r-release) - paste result]
 
-## NOTEs
+## R CMD check results
 
-1. **New submission**
-   ```
-   Maintainer: 'Yonggwan Shin <syg.stat@etri.re.kr>'
-   New submission
-   ```
-   This is the first submission of this package to CRAN.
+0 errors | 0 warnings | 2 notes
+
+1. **(possibly) invalid URL / DOI (status 403)**
+   The flagged DOIs (e.g., 10.1029/1999WR900330, AGU;
+   10.1111/j.2517-6161.1990.tb01775.x, Wiley) are valid; the 403
+   responses come from publishers rejecting automated requests.
+   The links resolve correctly in a browser.
+
+2. **unable to verify current time**
+   Local environment artifact (no network time check available on the
+   build machine); not related to the package.
 
 ## Downstream dependencies
 
-There are currently no downstream dependencies as this is a new package.
+There are no reverse dependencies on CRAN
+(checked with `tools::package_dependencies("GLmom", reverse = TRUE)`).
+The API changes in this major release therefore affect no other CRAN
+packages. Backward compatibility for end users is retained where the
+data license permits: every function exported in 1.3.1 remains exported
+and callable (with `gado.prop_11()` formally deprecated in favor of
+`lme.gev11()`).

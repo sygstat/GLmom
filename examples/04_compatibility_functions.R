@@ -21,11 +21,11 @@
 library(GLmom)
 
 # Load example data
-data(Trehafod)
-x <- Trehafod$r1
+data(PhliuAgromet)
+x <- PhliuAgromet$prec
 
 cat("=== GLmom Example 4: Compatibility Functions ===\n\n")
-cat("Data: Trehafod river flow (n =", length(x), "years)\n\n")
+cat("Data: Phliu annual maximum precipitation (n =", length(x), "years)\n\n")
 
 # -----------------------------------------------------------------------------
 # 1. nsgev() - Simple interface
@@ -138,31 +138,20 @@ Use glme.gev11() when:
 ")
 
 # -----------------------------------------------------------------------------
-# 6. Example with PhliuAgromet data
+# 6. Example with haenam data
 # -----------------------------------------------------------------------------
-cat("\n--- 6. Example with PhliuAgromet data ---\n")
-data(PhliuAgromet)
+cat("\n--- 6. Example with haenam data ---\n")
+data(haenam)
+y <- haenam$X1
 
-# Check if precipitation data is available
-if ("prec" %in% names(PhliuAgromet)) {
-  y <- PhliuAgromet$prec
-  y <- y[!is.na(y)]
+cat("Data: Haenam annual maximum rainfall (n =", length(y), ")\n\n")
 
-  if (length(y) >= 20) {
-    cat("Data: PhliuAgromet precipitation (n =", length(y), ")\n\n")
+set.seed(456)
+result_haenam <- nsgev(y, ntry = 5)
 
-    set.seed(456)
-    result_philu <- nsgev(y, ntry = 5)
-
-    cat("Proposed estimates:\n")
-    cat("  mu0 =", round(result_philu$para.prop[1], 4), "\n")
-    cat("  mu1 =", round(result_philu$para.prop[2], 4), "\n")
-    cat("  xi =", round(result_philu$para.prop[5], 4), "\n")
-  } else {
-    cat("Insufficient data in PhliuAgromet for this example.\n")
-  }
-} else {
-  cat("PhliuAgromet$prec not available. Skipping this example.\n")
-}
+cat("Proposed estimates:\n")
+cat("  mu0 =", round(result_haenam$para.prop[1], 4), "\n")
+cat("  mu1 =", round(result_haenam$para.prop[2], 4), "\n")
+cat("  xi =", round(result_haenam$para.prop[5], 4), "\n")
 
 cat("\n=== Example 4 completed ===\n")

@@ -35,8 +35,8 @@
 #' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' data(glanteifi)
-#' result <- GN16.gev11(glanteifi$flow)
+#' data(PhliuAgromet)
+#' result <- GN16.gev11(PhliuAgromet$prec)
 #' print(result$para.gado.org)
 #'
 #' @export

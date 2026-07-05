@@ -95,9 +95,9 @@ Next, we define the generalized L-moments distance (GLD) as;
 where \eqn{V} is the variance-covariance matrix of the sample L-moments up to the third order.
 }
 \examples{
-# Load example streamflow data
-data(streamflow)
-x <- streamflow$r1
+# Load example heavy-rainfall data
+data(haenam)
+x <- haenam$X1
 
 # Estimate GEV parameters using beta penalty (default)
 result <- glme.gev(x, ntry = 5)

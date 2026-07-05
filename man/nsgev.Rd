@@ -31,8 +31,8 @@ compatibility with the original nsgev package interface (and with
 GLmom v1.x).
 }
 \examples{
-data(Trehafod)
-result <- nsgev(Trehafod$r1, ntry = 5)
+data(PhliuAgromet)
+result <- nsgev(PhliuAgromet$prec, ntry = 5)
 print(result$para.prop)
 
 }

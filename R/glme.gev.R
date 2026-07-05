@@ -68,8 +68,8 @@ init.gevmax <-function(data=NULL, ntry=NULL){
 #'   function internally.
 #'
 #' @examples
-#' data(streamflow)
-#' inits <- init.glme(streamflow$r1, ntry = 5)
+#' data(haenam)
+#' inits <- init.glme(haenam$X1, ntry = 5)
 #' print(inits)
 #'
 #' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
@@ -170,8 +170,8 @@ boot.cov = function(xdat,BB){
 #' @seealso \code{\link{glme.gev}} which calls this function for optimization.
 #'
 #' @examples
-#' data(streamflow)
-#' x <- streamflow$r1
+#' data(haenam)
+#' x <- haenam$X1
 #' slm <- lmomco::lmoms(x, nmom = 3)
 #' cov_mat <- lmomco::lmoms.cov(x, nmom = 3)
 #' lme_par <- lmomco::pargev(slm)$para
@@ -275,9 +275,9 @@ glme.like = function(par, xdat=xdat, slmgev=slmgev, covinv=covinv,
 #' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park
 #'
 #' @examples
-#' # Load example streamflow data
-#' data(streamflow)
-#' x <- streamflow$r1
+#' # Load example heavy-rainfall data
+#' data(haenam)
+#' x <- haenam$X1
 #'
 #' # Estimate GEV parameters using beta penalty (default)
 #' result <- glme.gev(x, ntry = 5)
@@ -416,8 +416,8 @@ glme.gev= function(xdat, ntry=5, pen='beta', pen.choice=1,
 #'   \code{\link[lmomco]{pargev}} for the original L-moment GEV fitting.
 #'
 #' @examples
-#' data(streamflow)
-#' lmom <- lmomco::lmoms(streamflow$r1, nmom = 3)
+#' data(haenam)
+#' lmom <- lmomco::lmoms(haenam$X1, nmom = 3)
 #' pargev.kfix(lmom, kfix = -0.1)
 #'
 #' @author Yonggwan Shin, Seokkap Ko, Jihong Park, Yire Shin, Jeong-Soo Park

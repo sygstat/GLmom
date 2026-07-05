@@ -95,8 +95,8 @@ pre-estimated values. With \code{pen="no"} the result equals the pure
 L-moment method \code{\link{lme.gev11}} of Shin et al. (2025b).
 }
 \examples{
-data(glanteifi)
-x <- glanteifi$flow
+data(PhliuAgromet)
+x <- PhliuAgromet$prec
 
 \donttest{
 # Estimate non-stationary GEV11 parameters
