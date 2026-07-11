@@ -1,4 +1,22 @@
-## GLmom 2.0.0
+## GLmom 2.0.1
+
+This is a quick correction release to 2.0.0. It fixes two implementation
+errors identified by the methodology authors:
+
+* The constant term of the GLME objective now uses log(det(V))/2 (the
+  correct multivariate-normal constant) instead of log(det(V)). Parameter
+  estimates are unchanged (the term is parameter-free); only reported
+  criterion values shift.
+* The fixed literature penalties (`pen = "ms"`, `"park"`, `"cannon"`) are
+  now evaluated on the shape-parameter interval (-0.5, 0.5), matching
+  their definitions in the literature (Martins & Stedinger, 2000), instead
+  of (-1, 0.5). Estimates obtained with these three penalty options
+  change; this affects reported results, which is why we submit the
+  correction promptly rather than waiting.
+
+Both changes are documented in NEWS.md.
+
+## Previous release: GLmom 2.0.0
 
 This is a major update (1.3.1 -> 2.0.0). It integrates the revised GLME
 methodology of Shin et al. (2026 revised version of arXiv:2512.20385):
@@ -23,15 +41,22 @@ and tests.
 
 ## Test environments
 
-* local: macOS (Apple silicon, arm64), R 4.1.3
-* win-builder, R-devel (2026-07-04 r90207 ucrt): 0 errors, 0 warnings,
-  1 NOTE (DESCRIPTION spell-check only; see note 3 below)
-* macOS builder: service unavailable at submission time; the package is
-  pure R and was fully checked locally on macOS (arm64)
+* local (2.0.1): macOS (Apple silicon, arm64), R 4.1.3 — 0 errors,
+  0 warnings, 2 notes (see below)
+* win-builder, R-devel: [TODO: run for 2.0.1 before submission;
+  the 2.0.0 tarball gave 0 errors, 0 warnings, 1 NOTE
+  (DESCRIPTION spell-check only; see note 4 below)]
+* macOS builder: service unavailable at the 2.0.0 submission; the package
+  is pure R and was fully checked locally on macOS (arm64)
 
 ## R CMD check results
 
 0 errors | 0 warnings | 2 notes
+
+0. **Days since last update**
+   2.0.1 follows 2.0.0 after a short interval because it corrects the
+   estimation results of three penalty options (see above); we considered
+   it better to fix published results promptly.
 
 1. **(possibly) invalid URL / DOI (status 403)**
    The flagged DOIs (e.g., 10.1029/1999WR900330, AGU;

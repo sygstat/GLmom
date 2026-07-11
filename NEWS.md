@@ -1,3 +1,22 @@
+# GLmom 2.0.1
+
+Two corrections to the GLME objective and penalty layer, following the
+revised methodology paper (Shin et al., 2026).
+
+## Bug Fixes
+
+* The constant term of the GLME objective now uses `log(det(V))/2`
+  (the correct multivariate-normal constant) instead of `log(det(V))`,
+  in both `glme.gev()` and `glme.gev11()`. This term does not depend on
+  the parameters, so **all parameter estimates are unchanged**; only the
+  reported `nllh.glme` values shift by a constant.
+* The fixed literature penalties (`pen = "ms"`, `"park"`, `"cannon"`) are
+  now evaluated on the shape-parameter interval (-0.5, 0.5), matching
+  their definitions in the literature (e.g., the Martins-Stedinger
+  geophysical prior), instead of (-1, 0.5). **Estimates obtained with
+  these three penalties change**; the adaptive `"beta"`/`"norm"`
+  penalties, `"cd"`, and `"no"` are unaffected.
+
 # GLmom 2.0.0
 
 This release integrates the revised GLME methodology of Shin et al.

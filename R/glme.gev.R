@@ -196,7 +196,7 @@ glme.like = function(par, xdat=xdat, slmgev=slmgev, covinv=covinv,
   zvec= emom - slmgev$lambdas[1:3]
 
   gld= t(zvec) %*% covinv %*% zvec
-  prob.norm =  gld/2  + (3/2)*log(2*pi) + lcovdet
+  prob.norm =  gld/2  + (3/2)*log(2*pi) + lcovdet/2
 
   pk_beta = penalty.fun(par=par, mu=mu, std=std, lme=lme,
                     pen=pen, p=p, c0=c0, c1=c1, c2=c2, q=q)

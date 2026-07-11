@@ -197,7 +197,7 @@ nllh.glme.gev11 = function(a, xdat=xdat, newtheta=newtheta,
 
   gld= t(ldist) %*% covinv %*% ldist
 
-  nllh.norm =  gld/2 + (3/2)*log(2*pi) + lcovdet
+  nllh.norm =  gld/2 + (3/2)*log(2*pi) + lcovdet/2
 
   pk.ns= penalty.fun(par=a, mu=mu, std=std, lme=newtheta[c(1,3,5)],
                      pen=pen, p=p, c0=c0, c1=c1, c2=c2, q=q)

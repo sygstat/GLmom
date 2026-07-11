@@ -282,15 +282,15 @@ penalty.fun = function(par, mu=NULL, std=NULL, lme=NULL, pen='beta',
 
   }else if(pen=='ms' | pen=="MS"){
 
-    pk = -log( pk.beta(para=par, p=6, q=9)$pk.one )
+    pk = -log( pk.beta(para=par, p=6, q=9, min.xi=-0.5)$pk.one )
 
   }else if(pen=="park" | pen=="Park"){
 
-    pk = -log( pk.beta(para=par, p=2.5, q=2.5)$pk.one )
+    pk = -log( pk.beta(para=par, p=2.5, q=2.5, min.xi=-0.5)$pk.one )
 
   }else if(pen=="cannon" | pen=="Cannon"){
 
-    pk = -log( pk.beta(para=par, p=2, q=3.3)$pk.one )
+    pk = -log( pk.beta(para=par, p=2, q=3.3, min.xi=-0.5)$pk.one )
 
   }else if(pen=="cd" | pen=="CD"){
 
