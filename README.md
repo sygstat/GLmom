@@ -49,27 +49,32 @@ For time-varying extremes, the GEV11 model allows:
 - **MAGEV diagnostic plots**: `magev.ksensplot`, `magev.qqplot`, `magev.rlplot`
 - **Example datasets**: `PhliuAgromet`, `bangkok`, `haenam`
 
-> **Note (v2.0.0):** the GLME penalty presets and several defaults were
+> **Note (v2.0.0/2.0.1):** the GLME penalty presets and several defaults were
 > re-tuned following the revised paper (Shin et al., 2025a), so numerical
-> results differ from v1.3.1. All v1.3.1 functions remain available.
+> results differ from v1.3.1; v2.0.1 additionally corrects the objective
+> constant and evaluates the fixed penalties (`ms`, `park`, `cannon`) on
+> (-0.5, 0.5). All v1.3.1 functions remain available.
 > The `streamflow`, `Trehafod`, and `glanteifi` datasets were removed
 > because their source (UK National River Flow Archive) does not permit
 > redistribution; see `NEWS.md` for details.
 
 ## Installation
 
-This README describes **version 2.0.0**. Until CRAN is updated (the CRAN
-release is currently 1.3.1, which still ships the old datasets, presets,
-and defaults), install 2.0.0 from GitHub:
+This README describes **version 2.0.1** (the development version on
+GitHub). The CRAN release is currently **2.0.0**; version 2.0.1 corrects
+the objective constant (reported criterion values only) and evaluates the
+fixed penalties (`ms`, `park`, `cannon`) on (-0.5, 0.5), so results for
+those three penalty options differ between the two versions (see
+`NEWS.md`). 2.0.1 will be submitted to CRAN in due course.
 
 ```r
-# Version 2.0.0 (this README)
-remotes::install_github("sygstat/GLmom")
+# CRAN release (2.0.0)
+install.packages("GLmom")
 ```
 
 ```r
-# CRAN release (currently 1.3.1)
-install.packages("GLmom")
+# Development version 2.0.1 (this README)
+remotes::install_github("sygstat/GLmom")
 ```
 
 
@@ -107,15 +112,15 @@ x <- haenam$X1  # 52 annual maxima of daily rainfall, Haenam, Korea
 result <- glme.gev(x)
 result$para.glme  # GLME estimates
 #>       mu      sig       xi
-#> 113.3014  37.3662  -0.3225
+#> 113.2862  37.3576  -0.3225
 result$para.lme   # Traditional L-moment estimates
 #>       mu      sig       xi
 #> 113.4524  37.3533  -0.3104
 
 # Compare different penalty functions
 glme.gev(x, pen = "beta")$para.glme[3]    # xi ~= -0.323
-glme.gev(x, pen = "ms")$para.glme[3]      # xi ~= -0.328 (Martins-Stedinger)
-glme.gev(x, pen = "park")$para.glme[3]    # xi ~= -0.308
+glme.gev(x, pen = "ms")$para.glme[3]      # xi ~= -0.221 (Martins-Stedinger)
+glme.gev(x, pen = "park")$para.glme[3]    # xi ~= -0.263
 glme.gev(x, pen = "no")$para.glme[3]      # xi ~= -0.310 (no penalty = L-moment)
 ```
 
@@ -200,7 +205,7 @@ results <- sapply(penalties, function(p) {
 
 print(round(results, 4))
 #>  beta.xi norm.xi   ms.xi park.xi cannon.xi   cd.xi   no.xi
-#>  -0.0356 -0.0451 -0.1289 -0.0416   -0.0577 -0.0232 -0.0303
+#>  -0.0356 -0.0451 -0.0639 -0.0281   -0.0486 -0.0232 -0.0303
 ```
 
 ### 5. Custom Hyperparameters
