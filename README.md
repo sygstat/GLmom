@@ -60,12 +60,12 @@ For time-varying extremes, the GEV11 model allows:
 
 ## Installation
 
-This README describes **version 2.0.1** (the development version on
-GitHub). The CRAN release is currently **2.0.0**; version 2.0.1 corrects
-the objective constant (reported criterion values only) and evaluates the
-fixed penalties (`ms`, `park`, `cannon`) on (-0.5, 0.5), so results for
-those three penalty options differ between the two versions (see
-`NEWS.md`). 2.0.1 will be submitted to CRAN in due course.
+This README describes **version 2.0.1**. The CRAN release is currently
+**2.0.0**; version 2.0.1 corrects the objective constant (reported
+criterion values only) and evaluates the fixed penalties (`ms`, `park`,
+`cannon`) on (-0.5, 0.5), so results for those three penalty options
+differ between the two versions (see `NEWS.md`). Version 2.0.1 has been
+submitted to CRAN; until it is accepted, install it from GitHub.
 
 ```r
 # CRAN release (2.0.0)
