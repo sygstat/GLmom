@@ -43,10 +43,8 @@ and tests.
 
 * local (2.0.1): macOS (Apple silicon, arm64), R 4.1.3 — 0 errors,
   0 warnings, 2 notes (see below)
-* win-builder, R-devel: 2.0.1 tarball uploaded 2026-07-25 (result
-  pending at submission time); the 2.0.0 tarball gave 0 errors,
-  0 warnings, 1 NOTE (DESCRIPTION spell-check only; see note 4 below),
-  and 2.0.1 changes only two arithmetic expressions in R code
+* win-builder, R-devel (2026-07-23 r90295 ucrt): Status OK —
+  0 errors, 0 warnings, 0 notes
 * macOS builder: service unavailable at the 2.0.0 submission; the package
   is pure R and was fully checked locally on macOS (arm64)
 
