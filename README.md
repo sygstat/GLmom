@@ -60,20 +60,13 @@ For time-varying extremes, the GEV11 model allows:
 
 ## Installation
 
-This README describes **version 2.0.1**. The CRAN release is currently
-**2.0.0**; version 2.0.1 corrects the objective constant (reported
-criterion values only) and evaluates the fixed penalties (`ms`, `park`,
-`cannon`) on (-0.5, 0.5), so results for those three penalty options
-differ between the two versions (see `NEWS.md`). Version 2.0.1 has been
-submitted to CRAN; until it is accepted, install it from GitHub.
-
 ```r
-# CRAN release (2.0.0)
+# Install package
 install.packages("GLmom")
 ```
 
 ```r
-# Development version 2.0.1 (this README)
+# Install from GitHub
 remotes::install_github("sygstat/GLmom")
 ```
 
